@@ -53,6 +53,11 @@
 		8B91D3AE0F959DE2A87F4FE5C12E9C47 /* BMACircleProgressIndicatorView.h in Headers */ = {isa = PBXBuildFile; fileRef = 705BC399BD4B077E37975D15C89248C5 /* BMACircleProgressIndicatorView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8F15C49B27F151842800BE46B7A1F8D5 /* KeyboardTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C5450447BBEDCADEE91F8CA4A0970CC /* KeyboardTracker.swift */; };
 		912346E11BA28AB42EF2C880D9BBB7BE /* TextMessageCollectionViewCellDefaultStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C42DE4E7BA84C9B0F5D1A68BE58C87 /* TextMessageCollectionViewCellDefaultStyle.swift */; };
+		92FE0B3A1C244EA600E606E4 /* SectionHeaderModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92FE0B381C244E7D00E606E4 /* SectionHeaderModel.swift */; };
+		92FE0B3C1C244F5A00E606E4 /* SectionHeaderPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92FE0B3B1C244F5A00E606E4 /* SectionHeaderPresenter.swift */; };
+		92FE0B3E1C244F6700E606E4 /* SectionHeaderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92FE0B3D1C244F6700E606E4 /* SectionHeaderViewModel.swift */; };
+		92FE0B411C24511000E606E4 /* SectionHeaderCollectionViewCellDefaultStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92FE0B401C24511000E606E4 /* SectionHeaderCollectionViewCellDefaultStyle.swift */; };
+		92FE0B431C24513200E606E4 /* SectionHeaderCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92FE0B421C24513200E606E4 /* SectionHeaderCollectionViewCell.swift */; };
 		9704A68C7BA570894FC6E17A45A02D7B /* ExpandableTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24BCF073CE16056F253257894CF66DD /* ExpandableTextView.swift */; };
 		9880C7250D3C2D73510FD558175B72DD /* TextMessageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0115F92456789DC5293B80ADE95E0C9F /* TextMessageCollectionViewCell.swift */; };
 		A6DA10DCA661CA422AF69BF4AB9B954E /* ChatInputBarPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC819B1D861D4DAB565E0F55A285701 /* ChatInputBarPresenter.swift */; };
@@ -158,6 +163,11 @@
 		894E5DA93A9F359521A89826BE6DA777 /* Pods-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-dummy.m"; sourceTree = "<group>"; };
 		8A3C388748081057087ABCD9B0DDC950 /* ChatItemDecorationAttributes.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChatItemDecorationAttributes.swift; sourceTree = "<group>"; };
 		90DA51B10129517CD3241737D8212E87 /* BMACircleProgressIndicatorView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = BMACircleProgressIndicatorView.m; sourceTree = "<group>"; };
+		92FE0B381C244E7D00E606E4 /* SectionHeaderModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SectionHeaderModel.swift; sourceTree = "<group>"; };
+		92FE0B3B1C244F5A00E606E4 /* SectionHeaderPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SectionHeaderPresenter.swift; sourceTree = "<group>"; };
+		92FE0B3D1C244F6700E606E4 /* SectionHeaderViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SectionHeaderViewModel.swift; sourceTree = "<group>"; };
+		92FE0B401C24511000E606E4 /* SectionHeaderCollectionViewCellDefaultStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SectionHeaderCollectionViewCellDefaultStyle.swift; sourceTree = "<group>"; };
+		92FE0B421C24513200E606E4 /* SectionHeaderCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SectionHeaderCollectionViewCell.swift; sourceTree = "<group>"; };
 		96A7978D5FD75F4D2E7E2844B82897DF /* ChatViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
 		977577C045EDA9D9D1F46E2598D19FC7 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Pods.debug.xcconfig; sourceTree = "<group>"; };
 		97EC8D64F772F020E4A9E737D4A050C3 /* KeyedOperationQueue.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KeyedOperationQueue.swift; sourceTree = "<group>"; };
@@ -513,6 +523,26 @@
 			path = Text;
 			sourceTree = "<group>";
 		};
+		92FE0B371C244E5900E606E4 /* SectionHeader */ = {
+			isa = PBXGroup;
+			children = (
+				92FE0B381C244E7D00E606E4 /* SectionHeaderModel.swift */,
+				92FE0B3B1C244F5A00E606E4 /* SectionHeaderPresenter.swift */,
+				92FE0B3D1C244F6700E606E4 /* SectionHeaderViewModel.swift */,
+				92FE0B3F1C2450EF00E606E4 /* Views */,
+			);
+			name = SectionHeader;
+			sourceTree = "<group>";
+		};
+		92FE0B3F1C2450EF00E606E4 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				92FE0B421C24513200E606E4 /* SectionHeaderCollectionViewCell.swift */,
+				92FE0B401C24511000E606E4 /* SectionHeaderCollectionViewCellDefaultStyle.swift */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
 		9486F27E9C712C62F6856EC5E1DFD468 /* BaseMessage */ = {
 			isa = PBXGroup;
 			children = (
@@ -663,6 +693,7 @@
 			isa = PBXGroup;
 			children = (
 				8A3C388748081057087ABCD9B0DDC950 /* ChatItemDecorationAttributes.swift */,
+				92FE0B371C244E5900E606E4 /* SectionHeader */,
 				4132B6A0B82C9AD10C98563576173FA9 /* BaseMessage */,
 				EEAABA8E8443311507CD9BB41E35B286 /* PhotoMessages */,
 				CC27B0AA8783E403851467DA308D736D /* TextMessages */,
@@ -853,6 +884,8 @@
 				E4E4535937848CDEFE3D32352CB3A9E2 /* BaseMessageCollectionViewCell.swift in Sources */,
 				2E053E32E6699131415FBFCAF852DD2B /* BaseMessageCollectionViewCellDefaultSyle.swift in Sources */,
 				1F2DA4739EFF506885EF07C89CFA45E8 /* BaseMessageModel.swift in Sources */,
+				92FE0B3E1C244F6700E606E4 /* SectionHeaderViewModel.swift in Sources */,
+				92FE0B3A1C244EA600E606E4 /* SectionHeaderModel.swift in Sources */,
 				58E5645BFC734617ACF8D007494B5B0F /* BaseMessagePresenter.swift in Sources */,
 				7F3A6C8CD9E9A403018BA32E77A652CA /* BaseMessageViewModel.swift in Sources */,
 				D8DF88A9BDED618732761848AAC68BF8 /* BMACircleIconView.m in Sources */,
@@ -860,6 +893,7 @@
 				1A24981C14D3100113C7C25946F3EF19 /* BMACircleProgressView.m in Sources */,
 				85030BD1405D84D64A8AF99383A16B65 /* ChatInputBar.swift in Sources */,
 				6CB8747661CD25674AF534222940E703 /* ChatInputBarAppearance.swift in Sources */,
+				92FE0B411C24511000E606E4 /* SectionHeaderCollectionViewCellDefaultStyle.swift in Sources */,
 				A6DA10DCA661CA422AF69BF4AB9B954E /* ChatInputBarPresenter.swift in Sources */,
 				D2FD1F6DA50E296192F8749029C4F45C /* ChatInputItem.swift in Sources */,
 				488B9CC6ACE0CED56CB768B26DC31BC8 /* ChatInputItemView.swift in Sources */,
@@ -868,6 +902,7 @@
 				9704A68C7BA570894FC6E17A45A02D7B /* ExpandableTextView.swift in Sources */,
 				028AD75840092D13B5224C8D5ED8AA42 /* HorizontalStackScrollView.swift in Sources */,
 				0B0DB6468BC049E1F7C9FE26AA7A20AA /* KeyedOperationQueue.swift in Sources */,
+				92FE0B431C24513200E606E4 /* SectionHeaderCollectionViewCell.swift in Sources */,
 				E6104D319568DE8BFC0B165F72551518 /* LiveCameraCell.swift in Sources */,
 				7732675797ADD0433829E313257315E2 /* Observable.swift in Sources */,
 				CB443568542D6251FEC92D7F9EF5983C /* PhotoBubbleView.swift in Sources */,
@@ -877,6 +912,7 @@
 				AE39E42EAFA8F74E43C46731395167DC /* PhotoMessagePresenter.swift in Sources */,
 				58CBF8F6DC12EFBD29E53FBAC68DA1D8 /* PhotoMessagePresenterBuilder.swift in Sources */,
 				E3DB923C434F009E860A4C8DE4834618 /* PhotoMessageViewModel.swift in Sources */,
+				92FE0B3C1C244F5A00E606E4 /* SectionHeaderPresenter.swift in Sources */,
 				0082007D49336CDF454FC58F2DEAD259 /* PhotosChatInputItem.swift in Sources */,
 				1F8053B39C77DA7DD8DB7305B1548746 /* PhotosInputCameraPicker.swift in Sources */,
 				0DDAA5B1D465414268117A4B24E21719 /* PhotosInputCell.swift in Sources */,
