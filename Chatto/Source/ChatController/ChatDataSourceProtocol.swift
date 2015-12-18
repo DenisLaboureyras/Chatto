@@ -31,7 +31,7 @@ public protocol ChatDataSourceDelegateProtocol: class {
 public protocol ChatDataSourceProtocol: class {
     var hasMoreNext: Bool { get }
     var hasMorePrevious: Bool { get }
-    var chatItems: [ChatItemProtocol] { get }
+    var sectionItems: [SectionItemProtocol] { get }
     weak var delegate: ChatDataSourceDelegateProtocol? { get set }
 
     func loadNext(completion: () -> Void)

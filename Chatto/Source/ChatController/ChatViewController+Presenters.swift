@@ -25,9 +25,27 @@
 import Foundation
 
 extension ChatViewController: ChatCollectionViewLayoutDelegate {
+    
+    public func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+        return self.sections.count
+    }
 
     public func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.decoratedChatItems.count
+        return self.sections[section].items.count
+    }
+    
+    public func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
+        if ( kind == UICollectionElementKindSectionHeader )
+        {
+            let presenter = self.presenterForIndexSection(indexPath)
+            let cell = presenter.dequeueCell(collectionView: collectionView, indexPath: indexPath)
+            let decorationAttributes = self.decorationAttributesForIndexSection(indexPath)
+            presenter.configureCell(cell, decorationAttributes: decorationAttributes)
+            return cell
+        }
+        
+        return UICollectionReusableView()
+        
     }
 
     public func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
@@ -67,7 +85,24 @@ extension ChatViewController: ChatCollectionViewLayoutDelegate {
     }
 
     public func presenterForIndexPath(indexPath: NSIndexPath) -> ChatItemPresenterProtocol {
-        return self.presenterForIndex(indexPath.item, decoratedChatItems: self.decoratedChatItems)
+        let decoratedChatItems = self.sections[indexPath.section].items
+        return self.presenterForIndex(indexPath.item, decoratedChatItems: decoratedChatItems)
+    }
+    
+    public func presenterForIndexSection(indexPath: NSIndexPath) -> ChatItemPresenterProtocol {
+        
+        guard indexPath.section < sections.count else {
+            // This can happen from didEndDisplayingCell if we reloaded with less messages
+            return DummyChatItemPresenter()
+        }
+        let decoratedChatItems = self.sections[indexPath.section].section
+        let chatItem = decoratedChatItems.chatItem
+        if let presenter = self.presentersByChatItem.objectForKey(chatItem) as? ChatItemPresenterProtocol {
+            return presenter
+        }
+        let presenter = self.createPresenterForChatItem(chatItem)
+        self.presentersByChatItem.setObject(presenter, forKey: chatItem)
+        return presenter
     }
 
     public func presenterForIndex(index: Int, decoratedChatItems: [DecoratedChatItem]) -> ChatItemPresenterProtocol {
@@ -95,6 +130,10 @@ extension ChatViewController: ChatCollectionViewLayoutDelegate {
     }
 
     public func decorationAttributesForIndexPath(indexPath: NSIndexPath) -> ChatItemDecorationAttributesProtocol? {
-        return self.decoratedChatItems[indexPath.item].decorationAttributes
+        return self.sections[indexPath.section].items[indexPath.row].decorationAttributes
+    }
+    
+    public func decorationAttributesForIndexSection(indexPath: NSIndexPath) -> ChatItemDecorationAttributesProtocol? {
+        return self.sections[indexPath.section].section.decorationAttributes
     }
 }

@@ -28,6 +28,21 @@ public protocol UniqueIdentificable {
     var uid: String { get }
 }
 
+struct SectionChangeMove: Equatable, Hashable {
+    let indexOld: Int
+    let indexNew: Int
+    init(indexOld: Int, indexNew: Int) {
+        self.indexOld = indexOld
+        self.indexNew = indexNew
+    }
+    
+    var hashValue: Int { return indexOld ^ indexNew }
+}
+
+func == (lhs: SectionChangeMove, rhs: SectionChangeMove) -> Bool {
+    return lhs.indexOld == rhs.indexOld && lhs.indexNew == rhs.indexNew
+}
+
 struct CollectionChangeMove: Equatable, Hashable {
     let indexPathOld: NSIndexPath
     let indexPathNew: NSIndexPath
@@ -44,49 +59,103 @@ func == (lhs: CollectionChangeMove, rhs: CollectionChangeMove) -> Bool {
 }
 
 struct CollectionChanges {
+    let insertedIndexSections: NSIndexSet
+    let deletedIndexSections: NSIndexSet
+    let movedIndexSections: [SectionChangeMove]
     let insertedIndexPaths: Set<NSIndexPath>
     let deletedIndexPaths: Set<NSIndexPath>
     let movedIndexPaths: [CollectionChangeMove]
 
-    init(insertedIndexPaths: Set<NSIndexPath>, deletedIndexPaths: Set<NSIndexPath>, movedIndexPaths: [CollectionChangeMove]) {
+    init(
+        insertedIndexSections: NSIndexSet,
+        deletedIndexSections: NSIndexSet,
+        movedIndexSections: [SectionChangeMove],
+        insertedIndexPaths: Set<NSIndexPath>,
+        deletedIndexPaths: Set<NSIndexPath>,
+        movedIndexPaths: [CollectionChangeMove]
+        ) {
+        self.insertedIndexSections = insertedIndexSections
+        self.deletedIndexSections = deletedIndexSections
+        self.movedIndexSections = movedIndexSections
         self.insertedIndexPaths = insertedIndexPaths
         self.deletedIndexPaths = deletedIndexPaths
         self.movedIndexPaths = movedIndexPaths
     }
 }
 
-func generateChanges(oldCollection oldCollection: [UniqueIdentificable], newCollection: [UniqueIdentificable]) -> CollectionChanges {
-    func generateIndexesById(uids: [String]) -> [String: Int] {
+func generateChanges(oldCollection oldCollection: [SectionItemProtocol], newCollection: [SectionItemProtocol]) -> CollectionChanges {
+    func generateSectionIndexesById(uids: [String]) -> [String: Int] {
         var map = [String: Int](minimumCapacity: uids.count)
         for (index, uid) in uids.enumerate() {
             map[uid] = index
         }
         return map
     }
+    
+    func generateIndexesById(sections: [SectionItemProtocol]) -> [String: NSIndexPath] {
+        var map = [String: NSIndexPath]()
+        for (indexSection, section) in sections.enumerate() {
+            for (indexRow, item) in section.items.enumerate() {
+                map[item.uid] = NSIndexPath(forRow: indexRow, inSection: indexSection)
+            }
+        }
+        return map
+    }
 
-    let oldIds = oldCollection.map { $0.uid }
-    let newIds = newCollection.map { $0.uid }
-    let oldIndexsById = generateIndexesById(oldIds)
-    let newIndexsById = generateIndexesById(newIds)
+    let oldSectionIds = oldCollection.map { $0.uid }
+    let newSectionIds = newCollection.map { $0.uid }
+    let oldIndexsSectionById = generateSectionIndexesById(oldSectionIds)
+    let newIndexsSectionById = generateSectionIndexesById(newSectionIds)
+    let oldIndexsPathById = generateIndexesById(oldCollection)
+    let newIndexsPathById = generateIndexesById(newCollection)
+    let oldIds = oldIndexsPathById.keys
+    let newIds = newIndexsPathById.keys
+    
+    let deletedIndexSections = NSMutableIndexSet()
+    let insertedIndexSections = NSMutableIndexSet()
+    var movedIndexSections = [SectionChangeMove]()
+    
+    // Deletions Sections
+    for oldId in oldSectionIds {
+        let isDeleted = newIndexsSectionById[oldId] == nil
+        if isDeleted {
+            deletedIndexSections.addIndex(oldIndexsSectionById[oldId]!)
+        }
+    }
+    
+    // Insertions and movements Sections
+    for newId in newSectionIds {
+        let newIndex = newIndexsSectionById[newId]!
+        if let oldIndex = oldIndexsSectionById[newId] {
+            if oldIndex != newIndex {
+                movedIndexSections.append(SectionChangeMove(indexOld: oldIndex, indexNew: newIndex))
+            }
+        } else {
+            // It's new
+            insertedIndexSections.addIndex(newIndex)
+        }
+    }
+
+    
+    
     var deletedIndexPaths = Set<NSIndexPath>()
     var insertedIndexPaths = Set<NSIndexPath>()
     var movedIndexPaths = [CollectionChangeMove]()
 
     // Deletetions
     for oldId in oldIds {
-        let isDeleted = newIndexsById[oldId] == nil
+        let isDeleted = newIndexsPathById[oldId] == nil
         if isDeleted {
-            deletedIndexPaths.insert(NSIndexPath(forItem: oldIndexsById[oldId]!, inSection: 0))
+            deletedIndexPaths.insert(oldIndexsPathById[oldId]!)
         }
     }
 
     // Insertions and movements
     for newId in newIds {
-        let newIndex = newIndexsById[newId]!
-        let newIndexPath = NSIndexPath(forItem: newIndex, inSection: 0)
-        if let oldIndex = oldIndexsById[newId] {
-            if oldIndex != newIndex {
-                movedIndexPaths.append(CollectionChangeMove(indexPathOld: NSIndexPath(forItem: oldIndex, inSection: 0), indexPathNew: newIndexPath))
+        let newIndexPath = newIndexsPathById[newId]!
+        if let oldIndexPath = oldIndexsPathById[newId] {
+            if oldIndexPath != newIndexPath {
+                movedIndexPaths.append(CollectionChangeMove(indexPathOld: oldIndexPath, indexPathNew: newIndexPath))
             }
         } else {
             // It's new
@@ -94,5 +163,11 @@ func generateChanges(oldCollection oldCollection: [UniqueIdentificable], newColl
         }
     }
 
-    return CollectionChanges(insertedIndexPaths: insertedIndexPaths, deletedIndexPaths: deletedIndexPaths, movedIndexPaths: movedIndexPaths)
+    return CollectionChanges(
+        insertedIndexSections: insertedIndexSections,
+        deletedIndexSections: deletedIndexSections,
+        movedIndexSections: movedIndexSections,
+        insertedIndexPaths: insertedIndexPaths,
+        deletedIndexPaths: deletedIndexPaths,
+        movedIndexPaths: movedIndexPaths)
 }

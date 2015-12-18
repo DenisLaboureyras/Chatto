@@ -37,6 +37,29 @@ public struct DecoratedChatItem {
     }
 }
 
+public protocol SectionItemsDecoratorProtocol {
+    func decorateItems(sectionItems: [SectionItemProtocol]) -> [ChatSection]
+}
+
+public struct DecoratedSectionItem {
+    public let chatItem: ChatItemProtocol
+    public let decorationAttributes: ChatItemDecorationAttributesProtocol?
+    public init(chatItem: ChatItemProtocol, decorationAttributes: ChatItemDecorationAttributesProtocol?) {
+        self.chatItem = chatItem
+        self.decorationAttributes = decorationAttributes
+    }
+}
+
+public struct ChatSection {
+    public var section: DecoratedSectionItem;
+    public var items: [DecoratedChatItem];
+    public init(section: DecoratedSectionItem, items: [DecoratedChatItem]) {
+        self.section = section
+        self.items = items
+    }
+    
+}
+
 public class ChatViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
 
     public struct Constants {
@@ -51,7 +74,7 @@ public class ChatViewController: UIViewController, UICollectionViewDataSource, U
     public var constants = Constants()
 
     public private(set) var collectionView: UICollectionView!
-    var decoratedChatItems = [DecoratedChatItem]()
+    var sections = [ChatSection]()
     public var chatDataSource: ChatDataSourceProtocol? {
         didSet {
             self.chatDataSource?.delegate = self
@@ -208,6 +231,7 @@ public class ChatViewController: UIViewController, UICollectionViewDataSource, U
         - You can also add new items (for instance time markers or failed cells)
     */
     public var chatItemsDecorator: ChatItemsDecoratorProtocol?
+    public var sectionItemsDecorator: SectionItemsDecoratorProtocol?
 
     public var createCollectionViewLayout: UICollectionViewLayout {
         let layout = ChatCollectionViewLayout()

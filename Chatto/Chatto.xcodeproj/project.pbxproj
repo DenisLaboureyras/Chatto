@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		92F28D2E1C235D0B0055BA4F /* SectionItemProtocolDefinitions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F28D2D1C235D0A0055BA4F /* SectionItemProtocolDefinitions.swift */; };
 		C31E919A1BFF4CA300339585 /* ChatViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31E91991BFF4CA300339585 /* ChatViewControllerTests.swift */; };
 		C321C3961BE78835009803D1 /* CollectionChangesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C321C3951BE78835009803D1 /* CollectionChangesTests.swift */; };
 		C321DDA91BE9649F00DE88CC /* BaseChatItemPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C321DD941BE9649F00DE88CC /* BaseChatItemPresenter.swift */; };
@@ -42,6 +43,7 @@
 
 /* Begin PBXFileReference section */
 		55E85D821BE390BE001885AD /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		92F28D2D1C235D0A0055BA4F /* SectionItemProtocolDefinitions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SectionItemProtocolDefinitions.swift; sourceTree = "<group>"; };
 		C31E91991BFF4CA300339585 /* ChatViewControllerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatViewControllerTests.swift; sourceTree = "<group>"; };
 		C321C3951BE78835009803D1 /* CollectionChangesTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionChangesTests.swift; sourceTree = "<group>"; };
 		C321DD941BE9649F00DE88CC /* BaseChatItemPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseChatItemPresenter.swift; sourceTree = "<group>"; };
@@ -112,6 +114,7 @@
 			isa = PBXGroup;
 			children = (
 				C321DD941BE9649F00DE88CC /* BaseChatItemPresenter.swift */,
+				92F28D2D1C235D0A0055BA4F /* SectionItemProtocolDefinitions.swift */,
 				C321DD9A1BE9649F00DE88CC /* ChatItemProtocolDefinitions.swift */,
 				C36281EA1BF0F62F004D6BCE /* DummyChatItemPresenter.swift */,
 			);
@@ -319,6 +322,7 @@
 				C36281EB1BF0F62F004D6BCE /* DummyChatItemPresenter.swift in Sources */,
 				C38621DF1BE6C89900421718 /* CollectionChanges.swift in Sources */,
 				C3E904D91BE0509E00C662A2 /* ChatCollectionViewLayout.swift in Sources */,
+				92F28D2E1C235D0B0055BA4F /* SectionItemProtocolDefinitions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
