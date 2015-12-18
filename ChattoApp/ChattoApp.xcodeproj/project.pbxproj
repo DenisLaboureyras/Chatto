@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1CB21D193EF017E5E1C63755 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 623390018DA74FF277EE2626 /* Pods.framework */; };
+		92FE0B361C24255900E606E4 /* SectionItemsDemoDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92FE0B351C24255900E606E4 /* SectionItemsDemoDecorator.swift */; };
 		C30C6EBB1BDE9BDC00D4C879 /* FakeMessageFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30C6EBA1BDE9BDC00D4C879 /* FakeMessageFactory.swift */; };
 		C31E291A1BF38F8A00EF5B2F /* FakeMessageSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31E29191BF38F8A00EF5B2F /* FakeMessageSender.swift */; };
 		C31E291C1BF39DE600EF5B2F /* FakePhotoMessageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31E291B1BF39DE600EF5B2F /* FakePhotoMessageViewModel.swift */; };
@@ -60,6 +61,7 @@
 
 /* Begin PBXFileReference section */
 		623390018DA74FF277EE2626 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		92FE0B351C24255900E606E4 /* SectionItemsDemoDecorator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SectionItemsDemoDecorator.swift; sourceTree = "<group>"; };
 		BC1B7FD95E9FA5D84A5E756D /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		C103E6161174A5DF650D22E6 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		C30C6EBA1BDE9BDC00D4C879 /* FakeMessageFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FakeMessageFactory.swift; path = Source/FakeMessageFactory.swift; sourceTree = "<group>"; };
@@ -135,6 +137,7 @@
 			isa = PBXGroup;
 			children = (
 				C3B0D3601BF3C928006CF725 /* ChatItemsDemoDecorator.swift */,
+				92FE0B351C24255900E606E4 /* SectionItemsDemoDecorator.swift */,
 				C396D98E1BF8C64900F10439 /* ConversationsViewController.swift */,
 				C33FBFAA1BDE441C008E3545 /* DemoChatViewController.swift */,
 				C30C6EBA1BDE9BDC00D4C879 /* FakeMessageFactory.swift */,
@@ -429,6 +432,7 @@
 				C35A6F511BF8089C0085CA19 /* FakeDataSource.swift in Sources */,
 				C35A6F4D1BF807C10085CA19 /* SlidingDatasSource.swift in Sources */,
 				C33FBFA91BDE441C008E3545 /* AppDelegate.swift in Sources */,
+				92FE0B361C24255900E606E4 /* SectionItemsDemoDecorator.swift in Sources */,
 				C326C9AE1BF6424900EC4607 /* UserActionHandlers.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

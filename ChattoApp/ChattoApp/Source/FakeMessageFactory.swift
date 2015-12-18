@@ -33,6 +33,8 @@ extension Array {
     }
 }
 
+
+
 func createTextMessageModel(uid: String, text: String, isIncoming: Bool) -> TextMessageModel {
     let messageModel = createMessageModel(uid, isIncoming: isIncoming, type: TextMessageModel.chatItemType)
     let textMessageModel = TextMessageModel(messageModel: messageModel, text: text)
@@ -56,6 +58,10 @@ class FakeMessageFactory {
     static let demoTexts = [
         "Lorem ipsum dolor sit amet 😇, https://github.com/badoo/Chatto consectetur adipiscing elit , sed do eiusmod tempor incididunt 07400000000 📞 ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore https://github.com/badoo/Chatto eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat 07400000000 non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
     ]
+    
+    class func createUniqueSectionItem(sectionuid: String) -> MessageModelProtocol {
+        return createChatItem(sectionuid)
+    }
 
     class func createChatItem(uid: String) -> MessageModelProtocol {
         let isIncoming: Bool = arc4random_uniform(100) % 2 == 0

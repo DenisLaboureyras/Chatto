@@ -27,10 +27,12 @@ import Foundation
 extension ChatViewController: ChatCollectionViewLayoutDelegate {
     
     public func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+        //collectionView.collectionViewLayout.invalidateLayout()
         return self.sections.count
     }
 
     public func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        //collectionView.collectionViewLayout.invalidateLayout()
         return self.sections[section].items.count
     }
     

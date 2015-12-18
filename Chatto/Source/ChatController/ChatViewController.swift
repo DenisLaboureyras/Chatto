@@ -38,6 +38,7 @@ public struct DecoratedChatItem {
 }
 
 public protocol SectionItemsDecoratorProtocol {
+    var chatItemsDecorator: ChatItemsDecoratorProtocol? {get set}
     func decorateItems(sectionItems: [SectionItemProtocol]) -> [ChatSection]
 }
 
@@ -230,8 +231,16 @@ public class ChatViewController: UIViewController, UICollectionViewDataSource, U
         - Provide to your pressenters additional attributes to help them configure their cells (for instance if a bubble should show a tail)
         - You can also add new items (for instance time markers or failed cells)
     */
-    public var chatItemsDecorator: ChatItemsDecoratorProtocol?
-    public var sectionItemsDecorator: SectionItemsDecoratorProtocol?
+    public var chatItemsDecorator: ChatItemsDecoratorProtocol? {
+        didSet {
+            self.sectionItemsDecorator?.chatItemsDecorator = chatItemsDecorator
+        }
+    }
+    public var sectionItemsDecorator: SectionItemsDecoratorProtocol? {
+        didSet {
+            self.sectionItemsDecorator?.chatItemsDecorator = chatItemsDecorator
+        }
+    }
 
     public var createCollectionViewLayout: UICollectionViewLayout {
         let layout = ChatCollectionViewLayout()

@@ -22,7 +22,7 @@ public class SectionItem: SectionItemProtocol {
     
     public var uid: String
     
-    init(section: ChatItemProtocol, items: [ChatItemProtocol]){
+    public init(section: ChatItemProtocol, items: [ChatItemProtocol]){
         self.section = section;
         self.items = items;
         self.uid = section.uid;

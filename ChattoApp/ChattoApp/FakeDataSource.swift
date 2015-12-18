@@ -26,10 +26,12 @@ import Foundation
 import Chatto
 
 class FakeDataSource: ChatDataSourceProtocol {
+    
+   
     var lastMessageId: Int = 0
     let preferredMaxWindowSize = 500
 
-    var slidingWindow: SlidingDataSource<ChatItemProtocol>!
+    var slidingWindow: SlidingDataSource!
     init(count: Int, pageSize: Int) {
         self.slidingWindow = SlidingDataSource(count: count, pageSize: pageSize) { () -> ChatItemProtocol in
             return FakeMessageFactory.createChatItem("\(self.lastMessageId++)")
@@ -57,7 +59,7 @@ class FakeDataSource: ChatDataSourceProtocol {
         return self.slidingWindow.hasPrevious()
     }
 
-    var chatItems: [ChatItemProtocol] {
+    var sectionItems: [SectionItemProtocol] {
         return self.slidingWindow.itemsInWindow
     }
 

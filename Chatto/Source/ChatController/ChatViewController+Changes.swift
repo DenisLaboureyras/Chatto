@@ -252,9 +252,9 @@ extension ChatViewController: ChatDataSourceDelegateProtocol {
             if !isInbackground || presenter.canCalculateHeightInBackground ?? false {
                 height = presenter.heightForCell(maximumWidth: collectionViewWidth, decorationAttributes: decoratedSection.section.decorationAttributes)
             } else {
-                itemsForMainThread.append((index: sectionIndex, itemDecorationAttribute: decoratedSection.section.decorationAttributes, presenter: presenter))
+                //itemsForMainThread.append((index: sectionIndex, itemDecorationAttribute: decoratedSection.section.decorationAttributes, presenter: presenter))
             }
-            intermediateLayoutData.append((height: height, bottomMargin: bottomMargin))
+            //intermediateLayoutData.append((height: height, bottomMargin: bottomMargin))
             for (index, decoratedItem) in decoratedItems.enumerate() {
                 let presenter = self.presenterForIndex(index, decoratedChatItems: decoratedItems)
                 var height: CGFloat?

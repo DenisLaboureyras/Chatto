@@ -23,26 +23,30 @@
 */
 
 import Foundation
+import Chatto
 
 public enum InsertPosition {
     case Top
     case Bottom
 }
 
-public class SlidingDataSource<Element> {
+public class SlidingDataSource  {
 
+    var uniqueSection = FakeMessageFactory.createUniqueSectionItem("0")
+    
     private var pageSize: Int
     private var windowOffset: Int
     private var windowCount: Int
-    private var itemGenerator: (() -> Element)?
-    private var items = [Element]()
+    private var itemGenerator: (() -> ChatItemProtocol)?
+    private var items = [ChatItemProtocol]()
     private var itemsOffset: Int
-    public var itemsInWindow: [Element] {
+    public var itemsInWindow: [SectionItemProtocol] {
         let offset = self.windowOffset - self.itemsOffset
-        return Array(items[offset..<offset+self.windowCount])
+        let itemsInWd = Array(items[offset..<offset+self.windowCount]) as [ChatItemProtocol]
+        return [SectionItem(section: uniqueSection, items: itemsInWd)].map {$0 as SectionItemProtocol}
     }
 
-    public init(count: Int, pageSize: Int, itemGenerator: (() -> Element)?) {
+    public init(count: Int, pageSize: Int, itemGenerator: (() -> ChatItemProtocol)?) {
         self.windowOffset = count
         self.itemsOffset = count
         self.windowCount = 0
@@ -51,7 +55,7 @@ public class SlidingDataSource<Element> {
         self.generateItems(min(pageSize, count), position: .Top)
     }
 
-    public convenience init(items: [Element], pageSize: Int) {
+    public convenience init(items: [ChatItemProtocol], pageSize: Int) {
         self.init(count: 0, pageSize: pageSize, itemGenerator: nil)
         for item in items {
             self.insertItem(item, position: .Bottom)
@@ -68,7 +72,7 @@ public class SlidingDataSource<Element> {
         }
     }
 
-    public func insertItem(item: Element, position: InsertPosition) {
+    public func insertItem(item: ChatItemProtocol, position: InsertPosition) {
         if position == .Top {
             self.items.insert(item, atIndex: 0)
             let shouldExpandWindow = self.itemsOffset == self.windowOffset
