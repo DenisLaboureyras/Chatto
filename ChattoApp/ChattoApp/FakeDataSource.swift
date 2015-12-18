@@ -41,6 +41,10 @@ class FakeDataSource: ChatDataSourceProtocol {
     init(messages: [ChatItemProtocol], pageSize: Int) {
         self.slidingWindow = SlidingDataSource(items: messages, pageSize: pageSize)
     }
+    
+    init(sections: [SectionItemProtocol], pageSize: Int) {
+        self.slidingWindow = SlidingDataSource(sectionsItems: sections, pageSize: pageSize)
+    }
 
     lazy var messageSender: FakeMessageSender = {
         let sender = FakeMessageSender()

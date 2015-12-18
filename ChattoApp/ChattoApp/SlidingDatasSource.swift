@@ -39,11 +39,16 @@ public class SlidingDataSource  {
     private var windowCount: Int
     private var itemGenerator: (() -> ChatItemProtocol)?
     private var items = [ChatItemProtocol]()
+    private var sectionsItems = [SectionItemProtocol]()
     private var itemsOffset: Int
     public var itemsInWindow: [SectionItemProtocol] {
-        let offset = self.windowOffset - self.itemsOffset
-        let itemsInWd = Array(items[offset..<offset+self.windowCount]) as [ChatItemProtocol]
-        return [SectionItem(section: uniqueSection, items: itemsInWd)].map {$0 as SectionItemProtocol}
+        if sectionsItems.count > 0 {
+            return sectionsItems
+        }else{
+            let offset = self.windowOffset - self.itemsOffset
+            let itemsInWd = Array(items[offset..<offset+self.windowCount]) as [ChatItemProtocol]
+            return [SectionItem(section: uniqueSection, items: itemsInWd)].map {$0 as SectionItemProtocol}
+        }
     }
 
     public init(count: Int, pageSize: Int, itemGenerator: (() -> ChatItemProtocol)?) {
@@ -60,6 +65,11 @@ public class SlidingDataSource  {
         for item in items {
             self.insertItem(item, position: .Bottom)
         }
+    }
+    
+    public convenience init(sectionsItems: [SectionItemProtocol], pageSize: Int) {
+        self.init(count: 0, pageSize: pageSize, itemGenerator: nil)
+        self.sectionsItems = sectionsItems
     }
 
     private func generateItems(count: Int, position: InsertPosition) {

@@ -40,7 +40,9 @@ class ConversationsViewController: UITableViewController {
             initialCount = 10000
         } else if segue.identifier == "overview" {
             dataSource = FakeDataSource(messages: TutorialMessageFactory.createMessages().map { $0 }, pageSize: pageSize)
-        } else {
+        }else if segue.identifier == "sections" {
+            dataSource = FakeDataSource(sections: SectionMessageFactory.createSections().map { $0 }, pageSize: pageSize)
+        }  else {
             assert(false, "segue not handled!")
         }
 

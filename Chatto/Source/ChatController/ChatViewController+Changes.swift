@@ -230,12 +230,12 @@ extension ChatViewController: ChatDataSourceDelegateProtocol {
     }
 
     private func createLayoutModel(decoratedSections: [ChatSection], collectionViewWidth: CGFloat) -> ChatCollectionViewLayoutModel {
-        typealias IntermediateItemLayoutData = (height: CGFloat?, bottomMargin: CGFloat)
-        typealias ItemLayoutData = (height: CGFloat, bottomMargin: CGFloat)
+        typealias IntermediateItemLayoutData = (indexPath: NSIndexPath, height: CGFloat?, bottomMargin: CGFloat)
+        typealias ItemLayoutData = (indexPath: NSIndexPath, height: CGFloat, bottomMargin: CGFloat)
 
         func createLayoutModel(intermediateLayoutData intermediateLayoutData: [IntermediateItemLayoutData]) -> ChatCollectionViewLayoutModel {
             let layoutData = intermediateLayoutData.map { (intermediateLayoutData: IntermediateItemLayoutData) -> ItemLayoutData in
-                return (height: intermediateLayoutData.height!, bottomMargin: intermediateLayoutData.bottomMargin)
+                return (indexPath: intermediateLayoutData.indexPath, height: intermediateLayoutData.height!, bottomMargin: intermediateLayoutData.bottomMargin)
             }
             return ChatCollectionViewLayoutModel.createModel(self.collectionView.bounds.width, itemsLayoutData: layoutData)
         }
@@ -264,7 +264,8 @@ extension ChatViewController: ChatDataSourceDelegateProtocol {
                 } else {
                     itemsForMainThread.append((index: index, itemDecorationAttribute: decoratedItem.decorationAttributes, presenter: presenter))
                 }
-                intermediateLayoutData.append((height: height, bottomMargin: bottomMargin))
+                let indexPath = NSIndexPath(forRow: index, inSection: sectionIndex)
+                intermediateLayoutData.append((indexPath: indexPath, height: height, bottomMargin: bottomMargin))
             }
         }
         

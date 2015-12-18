@@ -34,15 +34,14 @@ public struct ChatCollectionViewLayoutModel {
     let layoutAttributesBySectionAndItem: [[UICollectionViewLayoutAttributes]]
     let calculatedForWidth: CGFloat
 
-    public static func createModel(collectionViewWidth: CGFloat, itemsLayoutData: [(height: CGFloat, bottomMargin: CGFloat)]) -> ChatCollectionViewLayoutModel {
+    public static func createModel(collectionViewWidth: CGFloat, itemsLayoutData: [(indexPath: NSIndexPath, height: CGFloat, bottomMargin: CGFloat)]) -> ChatCollectionViewLayoutModel {
         var layoutAttributes = [UICollectionViewLayoutAttributes]()
         var layoutAttributesBySectionAndItem = [[UICollectionViewLayoutAttributes]]()
         layoutAttributesBySectionAndItem.append([UICollectionViewLayoutAttributes]())
 
         var verticalOffset: CGFloat = 0
-        for (index, layoutData) in itemsLayoutData.enumerate() {
-            let indexPath = NSIndexPath(forItem: index, inSection: 0)
-            let (height, bottomMargin) = layoutData
+        for layoutData in itemsLayoutData {
+            let (indexPath, height, bottomMargin) = layoutData
             let itemSize = CGSize(width: collectionViewWidth, height: height)
             let frame = CGRect(origin: CGPoint(x: 0, y: verticalOffset), size: itemSize)
             let attributes = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)

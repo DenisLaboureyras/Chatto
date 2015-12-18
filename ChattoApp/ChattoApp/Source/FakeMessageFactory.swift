@@ -140,20 +140,63 @@ class TutorialMessageFactory {
         ("text", "Failed/sending status are completly separated cells. This helps to keep cells them simpler. They are generated with the decorator as well, but other approaches are possible, like being returned by the DataSource or using more complex cells"),
         ("text", "More info on https://github.com/badoo/Chatto. We are waiting for your pull requests!"),
     ]
-
+    
     static func createMessages() -> [MessageModelProtocol] {
         var result = [MessageModelProtocol]()
         for (index, message) in self.messages.enumerate() {
             let type = message.0
             let content = message.1
             let isIncoming: Bool = arc4random_uniform(100) % 2 == 0
-
+            
             if type == "text" {
                 result.append(createTextMessageModel("tutorial-\(index)", text: content, isIncoming: isIncoming))
             } else {
                 let image = UIImage(named: content)!
                 result.append(createPhotoMessageModel("tutorial-\(index)", image:image, size: image.size, isIncoming: isIncoming))
             }
+        }
+        return result
+    }
+}
+
+
+
+class SectionMessageFactory {
+    static let sections = [
+        "section 1" : [
+        ("text", "Welcome to Chatto! A lightweight Swift framework to build chat apps"),
+        ("text", "It calculates sizes in the background for smooth pagination and rotation, and it can deal with thousands of messages with a sliding data source"),
+        ("text", "Along with Chatto there's ChattoAdditions, with bubbles and the input component")
+        ],
+        "section 2" : [
+            ("text", "This is a TextMessageCollectionViewCell. It uses UITextView with data detectors so you can interact with urls: https://github.com/badoo/Chatto, phone numbers: 07400000000, dates: 3 jan 2016 and others"),
+            ("image", "pic-test-1")
+        ]
+    ]
+
+    static func createSections() -> [SectionItemProtocol] {
+        var result = [SectionItemProtocol]()
+        for (indexSection, section) in self.sections.enumerate() {
+            let content = section.0;
+            let sectionModel = createTextMessageModel("tutorialsection-\(indexSection)", text: content, isIncoming: true)
+            
+            var messagesModel = [MessageModelProtocol]()
+            for (indexMessage, message) in section.1.enumerate() {
+                let type = message.0
+                let content = message.1
+                let isIncoming: Bool = arc4random_uniform(100) % 2 == 0
+                
+                if type == "text" {
+                    messagesModel.append(createTextMessageModel("tutorial-\(indexMessage)", text: content, isIncoming: isIncoming))
+                } else {
+                    let image = UIImage(named: content)!
+                    messagesModel.append(createPhotoMessageModel("tutorial-\(indexMessage)", image:image, size: image.size, isIncoming: isIncoming))
+                }
+                
+            }
+            
+            let sectionFinal = SectionItem(section: sectionModel, items: messagesModel.map {$0 as ChatItemProtocol})
+            result.append(sectionFinal)
         }
         return result
     }
