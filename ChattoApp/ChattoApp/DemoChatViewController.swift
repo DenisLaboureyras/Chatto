@@ -38,7 +38,7 @@ class DemoChatViewController: ChatViewController {
     lazy private var baseMessageHandler: BaseMessageHandler = {
         return BaseMessageHandler(messageSender: self.messageSender)
     }()
-
+   
     override func viewDidLoad() {
         super.viewDidLoad()
         let image = UIImage(named: "bubble-incoming-tail-border", inBundle: NSBundle(forClass: self.dynamicType), compatibleWithTraitCollection: nil)?.bma_tintWithColor(UIColor.blueColor())
@@ -81,6 +81,10 @@ class DemoChatViewController: ChatViewController {
                     viewModelBuilder: FakePhotoMessageViewModelBuilder(),
                     interactionHandler: PhotoMessageHandler(baseHandler: self.baseMessageHandler)
                 )
+            ],
+            SectionHeaderModel.chatItemType: [
+                SectionHeaderPresenterBuilder(viewModelBuilder: SectionHeaderViewModelDefaultBuilder(),
+                    interactionHandler: SectionHeaderHandler(baseHandler: self.baseMessageHandler))
             ],
             SendingStatusModel.chatItemType: [SendingStatusPresenterBuilder()]
         ]

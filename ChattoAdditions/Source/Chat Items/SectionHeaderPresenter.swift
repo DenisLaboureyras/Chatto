@@ -10,12 +10,23 @@ import Foundation
 import Chatto
 
 
+public protocol SectionHeaderViewModelBuilderProtocol {
+    typealias ModelT: SectionHeaderModelProtocol
+    typealias ViewModelT: SectionHeaderViewModelProtocol
+    func createSectionHeaderViewModel(sectionHeader: ModelT) -> ViewModelT
+}
+
+
+
 public protocol SectionHeaderInteractionHandlerProtocol {
     typealias ViewModelT
+    func userDidTapOnFailIcon(viewModel viewModel: ViewModelT)
+    func userDidTapOnBubble(viewModel viewModel: ViewModelT)
+    func userDidLongPressOnBubble(viewModel viewModel: ViewModelT)
 }
 
 public class SectionHeaderPresenter<ViewModelBuilderT, InteractionHandlerT where
-    ViewModelBuilderT: ViewModelBuilderProtocol,
+    ViewModelBuilderT: SectionHeaderViewModelBuilderProtocol,
     ViewModelBuilderT.ModelT: SectionHeaderModelProtocol,
     ViewModelBuilderT.ViewModelT: SectionHeaderViewModelProtocol,
     InteractionHandlerT: SectionHeaderInteractionHandlerProtocol,
@@ -56,7 +67,7 @@ public class SectionHeaderPresenter<ViewModelBuilderT, InteractionHandlerT where
     }()
     
     public func createViewModel() -> ViewModelT {
-        let viewModel = self.viewModelBuilder.createViewModel(self.sectionHeaderModel)
+        let viewModel = self.viewModelBuilder.createSectionHeaderViewModel(self.sectionHeaderModel)
         return viewModel
     }
     

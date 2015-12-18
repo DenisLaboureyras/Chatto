@@ -29,6 +29,12 @@ public class SectionHeaderCollectionViewCell: UICollectionViewCell {
     public var animationDuration: CFTimeInterval = 0.33
     public var viewContext: ViewContext = .Normal
     
+    public static func sizingCell() -> SectionHeaderCollectionViewCell {
+        let cell = SectionHeaderCollectionViewCell(frame: CGRectZero)
+        cell.viewContext = .Sizing
+        return cell
+    }
+    
     public private(set) var isUpdating: Bool = false
     public func performBatchUpdates(updateClosure: () -> Void, animated: Bool, completion: (() ->())?) {
         self.isUpdating = true

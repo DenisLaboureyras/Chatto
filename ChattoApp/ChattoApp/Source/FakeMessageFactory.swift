@@ -112,6 +112,12 @@ class FakeMessageFactory {
     }
 }
 
+extension SectionHeaderModel {
+    static var chatItemType: ChatItemType {
+        return "header"
+    }
+}
+
 extension TextMessageModel {
     static var chatItemType: ChatItemType {
         return "text"

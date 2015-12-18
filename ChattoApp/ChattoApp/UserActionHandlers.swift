@@ -26,6 +26,25 @@ import Foundation
 import Chatto
 import ChattoAdditions
 
+class SectionHeaderHandler: SectionHeaderInteractionHandlerProtocol {
+    private let baseHandler: BaseMessageHandler
+    init (baseHandler: BaseMessageHandler) {
+        self.baseHandler = baseHandler
+    }
+    func userDidTapOnFailIcon(viewModel viewModel: SectionHeaderViewModel) {
+        
+    }
+    
+    func userDidTapOnBubble(viewModel viewModel: SectionHeaderViewModel) {
+        
+    }
+    
+    func userDidLongPressOnBubble(viewModel viewModel: SectionHeaderViewModel) {
+        
+    }
+}
+
+
 class TextMessageHandler: BaseMessageInteractionHandlerProtocol {
     private let baseHandler: BaseMessageHandler
     init (baseHandler: BaseMessageHandler) {

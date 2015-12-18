@@ -7,7 +7,7 @@
 //
 
 import Foundation
-
+import Chatto
 
 public protocol SectionHeaderViewModelProtocol: class { // why class? https://gist.github.com/diegosanchezr/29979d22c995b4180830
     var date: String { get }
@@ -44,9 +44,15 @@ public class SectionHeaderViewModel: SectionHeaderViewModelProtocol {
    
 }
 
-public class SectionHeaderViewModelDefaultBuilder {
+
+
+public class SectionHeaderViewModelDefaultBuilder: SectionHeaderViewModelBuilderProtocol {
+    public typealias ModelT = SectionHeaderModel
+    public typealias ViewModelT = SectionHeaderViewModel
     
-    public init() {}
+    public init() {
+        
+    }
     
     static let dateFormatter: NSDateFormatter = {
         let formatter = NSDateFormatter()
@@ -54,7 +60,8 @@ public class SectionHeaderViewModelDefaultBuilder {
         return formatter
     }()
     
-    public func createSectionHeaderViewModel(sectionHeader: SectionHeaderModelProtocol) -> SectionHeaderViewModelProtocol {
+    public func createSectionHeaderViewModel(sectionHeader: SectionHeaderModel) -> SectionHeaderViewModel
+    {
         return SectionHeaderViewModel(dateFormatter: self.dynamicType.dateFormatter, sectionHeaderModel: sectionHeader)
     }
 }
