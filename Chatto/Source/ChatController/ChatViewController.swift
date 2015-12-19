@@ -103,8 +103,15 @@ public class ChatViewController: UIViewController, UICollectionViewDataSource, U
         super.viewWillDisappear(animated)
         self.keyboardTracker.stopTracking()
     }
+    
+//    public func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAtIndex section: Int) -> UIEdgeInsets {
+//        return UIEdgeInsets(top: 50, left: 0, bottom: 0, right: 50)
+//    }
 
     private func addCollectionView() {
+        
+        
+        
         self.collectionView = UICollectionView(frame: CGRectZero, collectionViewLayout: self.createCollectionViewLayout)
         self.collectionView.contentInset = self.constants.defaultContentinsets
         self.collectionView.scrollIndicatorInsets = self.constants.defaultScrollIndicatorInsets
@@ -116,6 +123,7 @@ public class ChatViewController: UIViewController, UICollectionViewDataSource, U
         self.collectionView.allowsSelection = false
         self.collectionView.translatesAutoresizingMaskIntoConstraints = false
         self.collectionView.autoresizingMask = .None
+        
         self.view.addSubview(self.collectionView)
         self.view.addConstraint(NSLayoutConstraint(item: self.view, attribute: .Top, relatedBy: .Equal, toItem: self.collectionView, attribute: .Top, multiplier: 1, constant: 0))
         self.view.addConstraint(NSLayoutConstraint(item: self.view, attribute: .Leading, relatedBy: .Equal, toItem: self.collectionView, attribute: .Leading, multiplier: 1, constant: 0))

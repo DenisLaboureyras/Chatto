@@ -25,6 +25,7 @@
 import UIKit
 
 public protocol ChatCollectionViewLayoutDelegate: class {
+    var collectionView: UICollectionView! {get}
     func chatCollectionViewLayoutModel() -> ChatCollectionViewLayoutModel
 }
 
@@ -93,9 +94,105 @@ public class ChatCollectionViewLayout: UICollectionViewLayout {
         }
         return self.layoutModel.contentSize
     }
-
+    
     override public func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        return self.layoutModel.layoutAttributes.filter { $0.frame.intersects(rect) }
+        let layoutAttributes = test(rect)//self.layoutModel.layoutAttributes.filter { $0.frame.intersects(rect) }
+        print(layoutAttributes)
+        return layoutAttributes
+    }
+    
+    func test(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+        var answer = self.layoutModel.layoutAttributes.filter { $0.frame.intersects(rect) }
+        let cv = self.delegate?.collectionView;
+        let contentOffset: CGPoint = cv?.contentOffset ?? CGPointZero;
+        
+        let missingSections = NSMutableIndexSet();
+        for layoutAttributes in answer {
+            if (layoutAttributes.representedElementCategory == .Cell) {
+                print(layoutAttributes.indexPath)
+                missingSections.addIndex(layoutAttributes.indexPath.section);
+            }
+        }
+        for layoutAttributes in answer {
+            if (layoutAttributes.representedElementKind == UICollectionElementKindSectionHeader) {
+                print(layoutAttributes.indexPath)
+                missingSections.removeIndex(layoutAttributes.indexPath.section);
+            }
+        }
+        
+        missingSections.enumerateIndexesUsingBlock { (idx: Int, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
+            let indexPath = NSIndexPath(forItem: 0, inSection: idx)
+            if let layoutAttributes = self.layoutAttributesForSupplementaryViewOfKind(UICollectionElementKindSectionHeader, atIndexPath: indexPath) {
+                answer.append(layoutAttributes)
+            }
+
+        }
+        
+        
+        
+        for layoutAttributes in answer {
+            print(layoutAttributes.indexPath)
+            
+            if (layoutAttributes.representedElementKind == UICollectionElementKindSectionHeader) {
+                
+                let section = layoutAttributes.indexPath.section;
+                let numberOfItemsInSection = cv?.numberOfItemsInSection(section) ?? 0;
+                
+                //let firstCellIndexPath = NSIndexPath(forItem:0, inSection:section);
+                //let lastCellIndexPath = NSIndexPath(forItem:max(0, (numberOfItemsInSection - 1)), inSection:section);
+                
+                let firstObjectIndexPath = NSIndexPath(forItem:0, inSection:section);
+                let lastObjectIndexPath = NSIndexPath(forItem:max(0, (numberOfItemsInSection - 1)), inSection:section);
+                
+                var firstObjectAttrs: UICollectionViewLayoutAttributes!;
+                var lastObjectAttrs: UICollectionViewLayoutAttributes!;
+                
+                if (numberOfItemsInSection > 0) {
+                    firstObjectAttrs = self.layoutAttributesForItemAtIndexPath(firstObjectIndexPath);
+                    lastObjectAttrs = self.layoutAttributesForItemAtIndexPath(lastObjectIndexPath);
+                } else {
+                    firstObjectAttrs = self.layoutAttributesForSupplementaryViewOfKind(UICollectionElementKindSectionHeader,
+                        atIndexPath:firstObjectIndexPath);
+                    lastObjectAttrs = self.layoutAttributesForSupplementaryViewOfKind(UICollectionElementKindSectionFooter,
+                        atIndexPath:lastObjectIndexPath);
+                }
+                
+                let headerHeight = CGRectGetHeight(layoutAttributes.frame);
+                var origin = layoutAttributes.frame.origin;
+                origin.y = min(
+                    max(
+                        contentOffset.y + (cv?.contentInset.top ?? 0),
+                        (CGRectGetMinY(firstObjectAttrs.frame) - headerHeight)
+                    ),
+                    (CGRectGetMaxY(lastObjectAttrs.frame) - headerHeight)
+                );
+                
+                layoutAttributes.zIndex = 1024;
+                layoutAttributes.frame = CGRect(origin: origin, size: layoutAttributes.frame.size)
+                
+            }
+            
+        }
+        
+        return answer;
+
+    }
+
+    override public func layoutAttributesForSupplementaryViewOfKind(elementKind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
+//        if indexPath.section < self.layoutModel.layoutAttributesBySectionAndItem.count && indexPath.item < self.layoutModel.layoutAttributesBySectionAndItem[indexPath.section].count {
+//            return self.layoutModel.layoutAttributesBySectionAndItem[indexPath.section][indexPath.item]
+//        }
+//        assert(false, "Unexpected indexPath requested:\(indexPath)")
+        let attributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withIndexPath: indexPath)
+        let verticalOffset: CGFloat = 0
+        
+        let height: CGFloat = 40
+        let itemSize = CGSize(width: 375, height: height)
+        let frame = CGRect(origin: CGPoint(x: 0, y: verticalOffset), size: itemSize)
+        
+        attributes.frame = frame
+        
+        return attributes
     }
 
     public override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
