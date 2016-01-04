@@ -30,7 +30,7 @@ public class SectionHeaderPresenter<ViewModelBuilderT, InteractionHandlerT where
     ViewModelBuilderT.ModelT: SectionHeaderModelProtocol,
     ViewModelBuilderT.ViewModelT: SectionHeaderViewModelProtocol,
     InteractionHandlerT: SectionHeaderInteractionHandlerProtocol,
-    InteractionHandlerT.ViewModelT == ViewModelBuilderT.ViewModelT> : BaseChatItemPresenter<SectionHeaderCollectionViewCell> {
+    InteractionHandlerT.ViewModelT == ViewModelBuilderT.ViewModelT> : BaseSectionItemPresenter<SectionHeaderCollectionViewCell> {
     public typealias CellT = SectionHeaderCollectionViewCell
     public typealias ModelT = ViewModelBuilderT.ModelT
     public typealias ViewModelT = ViewModelBuilderT.ViewModelT
@@ -58,8 +58,8 @@ public class SectionHeaderPresenter<ViewModelBuilderT, InteractionHandlerT where
         collectionView.registerClass(SectionHeaderCollectionViewCell.self, forSupplementaryViewOfKind:UICollectionElementKindSectionHeader, withReuseIdentifier: "section-header")
     }
     
-    public override func dequeueCell(collectionView collectionView: UICollectionView, indexPath: NSIndexPath) -> UICollectionViewCell {
-        return collectionView.dequeueReusableCellWithReuseIdentifier("section-header", forIndexPath: indexPath)
+    public override func dequeueCell(collectionView collectionView: UICollectionView, indexPath: NSIndexPath) -> UICollectionReusableView {
+        return collectionView.dequeueReusableSupplementaryViewOfKind(UICollectionElementKindSectionHeader, withReuseIdentifier: "section-header", forIndexPath: indexPath)
     }
     
     public private(set) final lazy var sectionHeaderViewModel: ViewModelT = {
@@ -71,7 +71,7 @@ public class SectionHeaderPresenter<ViewModelBuilderT, InteractionHandlerT where
         return viewModel
     }
     
-    public final override func configureCell(cell: UICollectionViewCell, decorationAttributes: ChatItemDecorationAttributesProtocol?) {
+    public final override func configureCell(cell: UICollectionReusableView, decorationAttributes: ChatItemDecorationAttributesProtocol?) {
         guard let cell = cell as? CellT else {
             assert(false, "Invalid cell given to presenter")
             return

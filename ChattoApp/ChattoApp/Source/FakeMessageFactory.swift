@@ -33,7 +33,10 @@ extension Array {
     }
 }
 
-
+func createSectionHeaderModel(uid: String, text: String) -> SectionHeaderModel {
+    let sectionHeaderModel = SectionHeaderModel(uid: uid, type: SectionHeaderModel.chatItemType, date: NSDate())
+    return sectionHeaderModel
+}
 
 func createTextMessageModel(uid: String, text: String, isIncoming: Bool) -> TextMessageModel {
     let messageModel = createMessageModel(uid, isIncoming: isIncoming, type: TextMessageModel.chatItemType)
@@ -184,7 +187,7 @@ class SectionMessageFactory {
         var result = [SectionItemProtocol]()
         for (indexSection, section) in self.sections.enumerate() {
             let content = section.0;
-            let sectionModel = createTextMessageModel("tutorialsection-\(indexSection)", text: content, isIncoming: true)
+            let sectionModel = createSectionHeaderModel("tutorialsection-\(indexSection)", text: content)
             
             var messagesModel = [MessageModelProtocol]()
             for (indexMessage, message) in section.1.enumerate() {

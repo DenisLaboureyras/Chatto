@@ -75,7 +75,11 @@ public class ChatViewController: UIViewController, UICollectionViewDataSource, U
     public var constants = Constants()
 
     public private(set) var collectionView: UICollectionView!
-    var sections = [ChatSection]()
+    var sections = [ChatSection]() {
+        didSet {
+            print("section set : \(sections.count)")
+        }
+    }
     public var chatDataSource: ChatDataSourceProtocol? {
         didSet {
             self.chatDataSource?.delegate = self
@@ -134,10 +138,16 @@ public class ChatViewController: UIViewController, UICollectionViewDataSource, U
         self.accessoryViewRevealer = AccessoryViewRevealer(collectionView: self.collectionView)
 
         self.presenterBuildersByType = self.createPresenterBuilders()
+        self.sectionPresenterBuildersByType = self.createSectionPresenterBuilders()
 
         for presenterBuilder in self.presenterBuildersByType.flatMap({ $0.1 }) {
             presenterBuilder.presenterType.registerCells(self.collectionView)
         }
+        
+        for presenterBuilder in self.sectionPresenterBuildersByType.flatMap({ $0.1 }) {
+            presenterBuilder.presenterType.registerCells(self.collectionView)
+        }
+        
         DummyChatItemPresenter.registerCells(self.collectionView)
     }
 
@@ -218,14 +228,21 @@ public class ChatViewController: UIViewController, UICollectionViewDataSource, U
     var accessoryViewRevealer: AccessoryViewRevealer!
     var inputContainer: UIView!
     var presenterBuildersByType = [ChatItemType: [ChatItemPresenterBuilderProtocol]]()
+    var sectionPresenterBuildersByType = [ChatItemType: [SectionItemPresenterBuilderProtocol]]()
     var presenters = [ChatItemPresenterProtocol]()
     let presentersByChatItem = NSMapTable(keyOptions: .WeakMemory, valueOptions: .StrongMemory)
+    let presentersBySectionItem = NSMapTable(keyOptions: .WeakMemory, valueOptions: .StrongMemory)
     let presentersByCell = NSMapTable(keyOptions: .WeakMemory, valueOptions: .WeakMemory)
     var updateQueue: SerialTaskQueueProtocol = SerialTaskQueue()
 
     public func createPresenterBuilders() -> [ChatItemType: [ChatItemPresenterBuilderProtocol]] {
         assert(false, "Override in subclass")
         return [ChatItemType: [ChatItemPresenterBuilderProtocol]]()
+    }
+    
+    public func createSectionPresenterBuilders() -> [ChatItemType: [SectionItemPresenterBuilderProtocol]] {
+        assert(false, "Override in subclass")
+        return [ChatItemType: [SectionItemPresenterBuilderProtocol]]()
     }
 
     public func createChatInputView() -> UIView {

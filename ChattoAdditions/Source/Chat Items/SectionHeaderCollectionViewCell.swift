@@ -11,6 +11,9 @@ import Chatto
 
 public protocol SectionHeaderCollectionViewCellStyleProtocol {
     func attributedStringForDate(date: String) -> NSAttributedString
+    func textFont(viewModel viewModel: SectionHeaderViewModelProtocol) -> UIFont
+    func textColor(viewModel viewModel: SectionHeaderViewModelProtocol) -> UIColor
+
 }
 
 public struct SectionHeaderCollectionViewCellLayoutConstants {
@@ -99,6 +102,7 @@ public class SectionHeaderCollectionViewCell: UICollectionViewCell {
     
     
     private func commonInit() {
+        self.backgroundColor = UIColor.blackColor();
         self.contentView.exclusiveTouch = true
         self.exclusiveTouch = true
     }

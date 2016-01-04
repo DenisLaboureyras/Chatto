@@ -87,23 +87,24 @@ extension ChatViewController: ChatCollectionViewLayoutDelegate {
     }
 
     public func presenterForIndexPath(indexPath: NSIndexPath) -> ChatItemPresenterProtocol {
+        print("presenterForIndexPath \(indexPath)" )
         let decoratedChatItems = self.sections[indexPath.section].items
         return self.presenterForIndex(indexPath.item, decoratedChatItems: decoratedChatItems)
     }
     
-    public func presenterForIndexSection(indexPath: NSIndexPath) -> ChatItemPresenterProtocol {
-        
+    public func presenterForIndexSection(indexPath: NSIndexPath) -> SectionItemPresenterProtocol {
+        print("presenterForIndexSection \(indexPath)" )
         guard indexPath.section < sections.count else {
             // This can happen from didEndDisplayingCell if we reloaded with less messages
-            return DummyChatItemPresenter()
+            return DummySectionItemPresenter()
         }
-        let decoratedChatItems = self.sections[indexPath.section].section
-        let chatItem = decoratedChatItems.chatItem
-        if let presenter = self.presentersByChatItem.objectForKey(chatItem) as? ChatItemPresenterProtocol {
+        let decoratedSectionItems = self.sections[indexPath.section].section
+        let sectionItem = decoratedSectionItems.chatItem
+        if let presenter = self.presentersBySectionItem.objectForKey(sectionItem) as? SectionItemPresenterProtocol {
             return presenter
         }
-        let presenter = self.createPresenterForChatItem(chatItem)
-        self.presentersByChatItem.setObject(presenter, forKey: chatItem)
+        let presenter = self.createPresenterForSectionItem(sectionItem)
+        self.presentersBySectionItem.setObject(presenter, forKey: sectionItem)
         return presenter
     }
 
@@ -129,6 +130,15 @@ extension ChatViewController: ChatCollectionViewLayoutDelegate {
             }
         }
         return DummyChatItemPresenter()
+    }
+    
+    public func createPresenterForSectionItem(chatItem: ChatItemProtocol) -> SectionItemPresenterProtocol {
+        for builder in self.sectionPresenterBuildersByType[chatItem.type] ?? [] {
+            if builder.canHandleChatItem(chatItem) {
+                return builder.createPresenterWithChatItem(chatItem)
+            }
+        }
+        return DummySectionItemPresenter()
     }
 
     public func decorationAttributesForIndexPath(indexPath: NSIndexPath) -> ChatItemDecorationAttributesProtocol? {

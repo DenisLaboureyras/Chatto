@@ -68,6 +68,15 @@ class DemoChatViewController: ChatViewController {
         chatInputBar.setAppearance(appearance)
     }
 
+    override func createSectionPresenterBuilders() -> [ChatItemType: [SectionItemPresenterBuilderProtocol]] {
+        return [
+            SectionHeaderModel.chatItemType: [
+                SectionHeaderPresenterBuilder(viewModelBuilder: SectionHeaderViewModelDefaultBuilder(),
+                    interactionHandler: SectionHeaderHandler(baseHandler: self.baseMessageHandler))
+            ]
+        ]
+    }
+    
     override func createPresenterBuilders() -> [ChatItemType: [ChatItemPresenterBuilderProtocol]] {
         return [
             TextMessageModel.chatItemType: [
@@ -81,10 +90,6 @@ class DemoChatViewController: ChatViewController {
                     viewModelBuilder: FakePhotoMessageViewModelBuilder(),
                     interactionHandler: PhotoMessageHandler(baseHandler: self.baseMessageHandler)
                 )
-            ],
-            SectionHeaderModel.chatItemType: [
-                SectionHeaderPresenterBuilder(viewModelBuilder: SectionHeaderViewModelDefaultBuilder(),
-                    interactionHandler: SectionHeaderHandler(baseHandler: self.baseMessageHandler))
             ],
             SendingStatusModel.chatItemType: [SendingStatusPresenterBuilder()]
         ]

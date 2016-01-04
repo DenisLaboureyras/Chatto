@@ -21,4 +21,16 @@ public class SectionHeaderCollectionViewCellDefaultSyle: SectionHeaderCollection
         return NSAttributedString(string: date, attributes: attributes)
     }
     
+    lazy var font = {
+        return UIFont.systemFontOfSize(13)
+    }()
+    
+    public func textFont(viewModel viewModel: SectionHeaderViewModelProtocol) -> UIFont {
+        return self.font
+    }
+    
+    public func textColor(viewModel viewModel: SectionHeaderViewModelProtocol) -> UIColor {
+        return UIColor.blackColor()
+    }
+    
 }

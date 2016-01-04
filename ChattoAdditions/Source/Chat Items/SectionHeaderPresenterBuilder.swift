@@ -15,7 +15,7 @@ public class SectionHeaderPresenterBuilder<ViewModelBuilderT, InteractionHandler
     ViewModelBuilderT.ViewModelT: SectionHeaderViewModelProtocol,
     InteractionHandlerT: SectionHeaderInteractionHandlerProtocol,
     InteractionHandlerT.ViewModelT == ViewModelBuilderT.ViewModelT>
-: ChatItemPresenterBuilderProtocol {
+: SectionItemPresenterBuilderProtocol {
     typealias ViewModelT = ViewModelBuilderT.ViewModelT
     typealias ModelT = ViewModelBuilderT.ModelT
     
@@ -46,11 +46,11 @@ public class SectionHeaderPresenterBuilder<ViewModelBuilderT, InteractionHandler
     public lazy var sectionHeaderStyle: SectionHeaderCollectionViewCellStyleProtocol = SectionHeaderCollectionViewCellDefaultSyle()
     
     public func canHandleChatItem(chatItem: ChatItemProtocol) -> Bool {
-        return chatItem is TextMessageModelProtocol ? true : false
+        return chatItem is SectionHeaderModelProtocol ? true : false
     }
     
     
-    public func createPresenterWithChatItem(chatItem: ChatItemProtocol) -> ChatItemPresenterProtocol {
+    public func createPresenterWithChatItem(chatItem: ChatItemProtocol) -> SectionItemPresenterProtocol {
         assert(self.canHandleChatItem(chatItem))
         return SectionHeaderPresenter<ViewModelBuilderT, InteractionHandlerT>(
             sectionHeaderModel: chatItem as! ModelT,
@@ -61,7 +61,7 @@ public class SectionHeaderPresenterBuilder<ViewModelBuilderT, InteractionHandler
         )
     }
     
-    public var presenterType: ChatItemPresenterProtocol.Type {
+    public var presenterType: SectionItemPresenterProtocol.Type {
         return SectionHeaderPresenter<ViewModelBuilderT, InteractionHandlerT>.self
     }
 }

@@ -230,12 +230,12 @@ extension ChatViewController: ChatDataSourceDelegateProtocol {
     }
 
     private func createLayoutModel(decoratedSections: [ChatSection], collectionViewWidth: CGFloat) -> ChatCollectionViewLayoutModel {
-        typealias IntermediateItemLayoutData = (indexPath: NSIndexPath, height: CGFloat?, bottomMargin: CGFloat)
-        typealias ItemLayoutData = (indexPath: NSIndexPath, height: CGFloat, bottomMargin: CGFloat)
+        typealias IntermediateItemLayoutData = (indexPath: NSIndexPath, height: CGFloat?, headerMargin: CGFloat, bottomMargin: CGFloat)
+        typealias ItemLayoutData = (indexPath: NSIndexPath, height: CGFloat, headerMargin: CGFloat, bottomMargin: CGFloat)
 
         func createLayoutModel(intermediateLayoutData intermediateLayoutData: [IntermediateItemLayoutData]) -> ChatCollectionViewLayoutModel {
             let layoutData = intermediateLayoutData.map { (intermediateLayoutData: IntermediateItemLayoutData) -> ItemLayoutData in
-                return (indexPath: intermediateLayoutData.indexPath, height: intermediateLayoutData.height!, bottomMargin: intermediateLayoutData.bottomMargin)
+                return (indexPath: intermediateLayoutData.indexPath, height: intermediateLayoutData.height!, headerMargin: intermediateLayoutData.headerMargin, bottomMargin: intermediateLayoutData.bottomMargin)
             }
             return ChatCollectionViewLayoutModel.createModel(self.collectionView.bounds.width, itemsLayoutData: layoutData)
         }
@@ -265,7 +265,7 @@ extension ChatViewController: ChatDataSourceDelegateProtocol {
                     itemsForMainThread.append((index: index, itemDecorationAttribute: decoratedItem.decorationAttributes, presenter: presenter))
                 }
                 let indexPath = NSIndexPath(forRow: index, inSection: sectionIndex)
-                intermediateLayoutData.append((indexPath: indexPath, height: height, bottomMargin: bottomMargin))
+                intermediateLayoutData.append((indexPath: indexPath, height: height, headerMargin: 40, bottomMargin: bottomMargin))
             }
         }
         
