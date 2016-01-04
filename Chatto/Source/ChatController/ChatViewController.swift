@@ -149,6 +149,8 @@ public class ChatViewController: UIViewController, UICollectionViewDataSource, U
         }
         
         DummyChatItemPresenter.registerCells(self.collectionView)
+        
+        DummySectionItemPresenter.registerCells(self.collectionView)
     }
 
     private var inputContainerBottomConstraint: NSLayoutConstraint!

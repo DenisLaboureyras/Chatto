@@ -12,7 +12,7 @@ import Foundation
 class DummySectionItemPresenter: SectionItemPresenterProtocol {
     
     class func registerCells(collectionView: UICollectionView) {
-        collectionView.registerClass(DummyCollectionReusableView.self, forSupplementaryViewOfKind:UICollectionElementKindSectionHeader, withReuseIdentifier: "section-id-unhandled-message")
+        collectionView.registerClass(DummyCollectionReusableView.self, forSupplementaryViewOfKind:UICollectionElementKindSectionHeader, withReuseIdentifier: "section-id-unhandled")
     }
     
     var canCalculateHeightInBackground: Bool {
@@ -24,7 +24,7 @@ class DummySectionItemPresenter: SectionItemPresenterProtocol {
     }
     
     func dequeueCell(collectionView collectionView: UICollectionView, indexPath: NSIndexPath) -> UICollectionReusableView {
-        return collectionView.dequeueReusableSupplementaryViewOfKind(UICollectionElementKindSectionHeader, withReuseIdentifier: "section-id-unhandled-message", forIndexPath: indexPath)
+        return collectionView.dequeueReusableSupplementaryViewOfKind(UICollectionElementKindSectionHeader, withReuseIdentifier: "section-id-unhandled", forIndexPath: indexPath)
     }
     
     func configureCell(cell: UICollectionReusableView, decorationAttributes: ChatItemDecorationAttributesProtocol?) {
