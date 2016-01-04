@@ -11,6 +11,7 @@ import Chatto
 
 
 public protocol SectionHeaderModelProtocol: ChatItemProtocol {
+    var text: String { get }
     var date: NSDate { get }
 }
 
@@ -32,8 +33,10 @@ public class SectionHeaderModel: SectionHeaderModelProtocol {
     public var uid: String
     public var type: String
     public var date: NSDate
+    public var text: String
     
-    public init(uid: String, type: String, date: NSDate) {
+    public init(uid: String, type: String, text: String, date: NSDate) {
+        self.text = text;
         self.uid = uid
         self.type = type
         self.date = date

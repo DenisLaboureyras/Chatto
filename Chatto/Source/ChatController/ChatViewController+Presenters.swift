@@ -87,13 +87,11 @@ extension ChatViewController: ChatCollectionViewLayoutDelegate {
     }
 
     public func presenterForIndexPath(indexPath: NSIndexPath) -> ChatItemPresenterProtocol {
-        print("presenterForIndexPath \(indexPath)" )
         let decoratedChatItems = self.sections[indexPath.section].items
         return self.presenterForIndex(indexPath.item, decoratedChatItems: decoratedChatItems)
     }
     
     public func presenterForIndexSection(indexPath: NSIndexPath) -> SectionItemPresenterProtocol {
-        print("presenterForIndexSection \(indexPath)" )
         guard indexPath.section < sections.count else {
             // This can happen from didEndDisplayingCell if we reloaded with less messages
             return DummySectionItemPresenter()

@@ -13,7 +13,8 @@ public protocol SectionHeaderCollectionViewCellStyleProtocol {
     func attributedStringForDate(date: String) -> NSAttributedString
     func textFont(viewModel viewModel: SectionHeaderViewModelProtocol) -> UIFont
     func textColor(viewModel viewModel: SectionHeaderViewModelProtocol) -> UIColor
-
+    func backgroundColor(viewModel viewModel: SectionHeaderViewModelProtocol) -> UIColor
+    
 }
 
 public struct SectionHeaderCollectionViewCellLayoutConstants {
@@ -84,6 +85,19 @@ public class SectionHeaderCollectionViewCell: UICollectionViewCell {
         }
     }
     
+    private var label: UILabel = {
+        let label = UILabel()
+        label.textColor = UIColor.whiteColor();
+        label.backgroundColor = UIColor.darkGrayColor()
+        label.layer.cornerRadius = 8;
+        label.layer.masksToBounds = false;
+        label.clipsToBounds = true;
+        label.textAlignment = .Center;
+        label.text = "example"
+        return label
+    }()
+
+    
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -102,9 +116,12 @@ public class SectionHeaderCollectionViewCell: UICollectionViewCell {
     
     
     private func commonInit() {
-        self.backgroundColor = UIColor.blackColor();
+        self.backgroundColor = UIColor.clearColor();
         self.contentView.exclusiveTouch = true
         self.exclusiveTouch = true
+        let boundsLabel = CGRectMake(10, 5, self.bounds.width - 20, self.bounds.height - 10)
+        self.label.frame = boundsLabel;
+        self.addSubview(self.label);
     }
     
     
@@ -120,6 +137,13 @@ public class SectionHeaderCollectionViewCell: UICollectionViewCell {
         if self.isUpdating { return }
         guard let viewModel = self.sectionHeaderViewModel, style = self.baseStyle else { return }
         self.accessoryTimestamp?.attributedText = style.attributedStringForDate(viewModel.date)
+        
+        self.label.textColor = style.textColor(viewModel: viewModel)
+        self.label.backgroundColor = style.backgroundColor(viewModel: viewModel)
+        self.label.font = style.textFont(viewModel: viewModel)
+        
+        if self.label.text != viewModel.text {self.label.text = viewModel.text}
+        
         self.setNeedsLayout()
     }
     

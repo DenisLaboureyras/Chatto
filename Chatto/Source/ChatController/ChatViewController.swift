@@ -75,11 +75,7 @@ public class ChatViewController: UIViewController, UICollectionViewDataSource, U
     public var constants = Constants()
 
     public private(set) var collectionView: UICollectionView!
-    var sections = [ChatSection]() {
-        didSet {
-            print("section set : \(sections.count)")
-        }
-    }
+    var sections = [ChatSection]()
     public var chatDataSource: ChatDataSourceProtocol? {
         didSet {
             self.chatDataSource?.delegate = self

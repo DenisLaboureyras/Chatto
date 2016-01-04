@@ -34,7 +34,7 @@ extension Array {
 }
 
 func createSectionHeaderModel(uid: String, text: String) -> SectionHeaderModel {
-    let sectionHeaderModel = SectionHeaderModel(uid: uid, type: SectionHeaderModel.chatItemType, date: NSDate())
+    let sectionHeaderModel = SectionHeaderModel(uid: uid, type: SectionHeaderModel.chatItemType, text: text, date: NSDate())
     return sectionHeaderModel
 }
 

@@ -30,7 +30,11 @@ public class SectionHeaderCollectionViewCellDefaultSyle: SectionHeaderCollection
     }
     
     public func textColor(viewModel viewModel: SectionHeaderViewModelProtocol) -> UIColor {
-        return UIColor.blackColor()
+        return UIColor.whiteColor()
+    }
+    
+    public func backgroundColor(viewModel viewModel: SectionHeaderViewModelProtocol) -> UIColor {
+        return UIColor.darkGrayColor()
     }
     
 }

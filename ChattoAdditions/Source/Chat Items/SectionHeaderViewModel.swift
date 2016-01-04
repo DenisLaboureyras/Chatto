@@ -10,6 +10,7 @@ import Foundation
 import Chatto
 
 public protocol SectionHeaderViewModelProtocol: class { // why class? https://gist.github.com/diegosanchezr/29979d22c995b4180830
+    var text: String { get }
     var date: String { get }
     var sectionHeaderModel: SectionHeaderModelProtocol { get }
 }
@@ -37,7 +38,10 @@ public class SectionHeaderViewModel: SectionHeaderViewModelProtocol {
     public let dateFormatter: NSDateFormatter
     public private(set) var sectionHeaderModel: SectionHeaderModelProtocol
     
+    public let text: String
+    
     public init(dateFormatter: NSDateFormatter, sectionHeaderModel: SectionHeaderModelProtocol) {
+        self.text = sectionHeaderModel.text;
         self.dateFormatter = dateFormatter
         self.sectionHeaderModel = sectionHeaderModel;
     }

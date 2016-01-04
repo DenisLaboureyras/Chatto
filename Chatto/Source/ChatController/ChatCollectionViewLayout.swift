@@ -103,8 +103,7 @@ public class ChatCollectionViewLayout: UICollectionViewLayout {
     
     override public func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         let layoutAttributes = layoutAttributesForElementsInRectCustom(rect)//self.layoutModel.layoutAttributes.filter { $0.frame.intersects(rect) }
-        print("layout attributes")
-        print(layoutAttributes)
+
         return layoutAttributes
     }
     
@@ -114,13 +113,11 @@ public class ChatCollectionViewLayout: UICollectionViewLayout {
         let missingSections = NSMutableIndexSet();
         for layoutAttributes in answer {
             if (layoutAttributes.representedElementCategory == .Cell) {
-                print(layoutAttributes.indexPath)
                 missingSections.addIndex(layoutAttributes.indexPath.section);
             }
         }
         for layoutAttributes in answer {
             if (layoutAttributes.representedElementKind == UICollectionElementKindSectionHeader) {
-                print(layoutAttributes.indexPath)
                 missingSections.removeIndex(layoutAttributes.indexPath.section);
             }
         }
@@ -201,8 +198,6 @@ public class ChatCollectionViewLayout: UICollectionViewLayout {
     
 
     public override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
-        print("model \(indexPath.section) \(indexPath.item)")
-        print("indexPath \(self.layoutModel.layoutAttributesBySectionAndItem.count) \(self.layoutModel.layoutAttributesBySectionAndItem[indexPath.section].count)")
         if indexPath.section < self.layoutModel.layoutAttributesBySectionAndItem.count && indexPath.item < self.layoutModel.layoutAttributesBySectionAndItem[indexPath.section].count {
             return self.layoutModel.layoutAttributesBySectionAndItem[indexPath.section][indexPath.item]
         }
