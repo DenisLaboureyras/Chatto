@@ -232,29 +232,31 @@ extension ChatViewController: ChatDataSourceDelegateProtocol {
     private func createLayoutModel(decoratedSections: [ChatSection], collectionViewWidth: CGFloat) -> ChatCollectionViewLayoutModel {
         typealias IntermediateItemLayoutData = (indexPath: NSIndexPath, height: CGFloat?, headerMargin: CGFloat, bottomMargin: CGFloat)
         typealias ItemLayoutData = (indexPath: NSIndexPath, height: CGFloat, headerMargin: CGFloat, bottomMargin: CGFloat)
-
-        func createLayoutModel(intermediateLayoutData intermediateLayoutData: [IntermediateItemLayoutData]) -> ChatCollectionViewLayoutModel {
+        typealias SectionLayoutData = (indexPath: NSIndexPath, height: CGFloat)
+        func createLayoutModel(intermediateLayoutData intermediateLayoutData: [IntermediateItemLayoutData], sectionsLayoutData: [SectionLayoutData]) -> ChatCollectionViewLayoutModel {
             let layoutData = intermediateLayoutData.map { (intermediateLayoutData: IntermediateItemLayoutData) -> ItemLayoutData in
                 return (indexPath: intermediateLayoutData.indexPath, height: intermediateLayoutData.height!, headerMargin: intermediateLayoutData.headerMargin, bottomMargin: intermediateLayoutData.bottomMargin)
             }
-            return ChatCollectionViewLayoutModel.createModel(self.collectionView.bounds.width, itemsLayoutData: layoutData)
+            return ChatCollectionViewLayoutModel.createModel(self.collectionView.bounds.width, itemsLayoutData: layoutData, sectionsLayoutData: sectionsLayoutData)
         }
 
         let isInbackground = !NSThread.isMainThread()
         var intermediateLayoutData = [IntermediateItemLayoutData]()
+        var sectionsLayoutData = [SectionLayoutData]()
         var itemsForMainThread = [(index: Int, itemDecorationAttribute: ChatItemDecorationAttributesProtocol?, presenter: ChatItemPresenterProtocol?)]()
+        var sectionsForMainThread = [(index: Int, itemDecorationAttribute: ChatItemDecorationAttributesProtocol?, presenter: SectionItemPresenterProtocol?)]()
         
         for(sectionIndex, decoratedSection) in decoratedSections.enumerate(){
             let decoratedItems = decoratedSection.items;
             let presenter = self.presenterForIndexSection(NSIndexPath(forRow: 0, inSection: sectionIndex))
-            var height: CGFloat?
-            let bottomMargin: CGFloat = decoratedSection.section.decorationAttributes?.bottomMargin ?? 0
+            var sectionHeight: CGFloat = 0;
+
             if !isInbackground || presenter.canCalculateHeightInBackground ?? false {
-                height = presenter.heightForCell(maximumWidth: collectionViewWidth, decorationAttributes: decoratedSection.section.decorationAttributes)
+                sectionHeight = presenter.heightForCell(maximumWidth: collectionViewWidth, decorationAttributes: decoratedSection.section.decorationAttributes)
             } else {
-                //itemsForMainThread.append((index: sectionIndex, itemDecorationAttribute: decoratedSection.section.decorationAttributes, presenter: presenter))
+                sectionsForMainThread.append((index: sectionIndex, itemDecorationAttribute: decoratedSection.section.decorationAttributes, presenter: presenter))
             }
-            //intermediateLayoutData.append((height: height, bottomMargin: bottomMargin))
+            sectionsLayoutData.append((indexPath: NSIndexPath(forItem: 0, inSection: sectionIndex), height: sectionHeight))
             for (index, decoratedItem) in decoratedItems.enumerate() {
                 let presenter = self.presenterForIndex(index, decoratedChatItems: decoratedItems)
                 var height: CGFloat?
@@ -265,7 +267,7 @@ extension ChatViewController: ChatDataSourceDelegateProtocol {
                     itemsForMainThread.append((index: index, itemDecorationAttribute: decoratedItem.decorationAttributes, presenter: presenter))
                 }
                 let indexPath = NSIndexPath(forRow: index, inSection: sectionIndex)
-                intermediateLayoutData.append((indexPath: indexPath, height: height, headerMargin: 40, bottomMargin: bottomMargin))
+                intermediateLayoutData.append((indexPath: indexPath, height: height, headerMargin: sectionHeight, bottomMargin: bottomMargin))
             }
         }
         
@@ -278,7 +280,17 @@ extension ChatViewController: ChatDataSourceDelegateProtocol {
                 }
             })
         }
-        return createLayoutModel(intermediateLayoutData: intermediateLayoutData)
+        
+        if sectionsForMainThread.count > 0 {
+            dispatch_sync(dispatch_get_main_queue(), { () -> Void in
+                for (index, decoratedItem, presenter) in sectionsForMainThread {
+                    let height = presenter?.heightForCell(maximumWidth: collectionViewWidth, decorationAttributes: decoratedItem)
+                    intermediateLayoutData[index].height = height
+                }
+            })
+        }
+        
+        return createLayoutModel(intermediateLayoutData: intermediateLayoutData, sectionsLayoutData: sectionsLayoutData)
     }
 
     public func chatCollectionViewLayoutModel() -> ChatCollectionViewLayoutModel {

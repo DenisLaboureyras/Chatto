@@ -68,9 +68,9 @@ class DemoChatViewController: ChatViewController {
         chatInputBar.setAppearance(appearance)
     }
 
-    override func createSectionPresenterBuilders() -> [ChatItemType: [SectionItemPresenterBuilderProtocol]] {
+    override func createSectionPresenterBuilders() -> [SectionItemType: [SectionItemPresenterBuilderProtocol]] {
         return [
-            SectionHeaderModel.chatItemType: [
+            SectionHeaderModel.sectionItemType: [
                 SectionHeaderPresenterBuilder(viewModelBuilder: SectionHeaderViewModelDefaultBuilder(),
                     interactionHandler: SectionHeaderHandler(baseHandler: self.baseMessageHandler))
             ]

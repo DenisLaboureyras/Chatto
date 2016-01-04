@@ -33,11 +33,13 @@ public struct ChatCollectionViewLayoutModel {
     let contentSize: CGSize
     let layoutAttributes: [UICollectionViewLayoutAttributes]
     let layoutAttributesBySectionAndItem: [[UICollectionViewLayoutAttributes]]
+    let layoutAttributesSections: [UICollectionViewLayoutAttributes]
     let calculatedForWidth: CGFloat
 
-    public static func createModel(collectionViewWidth: CGFloat, itemsLayoutData: [(indexPath: NSIndexPath, height: CGFloat, headerMargin: CGFloat, bottomMargin: CGFloat)]) -> ChatCollectionViewLayoutModel {
+    public static func createModel(collectionViewWidth: CGFloat, itemsLayoutData: [(indexPath: NSIndexPath, height: CGFloat, headerMargin: CGFloat, bottomMargin: CGFloat)], sectionsLayoutData: [(indexPath: NSIndexPath, height: CGFloat)]) -> ChatCollectionViewLayoutModel {
         var layoutAttributes = [UICollectionViewLayoutAttributes]()
         var layoutAttributesBySectionAndItem = [[UICollectionViewLayoutAttributes]]()
+        var layoutAttributesSections = [UICollectionViewLayoutAttributes]()
         layoutAttributesBySectionAndItem.append([UICollectionViewLayoutAttributes]())
 
         var verticalOffset: CGFloat = 0
@@ -58,11 +60,23 @@ public struct ChatCollectionViewLayoutModel {
             verticalOffset += itemSize.height
             verticalOffset += bottomMargin
         }
+        
+        for sectionLayoutData in sectionsLayoutData {
+            let (indexPath, height) = sectionLayoutData
+            let layoutAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withIndexPath: indexPath)
+            
+            let itemSize = CGSize(width: collectionViewWidth, height: height)
+            let frame = CGRect(origin: CGPoint(x: 0, y: verticalOffset), size: itemSize)
+            
+            layoutAttributes.frame = frame
+            layoutAttributesSections.append(layoutAttributes)
+        }
 
         return ChatCollectionViewLayoutModel(
             contentSize: CGSize(width: collectionViewWidth, height: verticalOffset),
             layoutAttributes: layoutAttributes,
             layoutAttributesBySectionAndItem: layoutAttributesBySectionAndItem,
+            layoutAttributesSections : layoutAttributesSections,
             calculatedForWidth: collectionViewWidth
         )
     }
@@ -138,17 +152,13 @@ public class ChatCollectionViewLayout: UICollectionViewLayout {
     override public func layoutAttributesForSupplementaryViewOfKind(elementKind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
        
         if(elementKind == UICollectionElementKindSectionHeader){
-            let layoutAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withIndexPath: indexPath)
-            
-            let height: CGFloat = 40
-            let itemSize = CGSize(width: 375, height: height)
-            let frame = CGRect(origin: CGPoint(x: 0, y: 0), size: itemSize)
-            
-            layoutAttributes.frame = frame
-            
             
             let cv = self.delegate?.collectionView;
             let contentOffset: CGPoint = cv?.contentOffset ?? CGPointZero;
+            
+            
+            let layoutAttributes = self.layoutModel.layoutAttributesSections[indexPath.section]
+            
             let section = layoutAttributes.indexPath.section;
             let numberOfItemsInSection = cv?.numberOfItemsInSection(section) ?? 0;
             

@@ -14,6 +14,7 @@ public protocol SectionHeaderCollectionViewCellStyleProtocol {
     func textFont(viewModel viewModel: SectionHeaderViewModelProtocol) -> UIFont
     func textColor(viewModel viewModel: SectionHeaderViewModelProtocol) -> UIColor
     func backgroundColor(viewModel viewModel: SectionHeaderViewModelProtocol) -> UIColor
+    func height() -> CGFloat
     
 }
 

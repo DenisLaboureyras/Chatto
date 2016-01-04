@@ -37,4 +37,8 @@ public class SectionHeaderCollectionViewCellDefaultSyle: SectionHeaderCollection
         return UIColor.darkGrayColor()
     }
     
+    public func height() -> CGFloat {
+        return 40
+    }
+    
 }

@@ -226,7 +226,7 @@ public class ChatViewController: UIViewController, UICollectionViewDataSource, U
     var accessoryViewRevealer: AccessoryViewRevealer!
     var inputContainer: UIView!
     var presenterBuildersByType = [ChatItemType: [ChatItemPresenterBuilderProtocol]]()
-    var sectionPresenterBuildersByType = [ChatItemType: [SectionItemPresenterBuilderProtocol]]()
+    var sectionPresenterBuildersByType = [SectionItemType: [SectionItemPresenterBuilderProtocol]]()
     var presenters = [ChatItemPresenterProtocol]()
     let presentersByChatItem = NSMapTable(keyOptions: .WeakMemory, valueOptions: .StrongMemory)
     let presentersBySectionItem = NSMapTable(keyOptions: .WeakMemory, valueOptions: .StrongMemory)
@@ -238,9 +238,9 @@ public class ChatViewController: UIViewController, UICollectionViewDataSource, U
         return [ChatItemType: [ChatItemPresenterBuilderProtocol]]()
     }
     
-    public func createSectionPresenterBuilders() -> [ChatItemType: [SectionItemPresenterBuilderProtocol]] {
+    public func createSectionPresenterBuilders() -> [SectionItemType: [SectionItemPresenterBuilderProtocol]] {
         assert(false, "Override in subclass")
-        return [ChatItemType: [SectionItemPresenterBuilderProtocol]]()
+        return [SectionItemType: [SectionItemPresenterBuilderProtocol]]()
     }
 
     public func createChatInputView() -> UIView {
@@ -271,7 +271,7 @@ public class ChatViewController: UIViewController, UICollectionViewDataSource, U
         return layout
     }
 
-    var layoutModel = ChatCollectionViewLayoutModel.createModel(0, itemsLayoutData: [])
+    var layoutModel = ChatCollectionViewLayoutModel.createModel(0, itemsLayoutData: [], sectionsLayoutData: [])
 }
 
 extension ChatViewController { // Rotation

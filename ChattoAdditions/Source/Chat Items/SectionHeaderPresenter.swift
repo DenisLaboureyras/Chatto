@@ -58,6 +58,14 @@ public class SectionHeaderPresenter<ViewModelBuilderT, InteractionHandlerT where
         collectionView.registerClass(SectionHeaderCollectionViewCell.self, forSupplementaryViewOfKind:UICollectionElementKindSectionHeader, withReuseIdentifier: "section-header")
     }
     
+    override public var canCalculateHeightInBackground: Bool {
+        return true
+    }
+    
+    override public func heightForCell(maximumWidth width: CGFloat, decorationAttributes: ChatItemDecorationAttributesProtocol?) -> CGFloat {
+        return cellStyle.height()
+    }
+    
     public override func dequeueCell(collectionView collectionView: UICollectionView, indexPath: NSIndexPath) -> UICollectionReusableView {
         return collectionView.dequeueReusableSupplementaryViewOfKind(UICollectionElementKindSectionHeader, withReuseIdentifier: "section-header", forIndexPath: indexPath)
     }
