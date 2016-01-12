@@ -12,7 +12,7 @@ public typealias SectionItemType = String
 
 public protocol SectionItemProtocol: class, UniqueIdentificable {
     var section : ChatItemProtocol { get }
-    var items : [ChatItemProtocol] { get }
+    var items : [ChatItemProtocol] { get set}
 }
 
 public protocol SectionItemPresenterBuilderProtocol {
