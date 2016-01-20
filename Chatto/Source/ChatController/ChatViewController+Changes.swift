@@ -140,7 +140,7 @@ extension ChatViewController: ChatDataSourceDelegateProtocol {
                 })
             }
 
-            if context == .Normal {
+            if context == .Normal ||  context == .ForceScroll {
 
                 UIView.animateWithDuration(self.constants.updatesAnimationDuration, animations: { () -> Void in
                     // We want to update visible cells to support easy removal of bubble tail or any other updates that may be needed after a data update
@@ -173,7 +173,7 @@ extension ChatViewController: ChatDataSourceDelegateProtocol {
             }
 
             if shouldScrollToBottom {
-                self.scrollToBottom(animated: context == .Normal)
+                self.scrollToBottom(animated: context == .Normal || context == .ForceScroll)
             } else {
                 let newRect = self.rectAtIndexPath(changes.movedIndexPaths.first?.indexPathNew)
                 self.scrollToPreservePosition(oldRefRect: oldRect, newRefRect: newRect)
