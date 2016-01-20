@@ -30,6 +30,7 @@ public enum ChatUpdateContext {
     case Pagination
     case Reload
     case MessageCountReduction
+    case ForceScroll
 }
 
 extension ChatViewController: ChatDataSourceDelegateProtocol {
@@ -129,7 +130,7 @@ extension ChatViewController: ChatDataSourceDelegateProtocol {
         changes: CollectionChanges,
         context: ChatUpdateContext,
         completion: () -> Void) {
-            let shouldScrollToBottom = (context == .FirstLoad) || (context != .Pagination && self.isScrolledAtBottom())
+            let shouldScrollToBottom = (context == .FirstLoad) || (context == .ForceScroll) || (context != .Pagination && self.isScrolledAtBottom())
             let oldRect = self.rectAtIndexPath(changes.movedIndexPaths.first?.indexPathOld)
             let myCompletion = {
                 // Found that cells may not match correct index paths here yet! (see comment below)
