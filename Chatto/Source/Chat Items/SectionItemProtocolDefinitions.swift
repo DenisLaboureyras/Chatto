@@ -57,3 +57,7 @@ public class SectionItem: SectionItemProtocol {
         self.uid = section.uid;
     }
 }
+
+protocol SRChatItem: ChatItemProtocol {
+    var messageTimestamp: NSDate {get}
+}

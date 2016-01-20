@@ -24,21 +24,23 @@
 
 import Foundation
 
+public enum ChatUpdateContext {
+    case Normal
+    case FirstLoad
+    case Pagination
+    case Reload
+    case MessageCountReduction
+}
+
 extension ChatViewController: ChatDataSourceDelegateProtocol {
 
-    public enum UpdateContext {
-        case Normal
-        case FirstLoad
-        case Pagination
-        case Reload
-        case MessageCountReduction
-    }
+    
 
-    public func chatDataSourceDidUpdate(chatDataSource: ChatDataSourceProtocol) {
+    public func chatDataSourceDidUpdate(chatDataSource: ChatDataSourceProtocol, context: ChatUpdateContext = .Normal) {
         self.enqueueModelUpdate(context: .Normal)
     }
 
-    public func enqueueModelUpdate(context context: UpdateContext) {
+    public func enqueueModelUpdate(context context: ChatUpdateContext) {
         let newItems = self.chatDataSource?.sectionItems ?? []
         self.updateQueue.addTask({ [weak self] (completion) -> () in
             guard let sSelf = self else { return }
@@ -125,9 +127,9 @@ extension ChatViewController: ChatDataSourceDelegateProtocol {
     func performBatchUpdates(
         updateModelClosure updateModelClosure: () -> Void,
         changes: CollectionChanges,
-        context: UpdateContext,
+        context: ChatUpdateContext,
         completion: () -> Void) {
-            let shouldScrollToBottom = context != .Pagination && self.isScrolledAtBottom()
+            let shouldScrollToBottom = (context == .FirstLoad) || (context != .Pagination && self.isScrolledAtBottom())
             let oldRect = self.rectAtIndexPath(changes.movedIndexPaths.first?.indexPathOld)
             let myCompletion = {
                 // Found that cells may not match correct index paths here yet! (see comment below)
@@ -177,7 +179,7 @@ extension ChatViewController: ChatDataSourceDelegateProtocol {
             }
     }
 
-    private func updateModels(newItems newItems: [SectionItemProtocol], oldItems: [SectionItemProtocol], var context: UpdateContext, completion: () -> Void) {
+    private func updateModels(newItems newItems: [SectionItemProtocol], oldItems: [SectionItemProtocol], var context: ChatUpdateContext, completion: () -> Void) {
         let collectionViewWidth = self.collectionView.bounds.width
         context = self.isFirstLayout ? .FirstLoad : context
         let performInBackground = context != .FirstLoad

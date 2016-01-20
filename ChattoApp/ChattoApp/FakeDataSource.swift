@@ -50,7 +50,7 @@ class FakeDataSource: ChatDataSourceProtocol {
         let sender = FakeMessageSender()
         sender.onMessageChanged = { [weak self] (message) in
             guard let sSelf = self else { return }
-            sSelf.delegate?.chatDataSourceDidUpdate(sSelf)
+            sSelf.delegate?.chatDataSourceDidUpdate(sSelf, context: .Normal)
         }
         return sender
     }()
@@ -86,7 +86,7 @@ class FakeDataSource: ChatDataSourceProtocol {
         let message = createTextMessageModel(uid, text: text, isIncoming: false)
         self.messageSender.sendMessage(message)
         self.slidingWindow.insertItem(message, position: .Bottom)
-        self.delegate?.chatDataSourceDidUpdate(self)
+        self.delegate?.chatDataSourceDidUpdate(self, context: .Normal)
     }
 
     func addPhotoMessage(image: UIImage) {
@@ -94,13 +94,13 @@ class FakeDataSource: ChatDataSourceProtocol {
         let message = createPhotoMessageModel(uid, image: image, size: image.size, isIncoming: false)
         self.messageSender.sendMessage(message)
         self.slidingWindow.insertItem(message, position: .Bottom)
-        self.delegate?.chatDataSourceDidUpdate(self)
+        self.delegate?.chatDataSourceDidUpdate(self, context: .Normal)
     }
 
     func addRandomIncomingMessage() {
         let message = FakeMessageFactory.createChatItem("\(self.lastMessageId++)", isIncoming: true)
         self.slidingWindow.insertItem(message, position: .Bottom)
-        self.delegate?.chatDataSourceDidUpdate(self)
+        self.delegate?.chatDataSourceDidUpdate(self, context: .Normal)
     }
 
     func adjustNumberOfMessages(preferredMaxCount preferredMaxCount: Int?, focusPosition: Double, completion:(didAdjust: Bool) -> Void) {

@@ -25,7 +25,7 @@
 import Foundation
 
 public protocol ChatDataSourceDelegateProtocol: class {
-    func chatDataSourceDidUpdate(chatDataSource: ChatDataSourceProtocol)
+    func chatDataSourceDidUpdate(chatDataSource: ChatDataSourceProtocol, context: ChatUpdateContext)
 }
 
 public protocol ChatDataSourceProtocol: class {
