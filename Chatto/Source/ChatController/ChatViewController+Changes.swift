@@ -37,7 +37,7 @@ extension ChatViewController: ChatDataSourceDelegateProtocol {
     
 
     public func chatDataSourceDidUpdate(chatDataSource: ChatDataSourceProtocol, context: ChatUpdateContext = .Normal) {
-        self.enqueueModelUpdate(context: .Normal)
+        self.enqueueModelUpdate(context: context)
     }
 
     public func enqueueModelUpdate(context context: ChatUpdateContext) {
