@@ -43,16 +43,34 @@ public class BaseChatViewController: UIViewController, UICollectionViewDataSourc
 
     public private(set) var collectionView: UICollectionView!
     public final internal(set) var chatSectionCompanionCollection: ChatSectionCompanionCollection = ReadOnlyOrderedSectionedDictionary(items: [])
-    public var chatDataSource: ChatDataSourceProtocol? {
-        didSet {
-            self.chatDataSource?.delegate = self
-            self.enqueueModelUpdate(context: .Reload)
+    private var _chatDataSource: ChatDataSourceProtocol?
+    public final var chatDataSource: ChatDataSourceProtocol? {
+        get {
+            return _chatDataSource
+        }
+        set {
+            self.setChatDataSource(newValue, triggeringUpdateType: .Normal)
         }
     }
+    
+    // Custom update on setting the data source. if triggeringUpdateType is nil it won't enqueue any update (you should do it later manually)
+    public final func setChatDataSource(dataSource: ChatDataSourceProtocol?, triggeringUpdateType updateType: UpdateType?) {
+        self._chatDataSource = dataSource
+        self._chatDataSource?.delegate = self
+        if let updateType = updateType {
+            self.enqueueModelUpdate(updateType: updateType)
+        }
+    }
+    
 
     deinit {
         self.collectionView.delegate = nil
         self.collectionView.dataSource = nil
+    }
+    
+    public override func loadView() {
+        self.view = BaseChatViewControllerView() // http://stackoverflow.com/questions/24596031/uiviewcontroller-with-inputaccessoryview-is-not-deallocated
+        self.view.backgroundColor = UIColor.whiteColor()
     }
 
     override public func viewDidLoad() {
@@ -60,6 +78,20 @@ public class BaseChatViewController: UIViewController, UICollectionViewDataSourc
         self.addCollectionView()
         self.addInputViews()
         self.setupKeyboardTracker()
+        self.setupTapGestureRecognizer()
+    }
+    
+    
+    private func setupTapGestureRecognizer() {
+        self.collectionView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(BaseChatViewController.userDidTapOnCollectionView)))
+    }
+    
+    public var endsEditingWhenTappingOnChatBackground = true
+    @objc
+    public func userDidTapOnCollectionView() {
+        if self.endsEditingWhenTappingOnChatBackground {
+            self.view.endEditing(true)
+        }
     }
 
     public override func viewWillAppear(animated: Bool) {
@@ -101,20 +133,14 @@ public class BaseChatViewController: UIViewController, UICollectionViewDataSourc
         self.collectionView.delegate = self
         self.accessoryViewRevealer = AccessoryViewRevealer(collectionView: self.collectionView)
 
-        self.presenterBuildersByType = self.createPresenterBuilders()
-        self.sectionPresenterBuildersByType = self.createSectionPresenterBuilders()
-
-        for presenterBuilder in self.presenterBuildersByType.flatMap({ $0.1 }) {
-            presenterBuilder.presenterType.registerCells(self.collectionView)
-        }
         
-        for presenterBuilder in self.sectionPresenterBuildersByType.flatMap({ $0.1 }) {
-            presenterBuilder.presenterType.registerCells(self.collectionView)
-        }
+        self.presenterFactory = self.createPresenterFactory()
+        self.presenterFactory.configure(withCollectionView: self.collectionView)
         
-        DummyChatItemPresenter.registerCells(self.collectionView)
+        self.sectionPresenterFactory = self.createSectionPresenterFactory()
+        self.sectionPresenterFactory.configure(withCollectionView: self.collectionView)
         
-        DummySectionItemPresenter.registerCells(self.collectionView)
+        self.automaticallyAdjustsScrollViewInsets = false
     }
 
     private var inputContainerBottomConstraint: NSLayoutConstraint!
@@ -155,10 +181,6 @@ public class BaseChatViewController: UIViewController, UICollectionViewDataSourc
     var notificationCenter = NSNotificationCenter.defaultCenter()
     var keyboardTracker: KeyboardTracker!
 
-    public override var inputAccessoryView: UIView {
-        return self.keyboardTracker.trackingView
-    }
-
     public var isFirstLayout: Bool = true
     override public func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -176,36 +198,48 @@ public class BaseChatViewController: UIViewController, UICollectionViewDataSourc
         let isInteracting = self.collectionView.panGestureRecognizer.numberOfTouches() > 0
         let isBouncingAtTop = isInteracting && self.collectionView.contentOffset.y < -self.collectionView.contentInset.top
         if isBouncingAtTop { return }
-
+        
         let inputHeightWithKeyboard = self.view.bounds.height - self.inputContainer.frame.minY
         let newInsetBottom = self.constants.defaultContentInsets.bottom + inputHeightWithKeyboard
         let insetBottomDiff = newInsetBottom - self.collectionView.contentInset.bottom
+        let newInsetTop = self.topLayoutGuide.length + self.constants.defaultContentInsets.top
         
         let contentSize = self.collectionView.collectionViewLayout.collectionViewContentSize()
-
-        let allContentFits = self.collectionView.bounds.height - newInsetBottom - (contentSize.height + self.collectionView.contentInset.top) >= 0
-
-        let currentDistanceToBottomInset = max(0, self.collectionView.bounds.height - self.collectionView.contentInset.bottom - (contentSize.height - self.collectionView.contentOffset.y))
-        let newContentOffsetY = self.collectionView.contentOffset.y + insetBottomDiff - currentDistanceToBottomInset
-
-        self.collectionView.contentInset.bottom = newInsetBottom
-        self.collectionView.scrollIndicatorInsets.bottom = self.constants.defaultScrollIndicatorInsets.bottom + inputHeightWithKeyboard
+        let allContentFits: Bool = {
+            let availableHeight = self.collectionView.bounds.height - (newInsetTop + newInsetBottom)
+            return availableHeight >= contentSize.height
+        }()
+        
+        let newContentOffsetY: CGFloat = {
+            let minOffset = -newInsetTop
+            let maxOffset = contentSize.height - (self.collectionView.bounds.height - newInsetBottom)
+            let targetOffset = self.collectionView.contentOffset.y + insetBottomDiff
+            return max(min(maxOffset, targetOffset), minOffset)
+        }()
+        
+        self.collectionView.contentInset = {
+            var currentInsets = self.collectionView.contentInset
+            currentInsets.bottom = newInsetBottom
+            currentInsets.top = newInsetTop
+            return currentInsets
+        }()
+        
+        self.collectionView.scrollIndicatorInsets = {
+            var currentInsets = self.collectionView.scrollIndicatorInsets
+            currentInsets.bottom = self.constants.defaultScrollIndicatorInsets.bottom + inputHeightWithKeyboard
+            currentInsets.top = self.topLayoutGuide.length + self.constants.defaultScrollIndicatorInsets.top
+            return currentInsets
+        }()
+        
         let inputIsAtBottom = self.view.bounds.maxY - self.inputContainer.frame.maxY <= 0
-
+        
         if allContentFits {
             self.collectionView.contentOffset.y = -self.collectionView.contentInset.top
         } else if !isInteracting || inputIsAtBottom {
             self.collectionView.contentOffset.y = newContentOffsetY
         }
-        
-        self.workaroundContentInsetBugiOS_9_0_x()
     }
     
-    func workaroundContentInsetBugiOS_9_0_x() {
-        // Fix for http://www.openradar.me/22106545
-        self.collectionView.contentInset.top = self.topLayoutGuide.length + self.constants.defaultContentInsets.top
-        self.collectionView.scrollIndicatorInsets.top = self.topLayoutGuide.length + self.constants.defaultScrollIndicatorInsets.top
-    }
 
     func rectAtIndexPath(indexPath: NSIndexPath?) -> CGRect? {
         if let indexPath = indexPath {
@@ -217,8 +251,8 @@ public class BaseChatViewController: UIViewController, UICollectionViewDataSourc
     var autoLoadingEnabled: Bool = false
     var accessoryViewRevealer: AccessoryViewRevealer!
     var inputContainer: UIView!
-    var presenterBuildersByType = [ChatItemType: [ChatItemPresenterBuilderProtocol]]()
-    var sectionPresenterBuildersByType = [SectionItemType: [SectionItemPresenterBuilderProtocol]]()
+    var presenterFactory: ChatItemPresenterFactoryProtocol!
+    var sectionPresenterFactory: ChatSectionPresenterFactoryProtocol!
     
     let presentersByCell = NSMapTable(keyOptions: .WeakMemory, valueOptions: .WeakMemory)
     var updateQueue: SerialTaskQueueProtocol = SerialTaskQueue()
@@ -250,6 +284,16 @@ public class BaseChatViewController: UIViewController, UICollectionViewDataSourc
     var layoutModel = ChatCollectionViewLayoutModel.createModel(0, itemsLayoutData: [], sectionsLayoutData: [])
     
     // MARK: Subclass overrides
+    
+    public func createPresenterFactory() -> ChatItemPresenterFactoryProtocol {
+        // Default implementation
+        return ChatItemPresenterFactory(presenterBuildersByType: self.createPresenterBuilders())
+    }
+    
+    public func createSectionPresenterFactory() -> ChatSectionPresenterFactoryProtocol {
+        // Default implementation
+        return ChatSectionPresenterFactory(presenterBuildersByType: self.createSectionPresenterBuilders())
+    }
     
     public func createPresenterBuilders() -> [ChatItemType: [ChatItemPresenterBuilderProtocol]] {
         assert(false, "Override in subclass")

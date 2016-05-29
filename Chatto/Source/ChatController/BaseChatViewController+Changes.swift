@@ -29,14 +29,14 @@ import Foundation
 extension BaseChatViewController: ChatDataSourceDelegateProtocol {
 
     public func chatDataSourceDidUpdate(chatDataSource: ChatDataSourceProtocol, updateType: UpdateType) {
-        self.enqueueModelUpdate(context: updateType)
+        self.enqueueModelUpdate(updateType: updateType)
     }
     
     public func chatDataSourceDidUpdate(chatDataSource: ChatDataSourceProtocol) {
-        self.enqueueModelUpdate(context: .Normal)
+        self.enqueueModelUpdate(updateType: .Normal)
     }
 
-    public func enqueueModelUpdate(context context: UpdateType) {
+    public func enqueueModelUpdate(updateType context: UpdateType) {
         let newItems = self.chatDataSource?.sectionItems ?? []
         self.updateQueue.addTask({ [weak self] (completion) -> () in
             guard let sSelf = self else { return }
