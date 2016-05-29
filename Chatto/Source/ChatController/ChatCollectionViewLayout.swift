@@ -101,6 +101,7 @@ public class ChatCollectionViewLayout: UICollectionViewLayout {
         guard let delegate = self.delegate else { return }
         var oldLayoutModel = self.layoutModel
         self.layoutModel = delegate.chatCollectionViewLayoutModel()
+        self.layoutNeedsUpdate = false
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) { () -> Void in
             // Dealloc of layout with 5000 items take 25 ms on tests on iPhone 4s
             // This moves dealloc out of main thread
@@ -112,10 +113,7 @@ public class ChatCollectionViewLayout: UICollectionViewLayout {
     }
 
     public override func collectionViewContentSize() -> CGSize {
-        if self.layoutNeedsUpdate {
-            self.prepareLayout()
-        }
-        return self.layoutModel.contentSize
+        return self.layoutModel?.contentSize ?? .zero
     }
     
     override public func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {

@@ -28,43 +28,43 @@ public protocol UniqueIdentificable {
     var uid: String { get }
 }
 
-struct SectionChangeMove: Equatable, Hashable {
-    let indexOld: Int
-    let indexNew: Int
-    init(indexOld: Int, indexNew: Int) {
+public struct SectionChangeMove: Equatable, Hashable {
+    public let indexOld: Int
+    public let indexNew: Int
+    public init(indexOld: Int, indexNew: Int) {
         self.indexOld = indexOld
         self.indexNew = indexNew
     }
     
-    var hashValue: Int { return indexOld ^ indexNew }
+    public var hashValue: Int { return indexOld ^ indexNew }
 }
 
-func == (lhs: SectionChangeMove, rhs: SectionChangeMove) -> Bool {
+public func == (lhs: SectionChangeMove, rhs: SectionChangeMove) -> Bool {
     return lhs.indexOld == rhs.indexOld && lhs.indexNew == rhs.indexNew
 }
 
-struct CollectionChangeMove: Equatable, Hashable {
-    let indexPathOld: NSIndexPath
-    let indexPathNew: NSIndexPath
-    init(indexPathOld: NSIndexPath, indexPathNew: NSIndexPath) {
+public struct CollectionChangeMove: Equatable, Hashable {
+    public let indexPathOld: NSIndexPath
+    public let indexPathNew: NSIndexPath
+    public init(indexPathOld: NSIndexPath, indexPathNew: NSIndexPath) {
         self.indexPathOld = indexPathOld
         self.indexPathNew = indexPathNew
     }
 
-    var hashValue: Int { return indexPathOld.hash ^ indexPathNew.hash }
+    public var hashValue: Int { return indexPathOld.hash ^ indexPathNew.hash }
 }
 
-func == (lhs: CollectionChangeMove, rhs: CollectionChangeMove) -> Bool {
+public func == (lhs: CollectionChangeMove, rhs: CollectionChangeMove) -> Bool {
     return lhs.indexPathOld == rhs.indexPathOld && lhs.indexPathNew == rhs.indexPathNew
 }
 
-struct CollectionChanges {
-    let insertedIndexSections: NSIndexSet
-    let deletedIndexSections: NSIndexSet
-    let movedIndexSections: [SectionChangeMove]
-    let insertedIndexPaths: Set<NSIndexPath>
-    let deletedIndexPaths: Set<NSIndexPath>
-    let movedIndexPaths: [CollectionChangeMove]
+public struct CollectionChanges {
+    public let insertedIndexSections: NSIndexSet
+    public let deletedIndexSections: NSIndexSet
+    public let movedIndexSections: [SectionChangeMove]
+    public let insertedIndexPaths: Set<NSIndexPath>
+    public let deletedIndexPaths: Set<NSIndexPath>
+    public let movedIndexPaths: [CollectionChangeMove]
 
     init(
         insertedIndexSections: NSIndexSet,
@@ -83,7 +83,7 @@ struct CollectionChanges {
     }
 }
 
-func generateChanges(oldCollection oldCollection: [SectionItemProtocol], newCollection: [SectionItemProtocol]) -> CollectionChanges {
+func generateChanges(oldCollection oldCollection: [ChatSectionProtocol], newCollection: [ChatSectionProtocol]) -> CollectionChanges {
     func generateSectionIndexesById(uids: [String]) -> [String: Int] {
         var map = [String: Int](minimumCapacity: uids.count)
         for (index, uid) in uids.enumerate() {
@@ -92,7 +92,7 @@ func generateChanges(oldCollection oldCollection: [SectionItemProtocol], newColl
         return map
     }
     
-    func generateIndexesById(sections: [SectionItemProtocol]) -> [String: NSIndexPath] {
+    func generateIndexesById(sections: [ChatSectionProtocol]) -> [String: NSIndexPath] {
         var map = [String: NSIndexPath]()
         for (indexSection, section) in sections.enumerate() {
             for (indexRow, item) in section.items.enumerate() {

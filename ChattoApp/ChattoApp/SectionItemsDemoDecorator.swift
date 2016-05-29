@@ -19,9 +19,9 @@ final class SectionItemsDemoDecorator: SectionItemsDecoratorProtocol {
         static let timeIntervalThresholdToIncreaseSeparation: NSTimeInterval = 120
     }
     
-    func decorateItems(sectionItems: [SectionItemProtocol]) -> [ChatSection] {
+    func decorateItems(sectionItems: [SectionItemProtocol]) -> [DecoratedSectionItem] {
         
-        var decoratedSectionItems = [ChatSection]()
+        var decoratedSectionItems = [DecoratedSectionItem]()
         
         for sectionItem in sectionItems {
             
@@ -33,13 +33,7 @@ final class SectionItemsDemoDecorator: SectionItemsDecoratorProtocol {
                 decorationAttributes: ChatItemDecorationAttributes(bottomMargin: bottomMargin, showsTail: showsTail)
             )
             
-            let decoratedItems = chatItemsDecorator?.decorateItems(sectionItem.items) ?? sectionItem.items.map {DecoratedChatItem(chatItem: $0, decorationAttributes: nil)}
-            
-            let chatSection = ChatSection(section: decoratedSection, items: decoratedItems)
-
-            
-            
-            decoratedSectionItems.append(chatSection)
+            decoratedSectionItems.append(decoratedSection)
         }
         
         return decoratedSectionItems

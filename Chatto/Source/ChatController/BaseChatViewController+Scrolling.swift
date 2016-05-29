@@ -33,7 +33,7 @@ extension CGFloat {
     static let bma_epsilon: CGFloat = 0.001
 }
 
-extension ChatViewController {
+extension BaseChatViewController {
 
     public func isScrolledAtBottom() -> Bool {
         guard self.collectionView.numberOfSections() > 0 && self.collectionView.numberOfItemsInSection(0) > 0 else { return true }
@@ -120,13 +120,9 @@ extension ChatViewController {
         guard self.autoLoadingEnabled, let dataSource = self.chatDataSource else { return }
 
         if self.isCloseToTop() && dataSource.hasMorePrevious {
-            dataSource.loadPrevious({ [weak self] () -> Void in
-                self?.enqueueModelUpdate(context: .Pagination)
-            })
+            dataSource.loadPrevious()
         } else if self.isCloseToBottom() && dataSource.hasMoreNext {
-            dataSource.loadNext({ [weak self] () -> Void in
-                self?.enqueueModelUpdate(context: .Pagination)
-            })
+            dataSource.loadNext()
         }
     }
 }

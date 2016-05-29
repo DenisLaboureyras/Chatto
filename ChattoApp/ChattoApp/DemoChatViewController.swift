@@ -26,7 +26,7 @@ import UIKit
 import Chatto
 import ChattoAdditions
 
-class DemoChatViewController: ChatViewController {
+class DemoChatViewController: BaseChatViewController {
 
     var messageSender: FakeMessageSender!
     var dataSource: FakeDataSource! {
@@ -44,7 +44,7 @@ class DemoChatViewController: ChatViewController {
         let image = UIImage(named: "bubble-incoming-tail-border", inBundle: NSBundle(forClass: self.dynamicType), compatibleWithTraitCollection: nil)?.bma_tintWithColor(UIColor.blueColor())
         super.chatItemsDecorator = ChatItemsDemoDecorator()
         super.sectionItemsDecorator = SectionItemsDemoDecorator()
-        let addIncomingMessageButton = UIBarButtonItem(image: image, style: .Plain, target: self, action: "addRandomIncomingMessage")
+        let addIncomingMessageButton = UIBarButtonItem(image: image, style: .Plain, target: self, action: #selector(DemoChatViewController.addRandomIncomingMessage))
         self.navigationItem.rightBarButtonItem = addIncomingMessageButton;
     }
 

@@ -56,6 +56,8 @@ public class BaseMessageCollectionViewCell<BubbleViewType where BubbleViewType:U
 
     public var animationDuration: CFTimeInterval = 0.33
     public var viewContext: ViewContext = .Normal
+    
+    
 
     public private(set) var isUpdating: Bool = false
     public func performBatchUpdates(updateClosure: () -> Void, animated: Bool, completion: (() ->())?) {
@@ -240,7 +242,7 @@ public class BaseMessageCollectionViewCell<BubbleViewType where BubbleViewType:U
         }
     }
     var accessoryTimestamp: UILabel?
-    public func revealAccessoryView(maximumOffset offset: CGFloat, animated: Bool) {
+    public func revealAccessoryView(withOffset offset: CGFloat, animated: Bool) {
         if self.accessoryTimestamp == nil {
             if offset > 0 {
                 let accessoryTimestamp = UILabel()
@@ -273,6 +275,10 @@ public class BaseMessageCollectionViewCell<BubbleViewType where BubbleViewType:U
                 self.timestampMaxVisibleOffset = offset
             }
         }
+    }
+    
+    public func preferredOffsetToRevealAccessoryView() -> CGFloat? {
+        return nil
     }
 
     func removeAccessoryView() {

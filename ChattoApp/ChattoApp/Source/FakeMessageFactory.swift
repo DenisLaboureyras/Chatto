@@ -183,8 +183,8 @@ class SectionMessageFactory {
         ]
     ]
 
-    static func createSections() -> [SectionItemProtocol] {
-        var result = [SectionItemProtocol]()
+    static func createSections() -> [SectionItem] {
+        var result = [SectionItem]()
         for (indexSection, section) in self.sections.enumerate() {
             let content = section.0;
             let sectionModel = createSectionHeaderModel("tutorialsection-\(indexSection)", text: content)

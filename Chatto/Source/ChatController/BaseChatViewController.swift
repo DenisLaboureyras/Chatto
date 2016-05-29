@@ -24,44 +24,11 @@
 
 import UIKit
 
-public protocol ChatItemsDecoratorProtocol {
-    func decorateItems(chatItems: [ChatItemProtocol]) -> [DecoratedChatItem]
-}
 
-public struct DecoratedChatItem {
-    public let chatItem: ChatItemProtocol
-    public let decorationAttributes: ChatItemDecorationAttributesProtocol?
-    public init(chatItem: ChatItemProtocol, decorationAttributes: ChatItemDecorationAttributesProtocol?) {
-        self.chatItem = chatItem
-        self.decorationAttributes = decorationAttributes
-    }
-}
 
-public protocol SectionItemsDecoratorProtocol {
-    var chatItemsDecorator: ChatItemsDecoratorProtocol? {get set}
-    func decorateItems(sectionItems: [SectionItemProtocol]) -> [ChatSection]
-}
 
-public struct DecoratedSectionItem {
-    public let chatItem: ChatItemProtocol
-    public let decorationAttributes: ChatItemDecorationAttributesProtocol?
-    public init(chatItem: ChatItemProtocol, decorationAttributes: ChatItemDecorationAttributesProtocol?) {
-        self.chatItem = chatItem
-        self.decorationAttributes = decorationAttributes
-    }
-}
-
-public struct ChatSection {
-    public var section: DecoratedSectionItem;
-    public var items: [DecoratedChatItem];
-    public init(section: DecoratedSectionItem, items: [DecoratedChatItem]) {
-        self.section = section
-        self.items = items
-    }
+public class BaseChatViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
     
-}
-
-public class ChatViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
 
     public struct Constants {
         var updatesAnimationDuration: NSTimeInterval = 0.33
@@ -75,7 +42,7 @@ public class ChatViewController: UIViewController, UICollectionViewDataSource, U
     public var constants = Constants()
 
     public private(set) var collectionView: UICollectionView!
-    var sections = [ChatSection]()
+    public final internal(set) var chatSectionCompanionCollection: ChatSectionCompanionCollection = ReadOnlyOrderedSectionedDictionary(items: [])
     public var chatDataSource: ChatDataSourceProtocol? {
         didSet {
             self.chatDataSource?.delegate = self
@@ -92,6 +59,7 @@ public class ChatViewController: UIViewController, UICollectionViewDataSource, U
         super.viewDidLoad()
         self.addCollectionView()
         self.addInputViews()
+        self.setupKeyboardTracker()
     }
 
     public override func viewWillAppear(animated: Bool) {
@@ -167,9 +135,23 @@ public class ChatViewController: UIViewController, UICollectionViewDataSource, U
         self.inputContainer.addConstraint(NSLayoutConstraint(item: self.inputContainer, attribute: .Leading, relatedBy: .Equal, toItem: inputView, attribute: .Leading, multiplier: 1, constant: 0))
         self.inputContainer.addConstraint(NSLayoutConstraint(item: self.inputContainer, attribute: .Bottom, relatedBy: .Equal, toItem: inputView, attribute: .Bottom, multiplier: 1, constant: 0))
         self.inputContainer.addConstraint(NSLayoutConstraint(item: self.inputContainer, attribute: .Trailing, relatedBy: .Equal, toItem: inputView, attribute: .Trailing, multiplier: 1, constant: 0))
-
-        self.keyboardTracker = KeyboardTracker(viewController: self, inputContainer: self.inputContainer, inputContainerBottomContraint: self.inputContainerBottomConstraint, notificationCenter: self.notificationCenter)
+       
     }
+    
+    var isAdjustingInputContainer: Bool = false
+    public func setupKeyboardTracker() {
+        let layoutBlock = { [weak self] (bottomMargin: CGFloat) in
+            guard let sSelf = self else { return }
+            sSelf.isAdjustingInputContainer = true
+            sSelf.inputContainerBottomConstraint.constant = max(bottomMargin, sSelf.bottomLayoutGuide.length)
+            sSelf.view.layoutIfNeeded()
+            sSelf.isAdjustingInputContainer = false
+        }
+                
+        self.keyboardTracker = KeyboardTracker(viewController: self, inputContainer: self.inputContainer, layoutBlock: layoutBlock, notificationCenter: self.notificationCenter)
+        (self.view as? BaseChatViewControllerView)?.bmaInputAccessoryView = self.keyboardTracker?.trackingView
+    }
+    
     var notificationCenter = NSNotificationCenter.defaultCenter()
     var keyboardTracker: KeyboardTracker!
 
@@ -182,7 +164,7 @@ public class ChatViewController: UIViewController, UICollectionViewDataSource, U
         super.viewDidLayoutSubviews()
 
         self.adjustCollectionViewInsets()
-        self.keyboardTracker.layoutTrackingViewIfNeeded()
+        self.keyboardTracker.adjustTrackingViewSizeIfNeeded()
 
         if self.isFirstLayout {
             self.updateQueue.start()
@@ -237,27 +219,11 @@ public class ChatViewController: UIViewController, UICollectionViewDataSource, U
     var inputContainer: UIView!
     var presenterBuildersByType = [ChatItemType: [ChatItemPresenterBuilderProtocol]]()
     var sectionPresenterBuildersByType = [SectionItemType: [SectionItemPresenterBuilderProtocol]]()
-    var presenters = [ChatItemPresenterProtocol]()
-    let presentersByChatItem = NSMapTable(keyOptions: .WeakMemory, valueOptions: .StrongMemory)
-    let presentersBySectionItem = NSMapTable(keyOptions: .WeakMemory, valueOptions: .StrongMemory)
+    
     let presentersByCell = NSMapTable(keyOptions: .WeakMemory, valueOptions: .WeakMemory)
     var updateQueue: SerialTaskQueueProtocol = SerialTaskQueue()
 
-    public func createPresenterBuilders() -> [ChatItemType: [ChatItemPresenterBuilderProtocol]] {
-        assert(false, "Override in subclass")
-        return [ChatItemType: [ChatItemPresenterBuilderProtocol]]()
-    }
     
-    public func createSectionPresenterBuilders() -> [SectionItemType: [SectionItemPresenterBuilderProtocol]] {
-        assert(false, "Override in subclass")
-        return [SectionItemType: [SectionItemPresenterBuilderProtocol]]()
-    }
-
-    public func createChatInputView() -> UIView {
-        assert(false, "Override in subclass")
-        return UIView()
-    }
-
     /**
      - You can use a decorator to:
         - Provide the ChatCollectionViewLayout with margins between messages
@@ -282,9 +248,37 @@ public class ChatViewController: UIViewController, UICollectionViewDataSource, U
     }
 
     var layoutModel = ChatCollectionViewLayoutModel.createModel(0, itemsLayoutData: [], sectionsLayoutData: [])
+    
+    // MARK: Subclass overrides
+    
+    public func createPresenterBuilders() -> [ChatItemType: [ChatItemPresenterBuilderProtocol]] {
+        assert(false, "Override in subclass")
+        return [ChatItemType: [ChatItemPresenterBuilderProtocol]]()
+    }
+    
+    public func createSectionPresenterBuilders() -> [SectionItemType: [SectionItemPresenterBuilderProtocol]] {
+        assert(false, "Override in subclass")
+        return [SectionItemType: [SectionItemPresenterBuilderProtocol]]()
+    }
+    
+    public func createChatInputView() -> UIView {
+        assert(false, "Override in subclass")
+        return UIView()
+    }
+
+    
+    /**
+     When paginating up we need to change the scroll position as the content is pushed down.
+     We take distance to top from beforeUpdate indexPath and then we make afterUpdate indexPath to appear at the same distance
+     */
+    public func referenceIndexPathsToRestoreScrollPositionOnUpdate(itemsBeforeUpdate itemsBeforeUpdate: ChatSectionCompanionCollection, changes: CollectionChanges) -> (beforeUpdate: NSIndexPath?, afterUpdate: NSIndexPath?) {
+        let firstItemMoved = changes.movedIndexPaths.first
+        return (firstItemMoved?.indexPathOld, firstItemMoved?.indexPathNew)
+    }
+    
 }
 
-extension ChatViewController { // Rotation
+extension BaseChatViewController { // Rotation
 
     public override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)

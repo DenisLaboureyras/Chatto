@@ -24,16 +24,16 @@
 
 import Foundation
 
-extension ChatViewController: ChatCollectionViewLayoutDelegate {
+extension BaseChatViewController: ChatCollectionViewLayoutDelegate {
     
     public func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
         collectionView.collectionViewLayout.invalidateLayout()
-        return self.sections.count
+        return self.chatSectionCompanionCollection.count
     }
 
     public func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         //collectionView.collectionViewLayout.invalidateLayout()
-        return self.sections[section].items.count
+        return self.chatSectionCompanionCollection[section].items.count
     }
     
     public func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
@@ -87,38 +87,26 @@ extension ChatViewController: ChatCollectionViewLayoutDelegate {
     }
 
     public func presenterForIndexPath(indexPath: NSIndexPath) -> ChatItemPresenterProtocol {
-        let decoratedChatItems = self.sections[indexPath.section].items
-        return self.presenterForIndex(indexPath.item, decoratedChatItems: decoratedChatItems)
+        let decoratedChatItems = self.chatSectionCompanionCollection[indexPath.section].items
+        return self.presenterForIndex(indexPath.item, chatItemCompanionCollection: decoratedChatItems)
     }
     
     public func presenterForIndexSection(indexPath: NSIndexPath) -> SectionItemPresenterProtocol {
-        guard indexPath.section < sections.count else {
+        guard indexPath.section < chatSectionCompanionCollection.count else {
             // This can happen from didEndDisplayingCell if we reloaded with less messages
             return DummySectionItemPresenter()
         }
-        let decoratedSectionItems = self.sections[indexPath.section].section
-        let sectionItem = decoratedSectionItems.chatItem
-        if let presenter = self.presentersBySectionItem.objectForKey(sectionItem) as? SectionItemPresenterProtocol {
-            return presenter
-        }
-        let presenter = self.createPresenterForSectionItem(sectionItem)
-        self.presentersBySectionItem.setObject(presenter, forKey: sectionItem)
-        return presenter
+        return self.chatSectionCompanionCollection[indexPath.section].section.presenter
+        
     }
 
-    public func presenterForIndex(index: Int, decoratedChatItems: [DecoratedChatItem]) -> ChatItemPresenterProtocol {
-        guard index < decoratedChatItems.count else {
+    public func presenterForIndex(index: Int, chatItemCompanionCollection items: ChatItemCompanionCollection) -> ChatItemPresenterProtocol {
+        guard index < items.count else {
             // This can happen from didEndDisplayingCell if we reloaded with less messages
             return DummyChatItemPresenter()
         }
 
-        let chatItem = decoratedChatItems[index].chatItem
-        if let presenter = self.presentersByChatItem.objectForKey(chatItem) as? ChatItemPresenterProtocol {
-            return presenter
-        }
-        let presenter = self.createPresenterForChatItem(chatItem)
-        self.presentersByChatItem.setObject(presenter, forKey: chatItem)
-        return presenter
+        return items[index].presenter
     }
 
     public func createPresenterForChatItem(chatItem: ChatItemProtocol) -> ChatItemPresenterProtocol {
@@ -140,10 +128,10 @@ extension ChatViewController: ChatCollectionViewLayoutDelegate {
     }
 
     public func decorationAttributesForIndexPath(indexPath: NSIndexPath) -> ChatItemDecorationAttributesProtocol? {
-        return self.sections[indexPath.section].items[indexPath.row].decorationAttributes
+        return self.chatSectionCompanionCollection[indexPath.section].items[indexPath.row].decorationAttributes
     }
     
     public func decorationAttributesForIndexSection(indexPath: NSIndexPath) -> ChatItemDecorationAttributesProtocol? {
-        return self.sections[indexPath.section].section.decorationAttributes
+        return self.chatSectionCompanionCollection[indexPath.section].section.decorationAttributes
     }
 }
