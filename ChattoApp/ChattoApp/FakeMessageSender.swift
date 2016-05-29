@@ -43,6 +43,7 @@ public class FakeMessageSender {
     private func fakeMessageStatus(message: MessageModelProtocol) {
         switch message.status {
         case .Success:
+            self.updateMessage(message, status: .Success)
             break
         case .Failed:
             self.updateMessage(message, status: .Sending)

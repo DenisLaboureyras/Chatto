@@ -229,6 +229,8 @@ extension BaseChatViewController: ChatDataSourceDelegateProtocol {
             newCollection: sectionCompanionCollection.map {$0}
         )
         
+        changes.descriptionChanges();
+        
         let layoutModel = self.createLayoutModel(sectionCompanionCollection, collectionViewWidth: collectionViewWidth)
         let updateModelClosure : () -> Void = { [weak self] in
             self?.layoutModel = layoutModel

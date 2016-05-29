@@ -37,6 +37,10 @@ public struct SectionChangeMove: Equatable, Hashable {
     }
     
     public var hashValue: Int { return indexOld ^ indexNew }
+    
+    func description() -> String {
+        return "move section: \(indexOld) to section: \(indexNew)"
+    }
 }
 
 public func == (lhs: SectionChangeMove, rhs: SectionChangeMove) -> Bool {
@@ -52,6 +56,10 @@ public struct CollectionChangeMove: Equatable, Hashable {
     }
 
     public var hashValue: Int { return indexPathOld.hash ^ indexPathNew.hash }
+    
+    func description() -> String {
+        return "move section: \(indexPathOld.section) row : \(indexPathOld.row) to section: \(indexPathNew.section) row : \(indexPathNew.row) "
+    }
 }
 
 public func == (lhs: CollectionChangeMove, rhs: CollectionChangeMove) -> Bool {
@@ -80,6 +88,37 @@ public struct CollectionChanges {
         self.insertedIndexPaths = insertedIndexPaths
         self.deletedIndexPaths = deletedIndexPaths
         self.movedIndexPaths = movedIndexPaths
+    }
+    
+    func descriptionChanges() {
+        print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+        print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+        print("insertedIndexSections");
+        insertedIndexSections.enumerateIndexesUsingBlock { (index, stop) -> Void in
+            print("section : \(index)")
+        }
+        print("deletedIndexSections");
+        deletedIndexSections.enumerateIndexesUsingBlock { (index, stop) -> Void in
+            print("section : \(index)")
+        }
+        print("movedIndexSections");
+        for section in movedIndexSections {
+            print(section.description())
+        }
+        print("insertedIndexPaths");
+        for path in insertedIndexPaths {
+            print("section : \(path.section) row : \(path.row)")
+        }
+        print("deletedIndexPaths");
+        for path in deletedIndexPaths {
+            print("section : \(path.section) row : \(path.row)")
+        }
+        print("movedIndexPaths");
+        for path in movedIndexPaths {
+            print(path.description())
+        }
+        print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+        print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
     }
 }
 
