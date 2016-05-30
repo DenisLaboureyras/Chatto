@@ -149,7 +149,7 @@ func generateChanges(oldCollection oldCollection: [ChatSectionProtocol], newColl
     let newIndexsPathById = generateIndexesById(newCollection)
     let oldIds = oldIndexsPathById.keys
     let newIds = newIndexsPathById.keys
-    
+    /*
     print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
     print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
     
@@ -161,7 +161,7 @@ func generateChanges(oldCollection oldCollection: [ChatSectionProtocol], newColl
     for (key, path) in newIndexsPathById {
         print("key : \(key) section : \(path.section) row : \(path.row)")
     }
-    
+    */
     let deletedIndexSections = NSMutableIndexSet()
     let insertedIndexSections = NSMutableIndexSet()
     var movedIndexSections = [SectionChangeMove]()
