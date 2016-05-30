@@ -119,12 +119,22 @@ public class SlidingDataSource  {
         let newItemsCount = previousWindowOffset - nextWindowOffset
         self.windowOffset = nextWindowOffset
         self.windowCount = previousWindowCount + newItemsCount
+        
+        print("loadPrevious")
+        print("windowOffset \(windowOffset)")
+        print("windowCount \(windowCount)")
+        print("itemsOffset \(itemsOffset)")
     }
 
     public func loadNext() {
         guard self.items.count > 0 else { return }
         let itemCountAfterWindow = self.itemsOffset + self.items.count - self.windowOffset - self.windowCount
         self.windowCount += min(self.pageSize, itemCountAfterWindow)
+        
+        print("loadNext")
+        print("windowOffset \(windowOffset)")
+        print("windowCount \(windowCount)")
+        print("itemsOffset \(itemsOffset)")
     }
 
     public func adjustWindow(focusPosition focusPosition: Double, maxWindowSize: Int) -> Bool {
