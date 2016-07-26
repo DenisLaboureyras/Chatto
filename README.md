@@ -19,7 +19,7 @@
 - Photo bubbles
 - Extensible input bar
 
-## How to use
+## How to use it
 
 1. Subclass ChatViewController
 2. Override `createChatInputView()` to use `ChattoAdditions.ChatInputBar` or provide your own component
