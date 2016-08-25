@@ -11,26 +11,26 @@ import Chatto
 
 
 public protocol SectionHeaderViewModelBuilderProtocol {
-    typealias ModelT: SectionHeaderModelProtocol
-    typealias ViewModelT: SectionHeaderViewModelProtocol
-    func createSectionHeaderViewModel(sectionHeader: ModelT) -> ViewModelT
+    associatedtype ModelT: SectionHeaderModelProtocol
+    associatedtype ViewModelT: SectionHeaderViewModelProtocol
+    func createSectionHeaderViewModel(_ sectionHeader: ModelT) -> ViewModelT
 }
 
 
 
 public protocol SectionHeaderInteractionHandlerProtocol {
-    typealias ViewModelT
-    func userDidTapOnFailIcon(viewModel viewModel: ViewModelT)
-    func userDidTapOnBubble(viewModel viewModel: ViewModelT)
-    func userDidLongPressOnBubble(viewModel viewModel: ViewModelT)
+    associatedtype ViewModelT
+    func userDidTapOnFailIcon(viewModel: ViewModelT)
+    func userDidTapOnBubble(viewModel: ViewModelT)
+    func userDidLongPressOnBubble(viewModel: ViewModelT)
 }
 
-public class SectionHeaderPresenter<ViewModelBuilderT, InteractionHandlerT where
+open class SectionHeaderPresenter<ViewModelBuilderT, InteractionHandlerT> : BaseSectionItemPresenter<SectionHeaderCollectionViewCell> where
     ViewModelBuilderT: SectionHeaderViewModelBuilderProtocol,
     ViewModelBuilderT.ModelT: SectionHeaderModelProtocol,
     ViewModelBuilderT.ViewModelT: SectionHeaderViewModelProtocol,
     InteractionHandlerT: SectionHeaderInteractionHandlerProtocol,
-    InteractionHandlerT.ViewModelT == ViewModelBuilderT.ViewModelT> : BaseSectionItemPresenter<SectionHeaderCollectionViewCell> {
+    InteractionHandlerT.ViewModelT == ViewModelBuilderT.ViewModelT {
     public typealias CellT = SectionHeaderCollectionViewCell
     public typealias ModelT = ViewModelBuilderT.ModelT
     public typealias ViewModelT = ViewModelBuilderT.ViewModelT
@@ -54,32 +54,32 @@ public class SectionHeaderPresenter<ViewModelBuilderT, InteractionHandlerT where
     let interactionHandler: InteractionHandlerT?
     let cellStyle: SectionHeaderCollectionViewCellStyleProtocol
     
-    public override class func registerCells(collectionView: UICollectionView) {
-        collectionView.registerClass(SectionHeaderCollectionViewCell.self, forSupplementaryViewOfKind:UICollectionElementKindSectionHeader, withReuseIdentifier: "section-header")
+    open override class func registerCells(_ collectionView: UICollectionView) {
+        collectionView.register(SectionHeaderCollectionViewCell.self, forSupplementaryViewOfKind:UICollectionElementKindSectionHeader, withReuseIdentifier: "section-header")
     }
     
-    override public var canCalculateHeightInBackground: Bool {
+    override open var canCalculateHeightInBackground: Bool {
         return true
     }
     
-    override public func heightForCell(maximumWidth width: CGFloat, decorationAttributes: ChatItemDecorationAttributesProtocol?) -> CGFloat {
+    override open func heightForCell(maximumWidth width: CGFloat, decorationAttributes: ChatItemDecorationAttributesProtocol?) -> CGFloat {
         return cellStyle.height()
     }
     
-    public override func dequeueCell(collectionView collectionView: UICollectionView, indexPath: NSIndexPath) -> UICollectionReusableView {
-        return collectionView.dequeueReusableSupplementaryViewOfKind(UICollectionElementKindSectionHeader, withReuseIdentifier: "section-header", forIndexPath: indexPath)
+    open override func dequeueCell(collectionView: UICollectionView, indexPath: IndexPath) -> UICollectionReusableView {
+        return collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "section-header", for: indexPath)
     }
     
-    public private(set) final lazy var sectionHeaderViewModel: ViewModelT = {
+    public fileprivate(set) final lazy var sectionHeaderViewModel: ViewModelT = {
         return self.createViewModel()
     }()
     
-    public func createViewModel() -> ViewModelT {
+    open func createViewModel() -> ViewModelT {
         let viewModel = self.viewModelBuilder.createSectionHeaderViewModel(self.sectionHeaderModel)
         return viewModel
     }
     
-    public final override func configureCell(cell: UICollectionReusableView, decorationAttributes: ChatItemDecorationAttributesProtocol?) {
+    public final override func configureCell(_ cell: UICollectionReusableView, decorationAttributes: ChatItemDecorationAttributesProtocol?) {
         guard let cell = cell as? CellT else {
             assert(false, "Invalid cell given to presenter")
             return
@@ -94,7 +94,7 @@ public class SectionHeaderPresenter<ViewModelBuilderT, InteractionHandlerT where
     }
     
     var decorationAttributes: ChatItemDecorationAttributes!
-    public func configureCell(cell: CellT, decorationAttributes: ChatItemDecorationAttributes, animated: Bool, additionalConfiguration: (() -> Void)?) {
+    open func configureCell(_ cell: CellT, decorationAttributes: ChatItemDecorationAttributes, animated: Bool, additionalConfiguration: (() -> Void)?) {
         cell.performBatchUpdates({ () -> Void in
 
             cell.baseStyle = self.cellStyle

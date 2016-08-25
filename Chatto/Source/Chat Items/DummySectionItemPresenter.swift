@@ -11,8 +11,8 @@ import Foundation
 // Handles messages that aren't supported so they appear as invisible
 class DummySectionItemPresenter: SectionItemPresenterProtocol {
     
-    class func registerCells(collectionView: UICollectionView) {
-        collectionView.registerClass(DummyCollectionReusableView.self, forSupplementaryViewOfKind:UICollectionElementKindSectionHeader, withReuseIdentifier: "section-id-unhandled")
+    class func registerCells(_ collectionView: UICollectionView) {
+        collectionView.register(DummyCollectionReusableView.self, forSupplementaryViewOfKind:UICollectionElementKindSectionHeader, withReuseIdentifier: "section-id-unhandled")
     }
     
     var canCalculateHeightInBackground: Bool {
@@ -23,12 +23,12 @@ class DummySectionItemPresenter: SectionItemPresenterProtocol {
         return 30
     }
     
-    func dequeueCell(collectionView collectionView: UICollectionView, indexPath: NSIndexPath) -> UICollectionReusableView {
-        return collectionView.dequeueReusableSupplementaryViewOfKind(UICollectionElementKindSectionHeader, withReuseIdentifier: "section-id-unhandled", forIndexPath: indexPath)
+    func dequeueCell(collectionView: UICollectionView, indexPath: IndexPath) -> UICollectionReusableView {
+        return collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "section-id-unhandled", for: indexPath)
     }
     
-    func configureCell(cell: UICollectionReusableView, decorationAttributes: ChatItemDecorationAttributesProtocol?) {
-        cell.hidden = true
+    func configureCell(_ cell: UICollectionReusableView, decorationAttributes: ChatItemDecorationAttributesProtocol?) {
+        cell.isHidden = true
     }
 }
 

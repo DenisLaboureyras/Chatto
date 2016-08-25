@@ -25,52 +25,52 @@
 import UIKit
 
 protocol PhotosInputCellProviderProtocol {
-    func cellForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewCell
+    func cellForItemAtIndexPath(_ indexPath: IndexPath) -> UICollectionViewCell
 }
 
 class PhotosInputPlaceholderCellProvider: PhotosInputCellProviderProtocol {
-    private var reuseIdentifier = "PhotosPlaceholderCellProvider"
-    private let collectionView: UICollectionView
+    fileprivate var reuseIdentifier = "PhotosPlaceholderCellProvider"
+    fileprivate let collectionView: UICollectionView
     init(collectionView: UICollectionView) {
         self.collectionView = collectionView
-        self.collectionView.registerClass(PhotosInputPlaceholderCell.self, forCellWithReuseIdentifier: self.reuseIdentifier)
+        self.collectionView.register(PhotosInputPlaceholderCell.self, forCellWithReuseIdentifier: self.reuseIdentifier)
     }
 
-    func cellForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewCell {
-        return self.collectionView.dequeueReusableCellWithReuseIdentifier(self.reuseIdentifier, forIndexPath: indexPath)
+    func cellForItemAtIndexPath(_ indexPath: IndexPath) -> UICollectionViewCell {
+        return self.collectionView.dequeueReusableCell(withReuseIdentifier: self.reuseIdentifier, for: indexPath)
     }
 }
 
 class PhotosInputCellProvider: PhotosInputCellProviderProtocol {
-    private var reuseIdentifier = "PhotosCellProvider"
-    private let collectionView: UICollectionView
-    private let dataProvider: PhotosInputDataProvider
+    fileprivate var reuseIdentifier = "PhotosCellProvider"
+    fileprivate let collectionView: UICollectionView
+    fileprivate let dataProvider: PhotosInputDataProvider
     init(collectionView: UICollectionView, dataProvider: PhotosInputDataProvider) {
         self.dataProvider = dataProvider
         self.collectionView = collectionView
-        self.collectionView.registerClass(PhotosInputCell.self, forCellWithReuseIdentifier: self.reuseIdentifier)
+        self.collectionView.register(PhotosInputCell.self, forCellWithReuseIdentifier: self.reuseIdentifier)
     }
 
-    func cellForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = self.collectionView.dequeueReusableCellWithReuseIdentifier(self.reuseIdentifier, forIndexPath: indexPath) as! PhotosInputCell
+    func cellForItemAtIndexPath(_ indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = self.collectionView.dequeueReusableCell(withReuseIdentifier: self.reuseIdentifier, for: indexPath) as! PhotosInputCell
         self.configureCell(cell, atIndexPath: indexPath)
         return cell
     }
 
-    private let previewRequests = NSMapTable.weakToStrongObjectsMapTable()
-    private func configureCell(cell: PhotosInputCell, atIndexPath indexPath: NSIndexPath) {
-        if let requestID = self.previewRequests.objectForKey(cell) as? NSNumber {
-            self.previewRequests.removeObjectForKey(cell)
-            self.dataProvider.cancelPreviewImageRequest(requestID.intValue)
+    fileprivate let previewRequests = NSMapTable<PhotosInputCell, NSNumber>.weakToStrongObjects()
+    fileprivate func configureCell(_ cell: PhotosInputCell, atIndexPath indexPath: IndexPath) {
+        if let requestID = self.previewRequests.object(forKey: cell) {
+            self.previewRequests.removeObject(forKey: cell)
+            self.dataProvider.cancelPreviewImageRequest(requestID.int32Value)
         }
 
-        let index = indexPath.item - 1
+        let index = (indexPath as NSIndexPath).item - 1
         let targetSize = cell.bounds.size
         let requestID = self.dataProvider.requestPreviewImageAtIndex(index, targetSize: targetSize) { image in
-            self.previewRequests.removeObjectForKey(cell)
+            self.previewRequests.removeObject(forKey: cell)
             cell.image = image
         }
 
-        self.previewRequests.setObject(NSNumber(int: requestID), forKey:cell)
+        self.previewRequests.setObject(NSNumber(value: requestID), forKey:cell)
     }
 }

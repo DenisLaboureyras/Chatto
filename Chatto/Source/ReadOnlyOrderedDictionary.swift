@@ -8,21 +8,30 @@
 
 import Foundation
 
-public struct ReadOnlyOrderedDictionary<T where T: UniqueIdentificable>: CollectionType {
+public struct ReadOnlyOrderedDictionary<T where T: UniqueIdentificable>: Collection {
+    /// Returns the position immediately after the given index.
+    ///
+    /// - Parameter i: A valid index of the collection. `i` must be less than
+    ///   `endIndex`.
+    /// - Returns: The index value immediately after `i`.
+    public func index(after i: Int) -> Int {
+        return self.items.index(after: i)
+    }
+
     
-    private let items: [T]
-    private let itemIndexesById: [String: Int] // Maping to the position in the array instead the item itself for better performance
+    fileprivate let items: [T]
+    fileprivate let itemIndexesById: [String: Int] // Maping to the position in the array instead the item itself for better performance
     
     public init(items: [T]) {
         var dictionary = [String: Int](minimumCapacity: items.count)
-        for (index, item) in items.enumerate() {
+        for (index, item) in items.enumerated() {
             dictionary[item.uid] = index
         }
         self.items = items
         self.itemIndexesById = dictionary
     }
     
-    public func indexOf(uid: String) -> Int? {
+    public func indexOf(_ uid: String) -> Int? {
         return self.itemIndexesById[uid]
     }
     
@@ -37,17 +46,8 @@ public struct ReadOnlyOrderedDictionary<T where T: UniqueIdentificable>: Collect
         return nil
     }
     
-    public func generate() -> AnyGenerator<T> {
-        var index = 0
-        
-        return AnyGenerator(body: {
-            guard index < self.items.count else {
-                return nil
-            }
-            
-            defer { index += 1 }
-            return self.items[index]
-        })
+    public func makeIterator() -> IndexingIterator<[T]> {
+        return self.items.makeIterator()
     }
     
     public var startIndex: Int {
@@ -59,21 +59,30 @@ public struct ReadOnlyOrderedDictionary<T where T: UniqueIdentificable>: Collect
     }
 }
 
-public struct ReadOnlyOrderedSectionedDictionary<T where T: ChatSectionProtocol>: CollectionType {
+public struct ReadOnlyOrderedSectionedDictionary<T where T: ChatSectionProtocol>: Collection {
+    /// Returns the position immediately after the given index.
+    ///
+    /// - Parameter i: A valid index of the collection. `i` must be less than
+    ///   `endIndex`.
+    /// - Returns: The index value immediately after `i`.
+    public func index(after i: Int) -> Int {
+        return self.items.index(after: i)
+    }
+
     
-    private let items: [T]
-    private let itemIndexesById: [String: Int] // Maping to the position in the array instead the item itself for better performance
+    fileprivate let items: [T]
+    fileprivate let itemIndexesById: [String: Int] // Maping to the position in the array instead the item itself for better performance
     
     public init(items: [T]) {
         var dictionary = [String: Int](minimumCapacity: items.count)
-        for (index, item) in items.enumerate() {
+        for (index, item) in items.enumerated() {
             dictionary[item.uid] = index
         }
         self.items = items
         self.itemIndexesById = dictionary
     }
     
-    public func indexOf(uid: String) -> Int? {
+    public func indexOf(_ uid: String) -> Int? {
         return self.itemIndexesById[uid]
     }
     
@@ -88,19 +97,9 @@ public struct ReadOnlyOrderedSectionedDictionary<T where T: ChatSectionProtocol>
         return nil
     }
     
-    public func generate() -> AnyGenerator<T> {
-        var index = 0
-        
-        return AnyGenerator(body: {
-            guard index < self.items.count else {
-                return nil
-            }
-            
-            defer { index += 1 }
-            return self.items[index]
-        })
+    public func makeIterator() -> IndexingIterator<[T]> {
+        return self.items.makeIterator()
     }
-    
     public var startIndex: Int {
         return 0
     }

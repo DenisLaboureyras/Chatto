@@ -28,14 +28,14 @@ public protocol TextMessageModelProtocol: DecoratedMessageModelProtocol {
     var text: String { get }
 }
 
-public class TextMessageModel: TextMessageModelProtocol {
-    public let messageModel: MessageModelProtocol
-    public let text: String
+open class TextMessageModel: TextMessageModelProtocol {
+    open let messageModel: MessageModelProtocol
+    open let text: String
     public init(messageModel: MessageModelProtocol, text: String) {
         self.messageModel = messageModel
         self.text = text
     }
     // This should be covered by DecoratedMessageModelProtocol, but compiler crashes without this (Xcode 7.1)
-    public var uid: String { return self.messageModel.uid }
+    open var uid: String { return self.messageModel.uid }
 
 }

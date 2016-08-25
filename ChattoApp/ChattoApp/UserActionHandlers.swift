@@ -27,78 +27,78 @@ import Chatto
 import ChattoAdditions
 
 class SectionHeaderHandler: SectionHeaderInteractionHandlerProtocol {
-    private let baseHandler: BaseMessageHandler
+    fileprivate let baseHandler: BaseMessageHandler
     init (baseHandler: BaseMessageHandler) {
         self.baseHandler = baseHandler
     }
-    func userDidTapOnFailIcon(viewModel viewModel: SectionHeaderViewModel) {
+    func userDidTapOnFailIcon(viewModel: SectionHeaderViewModel) {
         
     }
     
-    func userDidTapOnBubble(viewModel viewModel: SectionHeaderViewModel) {
+    func userDidTapOnBubble(viewModel: SectionHeaderViewModel) {
         
     }
     
-    func userDidLongPressOnBubble(viewModel viewModel: SectionHeaderViewModel) {
+    func userDidLongPressOnBubble(viewModel: SectionHeaderViewModel) {
         
     }
 }
 
 
 class TextMessageHandler: BaseMessageInteractionHandlerProtocol {
-    private let baseHandler: BaseMessageHandler
+    fileprivate let baseHandler: BaseMessageHandler
     init (baseHandler: BaseMessageHandler) {
         self.baseHandler = baseHandler
     }
-    func userDidTapOnFailIcon(viewModel viewModel: TextMessageViewModel) {
+    func userDidTapOnFailIcon(viewModel: TextMessageViewModel) {
         self.baseHandler.userDidTapOnFailIcon(viewModel: viewModel)
     }
 
-    func userDidTapOnBubble(viewModel viewModel: TextMessageViewModel) {
+    func userDidTapOnBubble(viewModel: TextMessageViewModel) {
         self.baseHandler.userDidTapOnBubble(viewModel: viewModel)
     }
 
-    func userDidLongPressOnBubble(viewModel viewModel: TextMessageViewModel) {
+    func userDidLongPressOnBubble(viewModel: TextMessageViewModel) {
         self.baseHandler.userDidLongPressOnBubble(viewModel: viewModel)
     }
 }
 
 class PhotoMessageHandler: BaseMessageInteractionHandlerProtocol {
-    private let baseHandler: BaseMessageHandler
+    fileprivate let baseHandler: BaseMessageHandler
     init (baseHandler: BaseMessageHandler) {
         self.baseHandler = baseHandler
     }
 
-    func userDidTapOnFailIcon(viewModel viewModel: PhotoMessageViewModel) {
+    func userDidTapOnFailIcon(viewModel: PhotoMessageViewModel) {
         self.baseHandler.userDidTapOnFailIcon(viewModel: viewModel)
     }
 
-    func userDidTapOnBubble(viewModel viewModel: PhotoMessageViewModel) {
+    func userDidTapOnBubble(viewModel: PhotoMessageViewModel) {
         self.baseHandler.userDidTapOnBubble(viewModel: viewModel)
     }
 
-    func userDidLongPressOnBubble(viewModel viewModel: PhotoMessageViewModel) {
+    func userDidLongPressOnBubble(viewModel: PhotoMessageViewModel) {
         self.baseHandler.userDidLongPressOnBubble(viewModel: viewModel)
     }
 }
 
 class BaseMessageHandler {
 
-    private let messageSender: FakeMessageSender
+    fileprivate let messageSender: FakeMessageSender
     init (messageSender: FakeMessageSender) {
         self.messageSender = messageSender
     }
-    func userDidTapOnFailIcon(viewModel viewModel: MessageViewModelProtocol) {
+    func userDidTapOnFailIcon(viewModel: MessageViewModelProtocol) {
         NSLog("userDidTapOnFailIcon")
         self.messageSender.sendMessage(viewModel.messageModel)
     }
 
-    func userDidTapOnBubble(viewModel viewModel: MessageViewModelProtocol) {
+    func userDidTapOnBubble(viewModel: MessageViewModelProtocol) {
         NSLog("userDidTapOnBubble")
 
     }
 
-    func userDidLongPressOnBubble(viewModel viewModel: MessageViewModelProtocol) {
+    func userDidLongPressOnBubble(viewModel: MessageViewModelProtocol) {
         NSLog("userDidLongPressOnBubble")
     }
 }

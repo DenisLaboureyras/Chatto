@@ -29,10 +29,10 @@ public protocol PhotoMessageModelProtocol: DecoratedMessageModelProtocol {
     var imageSize: CGSize { get }
 }
 
-public class PhotoMessageModel: PhotoMessageModelProtocol {
-    public let messageModel: MessageModelProtocol
-    public let image: UIImage // fixme: URL
-    public let imageSize: CGSize
+open class PhotoMessageModel: PhotoMessageModelProtocol {
+    open let messageModel: MessageModelProtocol
+    open let image: UIImage // fixme: URL
+    open let imageSize: CGSize
     public init(messageModel: MessageModelProtocol, imageSize: CGSize, image: UIImage) {
         self.messageModel = messageModel
         self.imageSize = imageSize
@@ -40,5 +40,5 @@ public class PhotoMessageModel: PhotoMessageModelProtocol {
     }
 
     // This should be covered by DecoratedMessageModelProtocol, but compiler crashes without this (Xcode 7.1)
-    public var uid: String { return self.messageModel.uid }
+    open var uid: String { return self.messageModel.uid }
 }

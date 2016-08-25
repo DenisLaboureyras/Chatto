@@ -8,36 +8,36 @@
 
 import Foundation
 
-public class SectionHeaderCollectionViewCellDefaultSyle: SectionHeaderCollectionViewCellStyleProtocol {
+open class SectionHeaderCollectionViewCellDefaultSyle: SectionHeaderCollectionViewCellStyleProtocol {
     
     public init () {}
     
-    private lazy var dateFont = {
-        return UIFont.systemFontOfSize(12.0)
+    fileprivate lazy var dateFont = {
+        return UIFont.systemFont(ofSize: 12.0)
     }()
     
-    public func attributedStringForDate(date: String) -> NSAttributedString {
+    open func attributedStringForDate(_ date: String) -> NSAttributedString {
         let attributes = [NSFontAttributeName : self.dateFont]
         return NSAttributedString(string: date, attributes: attributes)
     }
     
     lazy var font = {
-        return UIFont.systemFontOfSize(13)
+        return UIFont.systemFont(ofSize: 13)
     }()
     
-    public func textFont(viewModel viewModel: SectionHeaderViewModelProtocol) -> UIFont {
+    open func textFont(viewModel: SectionHeaderViewModelProtocol) -> UIFont {
         return self.font
     }
     
-    public func textColor(viewModel viewModel: SectionHeaderViewModelProtocol) -> UIColor {
-        return UIColor.whiteColor()
+    open func textColor(viewModel: SectionHeaderViewModelProtocol) -> UIColor {
+        return UIColor.white
     }
     
-    public func backgroundColor(viewModel viewModel: SectionHeaderViewModelProtocol) -> UIColor {
-        return UIColor.darkGrayColor()
+    open func backgroundColor(viewModel: SectionHeaderViewModelProtocol) -> UIColor {
+        return UIColor.darkGray
     }
     
-    public func height() -> CGFloat {
+    open func height() -> CGFloat {
         return 40
     }
     

@@ -48,17 +48,17 @@ public func == (lhs: SectionChangeMove, rhs: SectionChangeMove) -> Bool {
 }
 
 public struct CollectionChangeMove: Equatable, Hashable {
-    public let indexPathOld: NSIndexPath
-    public let indexPathNew: NSIndexPath
-    public init(indexPathOld: NSIndexPath, indexPathNew: NSIndexPath) {
+    public let indexPathOld: IndexPath
+    public let indexPathNew: IndexPath
+    public init(indexPathOld: IndexPath, indexPathNew: IndexPath) {
         self.indexPathOld = indexPathOld
         self.indexPathNew = indexPathNew
     }
 
-    public var hashValue: Int { return indexPathOld.hash ^ indexPathNew.hash }
+    public var hashValue: Int { return (indexPathOld as NSIndexPath).hash ^ (indexPathNew as NSIndexPath).hash }
     
     func description() -> String {
-        return "move section: \(indexPathOld.section) row : \(indexPathOld.row) to section: \(indexPathNew.section) row : \(indexPathNew.row) "
+        return "move section: \((indexPathOld as NSIndexPath).section) row : \((indexPathOld as NSIndexPath).row) to section: \((indexPathNew as NSIndexPath).section) row : \((indexPathNew as NSIndexPath).row) "
     }
 }
 
@@ -67,19 +67,19 @@ public func == (lhs: CollectionChangeMove, rhs: CollectionChangeMove) -> Bool {
 }
 
 public struct CollectionChanges {
-    public let insertedIndexSections: NSIndexSet
-    public let deletedIndexSections: NSIndexSet
+    public let insertedIndexSections: IndexSet
+    public let deletedIndexSections: IndexSet
     public let movedIndexSections: [SectionChangeMove]
-    public let insertedIndexPaths: Set<NSIndexPath>
-    public let deletedIndexPaths: Set<NSIndexPath>
+    public let insertedIndexPaths: Set<IndexPath>
+    public let deletedIndexPaths: Set<IndexPath>
     public let movedIndexPaths: [CollectionChangeMove]
 
     init(
-        insertedIndexSections: NSIndexSet,
-        deletedIndexSections: NSIndexSet,
+        insertedIndexSections: IndexSet,
+        deletedIndexSections: IndexSet,
         movedIndexSections: [SectionChangeMove],
-        insertedIndexPaths: Set<NSIndexPath>,
-        deletedIndexPaths: Set<NSIndexPath>,
+        insertedIndexPaths: Set<IndexPath>,
+        deletedIndexPaths: Set<IndexPath>,
         movedIndexPaths: [CollectionChangeMove]
         ) {
         self.insertedIndexSections = insertedIndexSections
@@ -94,24 +94,34 @@ public struct CollectionChanges {
         print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
         print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
         print("insertedIndexSections");
-        insertedIndexSections.enumerateIndexesUsingBlock { (index, stop) -> Void in
+        
+        
+        
+        (insertedIndexSections as NSIndexSet).enumerate ({ (index, stop) -> Void in
             print("section : \(index)")
-        }
+        })
+        
+        
+        
+        
+        
         print("deletedIndexSections");
-        deletedIndexSections.enumerateIndexesUsingBlock { (index, stop) -> Void in
+        (deletedIndexSections as NSIndexSet).enumerate ({ (index, stop) -> Void in
             print("section : \(index)")
-        }
+        })
+        
+        
         print("movedIndexSections");
         for section in movedIndexSections {
             print(section.description())
         }
         print("insertedIndexPaths");
         for path in insertedIndexPaths {
-            print("section : \(path.section) row : \(path.row)")
+            print("section : \((path as NSIndexPath).section) row : \((path as NSIndexPath).row)")
         }
         print("deletedIndexPaths");
         for path in deletedIndexPaths {
-            print("section : \(path.section) row : \(path.row)")
+            print("section : \((path as NSIndexPath).section) row : \((path as NSIndexPath).row)")
         }
         print("movedIndexPaths");
         for path in movedIndexPaths {
@@ -122,20 +132,20 @@ public struct CollectionChanges {
     }
 }
 
-func generateChanges(oldCollection oldCollection: [ChatSectionProtocol], newCollection: [ChatSectionProtocol]) -> CollectionChanges {
-    func generateSectionIndexesById(uids: [String]) -> [String: Int] {
+func generateChanges(oldCollection: [ChatSectionProtocol], newCollection: [ChatSectionProtocol]) -> CollectionChanges {
+    func generateSectionIndexesById(_ uids: [String]) -> [String: Int] {
         var map = [String: Int](minimumCapacity: uids.count)
-        for (index, uid) in uids.enumerate() {
+        for (index, uid) in uids.enumerated() {
             map[uid] = index
         }
         return map
     }
     
-    func generateIndexesById(sections: [ChatSectionProtocol]) -> [String: NSIndexPath] {
-        var map = [String: NSIndexPath]()
-        for (indexSection, section) in sections.enumerate() {
-            for (indexRow, item) in section.items.enumerate() {
-                map[item.uid] = NSIndexPath(forRow: indexRow, inSection: indexSection)
+    func generateIndexesById(_ sections: [ChatSectionProtocol]) -> [String: IndexPath] {
+        var map = [String: IndexPath]()
+        for (indexSection, section) in sections.enumerated() {
+            for (indexRow, item) in section.items.enumerated() {
+                map[item.uid] = IndexPath(row: indexRow, section: indexSection)
             }
         }
         return map
@@ -170,7 +180,7 @@ func generateChanges(oldCollection oldCollection: [ChatSectionProtocol], newColl
     for oldId in oldSectionIds {
         let isDeleted = newIndexsSectionById[oldId] == nil
         if isDeleted {
-            deletedIndexSections.addIndex(oldIndexsSectionById[oldId]!)
+            deletedIndexSections.add(oldIndexsSectionById[oldId]!)
         }
     }
     
@@ -183,14 +193,14 @@ func generateChanges(oldCollection oldCollection: [ChatSectionProtocol], newColl
             }
         } else {
             // It's new
-            insertedIndexSections.addIndex(newIndex)
+            insertedIndexSections.add(newIndex)
         }
     }
 
     
     
-    var deletedIndexPaths = Set<NSIndexPath>()
-    var insertedIndexPaths = Set<NSIndexPath>()
+    var deletedIndexPaths = Set<IndexPath>()
+    var insertedIndexPaths = Set<IndexPath>()
     var movedIndexPaths = [CollectionChangeMove]()
 
     // Deletetions
@@ -215,8 +225,8 @@ func generateChanges(oldCollection oldCollection: [ChatSectionProtocol], newColl
     }
 
     return CollectionChanges(
-        insertedIndexSections: insertedIndexSections,
-        deletedIndexSections: deletedIndexSections,
+        insertedIndexSections: insertedIndexSections as IndexSet,
+        deletedIndexSections: deletedIndexSections as IndexSet,
         movedIndexSections: movedIndexSections,
         insertedIndexPaths: insertedIndexPaths,
         deletedIndexPaths: deletedIndexPaths,

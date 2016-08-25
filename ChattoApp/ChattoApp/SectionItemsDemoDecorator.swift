@@ -16,10 +16,10 @@ final class SectionItemsDemoDecorator: SectionItemsDecoratorProtocol {
     struct Constants {
         static let shortSeparation: CGFloat = 3
         static let normalSeparation: CGFloat = 10
-        static let timeIntervalThresholdToIncreaseSeparation: NSTimeInterval = 120
+        static let timeIntervalThresholdToIncreaseSeparation: TimeInterval = 120
     }
     
-    func decorateItems(sectionItems: [SectionItemProtocol]) -> [DecoratedSectionItem] {
+    func decorateItems(_ sectionItems: [SectionItemProtocol]) -> [DecoratedSectionItem] {
         
         var decoratedSectionItems = [DecoratedSectionItem]()
         

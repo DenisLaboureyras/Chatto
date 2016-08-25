@@ -16,40 +16,40 @@ public protocol SectionItemProtocol: class, UniqueIdentificable {
 }
 
 public protocol SectionItemPresenterBuilderProtocol {
-    func canHandleChatItem(chatItem: ChatItemProtocol) -> Bool
-    func createPresenterWithChatItem(chatItem: ChatItemProtocol) -> SectionItemPresenterProtocol
+    func canHandleChatItem(_ chatItem: ChatItemProtocol) -> Bool
+    func createPresenterWithChatItem(_ chatItem: ChatItemProtocol) -> SectionItemPresenterProtocol
     var presenterType: SectionItemPresenterProtocol.Type { get }
 }
 
 public protocol SectionItemPresenterProtocol: class {
-    static func registerCells(collectionView: UICollectionView)
+    static func registerCells(_ collectionView: UICollectionView)
     var canCalculateHeightInBackground: Bool { get } // Default is false
     func heightForCell(maximumWidth width: CGFloat, decorationAttributes: ChatItemDecorationAttributesProtocol?) -> CGFloat
-    func dequeueCell(collectionView collectionView: UICollectionView, indexPath: NSIndexPath) -> UICollectionReusableView
-    func configureCell(cell: UICollectionReusableView, decorationAttributes: ChatItemDecorationAttributesProtocol?)
-    func cellWillBeShown(cell: UICollectionReusableView) // optional
-    func cellWasHidden(cell: UICollectionReusableView) // optional
+    func dequeueCell(collectionView: UICollectionView, indexPath: IndexPath) -> UICollectionReusableView
+    func configureCell(_ cell: UICollectionReusableView, decorationAttributes: ChatItemDecorationAttributesProtocol?)
+    func cellWillBeShown(_ cell: UICollectionReusableView) // optional
+    func cellWasHidden(_ cell: UICollectionReusableView) // optional
     func shouldShowMenu() -> Bool // optional. Default is false
-    func canPerformMenuControllerAction(action: Selector) -> Bool // optional. Default is false
-    func performMenuControllerAction(action: Selector) // optional
+    func canPerformMenuControllerAction(_ action: Selector) -> Bool // optional. Default is false
+    func performMenuControllerAction(_ action: Selector) // optional
 }
 
 public extension SectionItemPresenterProtocol { // Optionals
     var canCalculateHeightInBackground: Bool { return false }
-    func cellWillBeShown(cell: UICollectionReusableView) {}
-    func cellWasHidden(cell: UICollectionReusableView) {}
+    func cellWillBeShown(_ cell: UICollectionReusableView) {}
+    func cellWasHidden(_ cell: UICollectionReusableView) {}
     func shouldShowMenu() -> Bool { return false }
-    func canPerformMenuControllerAction(action: Selector) -> Bool { return false }
-    func performMenuControllerAction(action: Selector) {}
+    func canPerformMenuControllerAction(_ action: Selector) -> Bool { return false }
+    func performMenuControllerAction(_ action: Selector) {}
 }
 
 
-public class SectionItem: SectionItemProtocol {
+open class SectionItem: SectionItemProtocol {
 
-    public var section : ChatItemProtocol
-    public var items : [ChatItemProtocol]
+    open var section : ChatItemProtocol
+    open var items : [ChatItemProtocol]
     
-    public var uid: String
+    open var uid: String
     
     public init(section: ChatItemProtocol, items: [ChatItemProtocol]){
         self.section = section;
@@ -59,5 +59,5 @@ public class SectionItem: SectionItemProtocol {
 }
 
 protocol SRChatItem: ChatItemProtocol {
-    var messageTimestamp: NSDate {get}
+    var messageTimestamp: Date {get}
 }

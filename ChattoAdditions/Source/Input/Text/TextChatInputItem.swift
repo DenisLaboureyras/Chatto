@@ -24,21 +24,21 @@
 
 import Foundation
 
-@objc public class TextChatInputItem: NSObject {
-    public var textInputHandler: ((String) -> Void)?
+@objc open class TextChatInputItem: NSObject {
+    open var textInputHandler: ((String) -> Void)?
 
-    lazy private var internalTabView: UIButton = {
-        var button = UIButton(type: .Custom)
-        button.exclusiveTouch = true
-        button.setImage(UIImage(named: "text-icon-unselected", inBundle: NSBundle(forClass: self.dynamicType), compatibleWithTraitCollection: nil), forState: .Normal)
-        button.setImage(UIImage(named: "text-icon-selected", inBundle: NSBundle(forClass: self.dynamicType), compatibleWithTraitCollection: nil), forState: .Highlighted)
-        button.setImage(UIImage(named: "text-icon-selected", inBundle: NSBundle(forClass: self.dynamicType), compatibleWithTraitCollection: nil), forState: .Selected)
+    lazy fileprivate var internalTabView: UIButton = {
+        var button = UIButton(type: .custom)
+        button.isExclusiveTouch = true
+        button.setImage(UIImage(named: "text-icon-unselected", in: Bundle(for: type(of: self)), compatibleWith: nil), for: UIControlState())
+        button.setImage(UIImage(named: "text-icon-selected", in: Bundle(for: type(of: self)), compatibleWith: nil), for: .highlighted)
+        button.setImage(UIImage(named: "text-icon-selected", in: Bundle(for: type(of: self)), compatibleWith: nil), for: .selected)
         return button
         }()
 
-    public var selected = false {
+    open var selected = false {
         didSet {
-            self.internalTabView.selected = self.selected;
+            self.internalTabView.isSelected = self.selected;
         }
     }
 }
@@ -46,7 +46,7 @@ import Foundation
 // MARK: - ChatInputItemProtocol
 extension TextChatInputItem : ChatInputItemProtocol {
     public var presentationMode: ChatInputItemPresentationMode {
-        return .Keyboard
+        return .keyboard
     }
 
     public var showsSendButton: Bool {
@@ -61,7 +61,7 @@ extension TextChatInputItem : ChatInputItemProtocol {
         return self.internalTabView
     }
 
-    public func handleInput(input: AnyObject) {
+    public func handleInput(_ input: AnyObject) {
         if let text = input as? String {
             self.textInputHandler?(text)
         }

@@ -36,7 +36,7 @@ public struct ChatCollectionViewLayoutModel {
     let layoutAttributesSections: [UICollectionViewLayoutAttributes]
     let calculatedForWidth: CGFloat
 
-    public static func createModel(collectionViewWidth: CGFloat, itemsLayoutData: [(indexPath: NSIndexPath, height: CGFloat, headerMargin: CGFloat, bottomMargin: CGFloat)], sectionsLayoutData: [(indexPath: NSIndexPath, height: CGFloat)]) -> ChatCollectionViewLayoutModel {
+    public static func createModel(_ collectionViewWidth: CGFloat, itemsLayoutData: [(indexPath: IndexPath, height: CGFloat, headerMargin: CGFloat, bottomMargin: CGFloat)], sectionsLayoutData: [(indexPath: IndexPath, height: CGFloat)]) -> ChatCollectionViewLayoutModel {
         var layoutAttributes = [UICollectionViewLayoutAttributes]()
         var layoutAttributesBySectionAndItem = [[UICollectionViewLayoutAttributes]]()
         var layoutAttributesSections = [UICollectionViewLayoutAttributes]()
@@ -46,13 +46,13 @@ public struct ChatCollectionViewLayoutModel {
         for layoutData in itemsLayoutData {
             let (indexPath, height, headerMargin, bottomMargin) = layoutData
             let itemSize = CGSize(width: collectionViewWidth, height: height)
-            if(indexPath.row == 0){verticalOffset += headerMargin}
+            if((indexPath as NSIndexPath).row == 0){verticalOffset += headerMargin}
             let frame = CGRect(origin: CGPoint(x: 0, y: verticalOffset), size: itemSize)
-            let attributes = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
+            let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
             attributes.frame = frame
             layoutAttributes.append(attributes)
-            if(indexPath.section < layoutAttributesBySectionAndItem.count){
-                layoutAttributesBySectionAndItem[indexPath.section].append(attributes)
+            if((indexPath as NSIndexPath).section < layoutAttributesBySectionAndItem.count){
+                layoutAttributesBySectionAndItem[(indexPath as NSIndexPath).section].append(attributes)
             }else{
                 layoutAttributesBySectionAndItem.append([attributes])
             }
@@ -63,7 +63,7 @@ public struct ChatCollectionViewLayoutModel {
         
         for sectionLayoutData in sectionsLayoutData {
             let (indexPath, height) = sectionLayoutData
-            let layoutAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withIndexPath: indexPath)
+            let layoutAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, with: indexPath)
             
             let itemSize = CGSize(width: collectionViewWidth, height: height)
             let frame = CGRect(origin: CGPoint(x: 0, y: verticalOffset), size: itemSize)
@@ -83,26 +83,26 @@ public struct ChatCollectionViewLayoutModel {
 }
 
 
-public class ChatCollectionViewLayout: UICollectionViewLayout {
+open class ChatCollectionViewLayout: UICollectionViewLayout {
     var layoutModel: ChatCollectionViewLayoutModel!
-    public weak var delegate: ChatCollectionViewLayoutDelegate?
+    open weak var delegate: ChatCollectionViewLayoutDelegate?
 
     // Optimization: after reloadData we'll get invalidateLayout, but prepareLayout will be delayed until next run loop.
     // Client may need to force prepareLayout after reloadData, but we don't want to compute layout again in the next run loop.
-    private var layoutNeedsUpdate = true
-    public override func invalidateLayout() {
+    fileprivate var layoutNeedsUpdate = true
+    open override func invalidateLayout() {
         super.invalidateLayout()
         self.layoutNeedsUpdate = true
     }
 
-    public override func prepareLayout() {
-        super.prepareLayout()
+    open override func prepare() {
+        super.prepare()
         guard self.layoutNeedsUpdate else { return }
         guard let delegate = self.delegate else { return }
         var oldLayoutModel = self.layoutModel
         self.layoutModel = delegate.chatCollectionViewLayoutModel()
         self.layoutNeedsUpdate = false
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) { () -> Void in
+        DispatchQueue.global(priority: DispatchQueue.GlobalQueuePriority.default).async { () -> Void in
             // Dealloc of layout with 5000 items take 25 ms on tests on iPhone 4s
             // This moves dealloc out of main thread
             if oldLayoutModel != nil {
@@ -112,81 +112,83 @@ public class ChatCollectionViewLayout: UICollectionViewLayout {
         }
     }
 
-    public override func collectionViewContentSize() -> CGSize {
+    open override var collectionViewContentSize: CGSize {
         return self.layoutModel?.contentSize ?? .zero
     }
     
-    override public func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+    override open func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         let layoutAttributes = layoutAttributesForElementsInRectCustom(rect)//self.layoutModel.layoutAttributes.filter { $0.frame.intersects(rect) }
 
         return layoutAttributes
     }
     
-    private func layoutAttributesForElementsInRectCustom(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+    fileprivate func layoutAttributesForElementsInRectCustom(_ rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         var answer = self.layoutModel.layoutAttributes.filter { $0.frame.intersects(rect) }
         
         let missingSections = NSMutableIndexSet();
         for layoutAttributes in answer {
-            if (layoutAttributes.representedElementCategory == .Cell) {
-                missingSections.addIndex(layoutAttributes.indexPath.section);
+            if (layoutAttributes.representedElementCategory == .cell) {
+                missingSections.add(layoutAttributes.indexPath.section);
             }
         }
         for layoutAttributes in answer {
             if (layoutAttributes.representedElementKind == UICollectionElementKindSectionHeader) {
-                missingSections.removeIndex(layoutAttributes.indexPath.section);
+                missingSections.remove(layoutAttributes.indexPath.section);
             }
         }
         
-        missingSections.enumerateIndexesUsingBlock { (idx: Int, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
-            let indexPath = NSIndexPath(forItem: 0, inSection: idx)
-            if let layoutAttributes = self.layoutAttributesForSupplementaryViewOfKind(UICollectionElementKindSectionHeader, atIndexPath: indexPath) {
+        
+        missingSections.enumerate ({ (idx, stop) in
+            let indexPath = IndexPath(item: 0, section: idx)
+            if let layoutAttributes = self.layoutAttributesForSupplementaryView(ofKind: UICollectionElementKindSectionHeader, at: indexPath) {
                 answer.append(layoutAttributes)
             }
-
-        }
+            
+        })
+        
         
         
         return answer;
 
     }
 
-    override public func layoutAttributesForSupplementaryViewOfKind(elementKind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
+    override open func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
        
         if(elementKind == UICollectionElementKindSectionHeader){
             
             let cv = self.delegate?.collectionView;
-            let contentOffset: CGPoint = cv?.contentOffset ?? CGPointZero;
+            let contentOffset: CGPoint = cv?.contentOffset ?? CGPoint.zero;
             
             
-            let layoutAttributes = self.layoutModel.layoutAttributesSections[indexPath.section]
+            let layoutAttributes = self.layoutModel.layoutAttributesSections[(indexPath as NSIndexPath).section]
             
             let section = layoutAttributes.indexPath.section;
-            let numberOfItemsInSection = cv?.numberOfItemsInSection(section) ?? 0;
+            let numberOfItemsInSection = cv?.numberOfItems(inSection: section) ?? 0;
             
-            let firstObjectIndexPath = NSIndexPath(forItem:0, inSection:section);
-            let lastObjectIndexPath = NSIndexPath(forItem:max(0, (numberOfItemsInSection - 1)), inSection:section);
+            let firstObjectIndexPath = IndexPath(item:0, section:section);
+            let lastObjectIndexPath = IndexPath(item:max(0, (numberOfItemsInSection - 1)), section:section);
             
             var firstObjectAttrs: UICollectionViewLayoutAttributes!;
             var lastObjectAttrs: UICollectionViewLayoutAttributes!;
             
             if (numberOfItemsInSection > 0) {
-                firstObjectAttrs = self.layoutAttributesForItemAtIndexPath(firstObjectIndexPath);
-                lastObjectAttrs = self.layoutAttributesForItemAtIndexPath(lastObjectIndexPath);
+                firstObjectAttrs = self.layoutAttributesForItem(at: firstObjectIndexPath);
+                lastObjectAttrs = self.layoutAttributesForItem(at: lastObjectIndexPath);
             } else {
-                firstObjectAttrs = self.layoutAttributesForSupplementaryViewOfKind(UICollectionElementKindSectionHeader,
-                    atIndexPath:firstObjectIndexPath);
-                lastObjectAttrs = self.layoutAttributesForSupplementaryViewOfKind(UICollectionElementKindSectionFooter,
-                    atIndexPath:lastObjectIndexPath);
+                firstObjectAttrs = self.layoutAttributesForSupplementaryView(ofKind: UICollectionElementKindSectionHeader,
+                    at:firstObjectIndexPath);
+                lastObjectAttrs = self.layoutAttributesForSupplementaryView(ofKind: UICollectionElementKindSectionFooter,
+                    at:lastObjectIndexPath);
             }
             
-            let headerHeight = CGRectGetHeight(layoutAttributes.frame);
+            let headerHeight = layoutAttributes.frame.height;
             var origin = layoutAttributes.frame.origin;
             origin.y = min(
                 max(
                     contentOffset.y + (cv?.contentInset.top ?? 0),
-                    (CGRectGetMinY(firstObjectAttrs.frame) - headerHeight)
+                    (firstObjectAttrs.frame.minY - headerHeight)
                 ),
-                (CGRectGetMaxY(lastObjectAttrs.frame) - headerHeight)
+                (lastObjectAttrs.frame.maxY - headerHeight)
             );
             
             layoutAttributes.zIndex = 1024;
@@ -196,27 +198,27 @@ public class ChatCollectionViewLayout: UICollectionViewLayout {
         return nil;
     }
     
-    public override func initialLayoutAttributesForAppearingSupplementaryElementOfKind(elementKind: String, atIndexPath indexPath : NSIndexPath) -> UICollectionViewLayoutAttributes?
+    open override func initialLayoutAttributesForAppearingSupplementaryElement(ofKind elementKind: String, at indexPath : IndexPath) -> UICollectionViewLayoutAttributes?
     {
-        let attributes = self.layoutAttributesForSupplementaryViewOfKind(elementKind, atIndexPath:indexPath);
+        let attributes = self.layoutAttributesForSupplementaryView(ofKind: elementKind, at:indexPath);
         return attributes;
     }
     
-    public override func finalLayoutAttributesForDisappearingSupplementaryElementOfKind(elementKind: String, atIndexPath indexPath : NSIndexPath) -> UICollectionViewLayoutAttributes? {
-        let attributes = self.layoutAttributesForSupplementaryViewOfKind(elementKind, atIndexPath:indexPath);
+    open override func finalLayoutAttributesForDisappearingSupplementaryElement(ofKind elementKind: String, at indexPath : IndexPath) -> UICollectionViewLayoutAttributes? {
+        let attributes = self.layoutAttributesForSupplementaryView(ofKind: elementKind, at:indexPath);
         return attributes;
     }
     
 
-    public override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
-        if indexPath.section < self.layoutModel.layoutAttributesBySectionAndItem.count && indexPath.item < self.layoutModel.layoutAttributesBySectionAndItem[indexPath.section].count {
-            return self.layoutModel.layoutAttributesBySectionAndItem[indexPath.section][indexPath.item]
+    open override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+        if (indexPath as NSIndexPath).section < self.layoutModel.layoutAttributesBySectionAndItem.count && (indexPath as NSIndexPath).item < self.layoutModel.layoutAttributesBySectionAndItem[(indexPath as NSIndexPath).section].count {
+            return self.layoutModel.layoutAttributesBySectionAndItem[(indexPath as NSIndexPath).section][(indexPath as NSIndexPath).item]
         }
         assert(false, "Unexpected indexPath requested:\(indexPath)")
         return nil
     }
 
-    public override func shouldInvalidateLayoutForBoundsChange(newBounds: CGRect) -> Bool {
+    open override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
         //change to recalculate headers
         return true
     }

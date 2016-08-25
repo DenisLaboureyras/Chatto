@@ -30,13 +30,13 @@ import Chatto
 protocol LiveCameraCaptureSessionProtocol {
     var captureLayer: AVCaptureVideoPreviewLayer? { get }
     var isCapturing: Bool { get }
-    func startCapturing(completion: () -> Void)
-    func stopCapturing(completion: () -> Void)
+    func startCapturing(_ completion: @escaping () -> Void)
+    func stopCapturing(_ completion: @escaping () -> Void)
 }
 
 class LiveCameraCell: UICollectionViewCell {
 
-    private struct Constants {
+    fileprivate struct Constants {
         static let backgroundColor = UIColor(red: 24.0/255.0, green: 101.0/255.0, blue: 245.0/255.0, alpha: 1)
         static let cameraImageName = "camera"
         static let lockedCameraImageName = "camera_lock"
@@ -46,7 +46,7 @@ class LiveCameraCell: UICollectionViewCell {
         return LiveCameraCaptureSession()
     }()
 
-    private var iconImageView: UIImageView!
+    fileprivate var iconImageView: UIImageView!
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -62,19 +62,19 @@ class LiveCameraCell: UICollectionViewCell {
         self.unsubscribeFromAppNotifications()
     }
 
-    private func commonInit() {
+    fileprivate func commonInit() {
         self.configureIcon()
         self.contentView.backgroundColor = Constants.backgroundColor
     }
 
-    private func configureIcon() {
+    fileprivate func configureIcon() {
         self.iconImageView = UIImageView()
-        self.iconImageView.contentMode = .Center
+        self.iconImageView.contentMode = .center
         self.contentView.addSubview(self.iconImageView)
     }
 
-    private var authorizationStatus: AVAuthorizationStatus = .NotDetermined
-    func updateWithAuthorizationStatus(status: AVAuthorizationStatus) {
+    fileprivate var authorizationStatus: AVAuthorizationStatus = .notDetermined
+    func updateWithAuthorizationStatus(_ status: AVAuthorizationStatus) {
         self.authorizationStatus = status
         self.updateIcon()
 
@@ -85,21 +85,21 @@ class LiveCameraCell: UICollectionViewCell {
         }
     }
 
-    private func updateIcon() {
+    fileprivate func updateIcon() {
         switch self.authorizationStatus {
-        case .NotDetermined, .Authorized:
-            self.iconImageView.image = UIImage(named: Constants.cameraImageName, inBundle: NSBundle(forClass: self.dynamicType), compatibleWithTraitCollection: nil)
-        case .Restricted, .Denied:
-            self.iconImageView.image = UIImage(named: Constants.lockedCameraImageName, inBundle: NSBundle(forClass: self.dynamicType), compatibleWithTraitCollection: nil)
+        case .notDetermined, .authorized:
+            self.iconImageView.image = UIImage(named: Constants.cameraImageName, in: Bundle(for: type(of: self)), compatibleWith: nil)
+        case .restricted, .denied:
+            self.iconImageView.image = UIImage(named: Constants.lockedCameraImageName, in: Bundle(for: type(of: self)), compatibleWith: nil)
         }
         self.setNeedsLayout()
     }
 
-    private var isCaptureAvailable: Bool {
+    fileprivate var isCaptureAvailable: Bool {
         switch self.authorizationStatus {
-        case .NotDetermined, .Restricted, .Denied:
+        case .notDetermined, .restricted, .denied:
             return false
-        case .Authorized:
+        case .authorized:
             return true
         }
     }
@@ -111,13 +111,13 @@ class LiveCameraCell: UICollectionViewCell {
         }
     }
 
-    private func addCaptureLayer() {
+    fileprivate func addCaptureLayer() {
         guard let captureLayer = self.captureSession.captureLayer else { return }
         self.contentView.layer.insertSublayer(captureLayer, below: self.iconImageView.layer)
         let animation = CABasicAnimation.bma_fadeInAnimationWithDuration(0.25)
         let animationKey = "fadeIn"
-        captureLayer.removeAnimationForKey(animationKey)
-        captureLayer.addAnimation(animation, forKey: animationKey)
+        captureLayer.removeAnimation(forKey: animationKey)
+        captureLayer.add(animation, forKey: animationKey)
     }
 
     func stopCapturing() {
@@ -127,7 +127,7 @@ class LiveCameraCell: UICollectionViewCell {
         }
     }
 
-    private func removeCaptureLayer() {
+    fileprivate func removeCaptureLayer() {
         self.captureSession.captureLayer?.removeFromSuperlayer()
     }
 
@@ -150,19 +150,19 @@ class LiveCameraCell: UICollectionViewCell {
 
     // MARK: - App Notifications
     lazy var notificationCenter = {
-        return NSNotificationCenter.defaultCenter()
+        return NotificationCenter.default
     }()
 
-    private func subscribeToAppNotifications() {
-        self.notificationCenter.addObserver(self, selector: "handleWillResignActiveNotification", name: UIApplicationWillResignActiveNotification, object: nil)
-        self.notificationCenter.addObserver(self, selector: "handleDidBecomeActiveNotification", name: UIApplicationDidBecomeActiveNotification, object: nil)
+    fileprivate func subscribeToAppNotifications() {
+        self.notificationCenter.addObserver(self, selector: #selector(LiveCameraCell.handleWillResignActiveNotification), name: NSNotification.Name.UIApplicationWillResignActive, object: nil)
+        self.notificationCenter.addObserver(self, selector: #selector(LiveCameraCell.handleDidBecomeActiveNotification), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
     }
 
-    private func unsubscribeFromAppNotifications() {
+    fileprivate func unsubscribeFromAppNotifications() {
         self.notificationCenter.removeObserver(self)
     }
 
-    private var needsRestoreCaptureSession = false
+    fileprivate var needsRestoreCaptureSession = false
     func handleWillResignActiveNotification() {
         if self.captureSession.isCapturing {
             self.needsRestoreCaptureSession = true
@@ -183,12 +183,12 @@ private class LiveCameraCaptureSession: LiveCameraCaptureSessionProtocol {
         self.configureCaptureSession()
     }
 
-    private var captureSession: AVCaptureSession!
-    private (set) var captureLayer: AVCaptureVideoPreviewLayer?
+    fileprivate var captureSession: AVCaptureSession!
+    fileprivate (set) var captureLayer: AVCaptureVideoPreviewLayer?
 
-    private func configureCaptureSession() {
+    fileprivate func configureCaptureSession() {
         self.captureSession = AVCaptureSession()
-        let device = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
+        let device = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
         do {
             let input = try AVCaptureDeviceInput(device: device)
             self.captureSession.addInput(input)
@@ -200,42 +200,42 @@ private class LiveCameraCaptureSession: LiveCameraCaptureSessionProtocol {
         self.captureLayer!.videoGravity = AVLayerVideoGravityResizeAspectFill
     }
 
-    private lazy var queue: KeyedOperationQueue = {
-        let queue = KeyedOperationQueue()
-        queue.qualityOfService = .UserInteractive
+    fileprivate lazy var queue: OperationQueue = {
+        let queue = OperationQueue()
+        queue.qualityOfService = .userInteractive
         queue.maxConcurrentOperationCount = 1
         return queue
     }()
 
-    func startCapturing(completion: () -> Void) {
-        let operation = NSBlockOperation()
+    func startCapturing(_ completion: @escaping () -> Void) {
+        let operation = BlockOperation()
         operation.addExecutionBlock { [weak operation, weak self] in
-            guard let strongSelf = self, strongOperation = operation else { return }
-            if !strongOperation.cancelled && !strongSelf.captureSession.running {
+            guard let strongSelf = self, let strongOperation = operation else { return }
+            if !strongOperation.isCancelled && !strongSelf.captureSession.isRunning {
                 strongSelf.captureSession.startRunning()
-                NSOperationQueue.mainQueue().addOperationWithBlock({
+                OperationQueue.main.addOperation({
                     completion()
                 })
             }
         }
-        self.queue.addOperation(operation, forKey: "startCapturingOperation")
+        self.queue.addOperation(operation)
     }
 
-    func stopCapturing(completion: () -> Void) {
-        let operation = NSBlockOperation()
+    func stopCapturing(_ completion: @escaping () -> Void) {
+        let operation = BlockOperation()
         operation.addExecutionBlock { [weak operation, weak self] in
-            guard let strongSelf = self, strongOperation = operation else { return }
-            if !strongOperation.cancelled && strongSelf.captureSession.running {
+            guard let strongSelf = self, let strongOperation = operation else { return }
+            if !strongOperation.isCancelled && strongSelf.captureSession.isRunning {
                 strongSelf.captureSession.stopRunning()
-                NSOperationQueue.mainQueue().addOperationWithBlock({
+                OperationQueue.main.addOperation({
                     completion()
                 })
             }
         }
-        self.queue.addOperation(operation, forKey: "stopCapturingOperation")
+        self.queue.addOperation(operation)
     }
 
     var isCapturing: Bool {
-        return self.captureSession.running
+        return self.captureSession.isRunning
     }
 }

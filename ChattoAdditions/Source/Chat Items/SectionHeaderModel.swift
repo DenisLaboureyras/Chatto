@@ -12,7 +12,7 @@ import Chatto
 
 public protocol SectionHeaderModelProtocol: ChatItemProtocol {
     var text: String { get }
-    var date: NSDate { get }
+    var date: Date { get }
 }
 
 public protocol DecoratedSectionHeaderModelProtocol: SectionHeaderModelProtocol {
@@ -24,18 +24,18 @@ public extension DecoratedSectionHeaderModelProtocol {
         return self.sectionHeaderModel.uid
     }
     
-    var date: NSDate {
+    var date: Date {
         return self.sectionHeaderModel.date
     }
 }
 
-public class SectionHeaderModel: SectionHeaderModelProtocol {
-    public var uid: String
-    public var type: String
-    public var date: NSDate
-    public var text: String
+open class SectionHeaderModel: SectionHeaderModelProtocol {
+    open var uid: String
+    open var type: String
+    open var date: Date
+    open var text: String
     
-    public init(uid: String, type: String, text: String, date: NSDate) {
+    public init(uid: String, type: String, text: String, date: Date) {
         self.text = text;
         self.uid = uid
         self.type = type

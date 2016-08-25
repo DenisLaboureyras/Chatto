@@ -24,19 +24,19 @@
 
 import Foundation
 
-@objc public class PhotosChatInputItem: NSObject {
-    public var photoInputHandler: ((UIImage) -> Void)?
-    public weak var presentingController: UIViewController?
+@objc open class PhotosChatInputItem: NSObject {
+    open var photoInputHandler: ((UIImage) -> Void)?
+    open weak var presentingController: UIViewController?
     public init(presentingController: UIViewController?) {
         self.presentingController = presentingController
     }
 
-    lazy private var internalTabView: UIButton = {
-        var button = UIButton(type: .Custom)
-        button.exclusiveTouch = true
-        button.setImage(UIImage(named: "camera-icon-unselected", inBundle: NSBundle(forClass: self.dynamicType), compatibleWithTraitCollection: nil), forState: .Normal)
-        button.setImage(UIImage(named: "camera-icon-selected", inBundle: NSBundle(forClass: self.dynamicType), compatibleWithTraitCollection: nil), forState: .Highlighted)
-        button.setImage(UIImage(named: "camera-icon-selected", inBundle: NSBundle(forClass: self.dynamicType), compatibleWithTraitCollection: nil), forState: .Selected)
+    lazy fileprivate var internalTabView: UIButton = {
+        var button = UIButton(type: .custom)
+        button.isExclusiveTouch = true
+        button.setImage(UIImage(named: "camera-icon-unselected", in: Bundle(for: type(of: self)), compatibleWith: nil), for: UIControlState())
+        button.setImage(UIImage(named: "camera-icon-selected", in: Bundle(for: type(of: self)), compatibleWith: nil), for: .highlighted)
+        button.setImage(UIImage(named: "camera-icon-selected", in: Bundle(for: type(of: self)), compatibleWith: nil), for: .selected)
         return button
     }()
 
@@ -46,9 +46,9 @@ import Foundation
         return photosInputView
     }()
 
-    public var selected = false {
+    open var selected = false {
         didSet {
-            self.internalTabView.selected = self.selected;
+            self.internalTabView.isSelected = self.selected;
             if self.selected != oldValue {
                 self.photosInputView.reload()
             }
@@ -59,7 +59,7 @@ import Foundation
 // MARK: - ChatInputItemProtocol
 extension PhotosChatInputItem : ChatInputItemProtocol {
     public var presentationMode: ChatInputItemPresentationMode {
-        return .CustomView
+        return .customView
     }
 
     public var showsSendButton: Bool {
@@ -74,7 +74,7 @@ extension PhotosChatInputItem : ChatInputItemProtocol {
         return self.internalTabView
     }
 
-    public func handleInput(input: AnyObject) {
+    public func handleInput(_ input: AnyObject) {
         if let image = input as? UIImage {
             self.photoInputHandler?(image)
         }
@@ -83,7 +83,7 @@ extension PhotosChatInputItem : ChatInputItemProtocol {
 
 // MARK: - PhotosChatInputCollectionViewWrapperDelegate
 extension PhotosChatInputItem: PhotosInputViewDelegate {
-    func inputView(inputView: PhotosInputViewProtocol, didSelectImage image: UIImage) {
+    func inputView(_ inputView: PhotosInputViewProtocol, didSelectImage image: UIImage) {
         self.photoInputHandler?(image)
     }
 }

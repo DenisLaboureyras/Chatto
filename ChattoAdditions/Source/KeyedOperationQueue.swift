@@ -24,15 +24,3 @@
 
 import Foundation
 
-class KeyedOperationQueue: NSOperationQueue {
-    private var keyedOperations = NSMapTable.strongToWeakObjectsMapTable()
-    func addOperation(operation: NSOperation, forKey key: String) {
-        objc_sync_enter(self)
-        if let existingOperation = self.keyedOperations.objectForKey(key) as? NSOperation {
-            existingOperation.cancel()
-        }
-        self.keyedOperations.setObject(operation, forKey: key)
-        objc_sync_exit(self)
-        super.addOperation(operation)
-    }
-}

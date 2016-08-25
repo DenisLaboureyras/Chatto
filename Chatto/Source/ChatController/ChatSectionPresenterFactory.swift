@@ -9,7 +9,7 @@
 import Foundation
 
 public protocol ChatSectionPresenterFactoryProtocol {
-    func createChatSectionPresenter(chatItem: ChatItemProtocol) -> SectionItemPresenterProtocol
+    func createChatSectionPresenter(_ chatItem: ChatItemProtocol) -> SectionItemPresenterProtocol
     func configure(withCollectionView collectionView: UICollectionView)
 }
 
@@ -20,7 +20,7 @@ final class ChatSectionPresenterFactory: ChatSectionPresenterFactoryProtocol {
         self.presenterBuildersByType = presenterBuildersByType
     }
     
-    func createChatSectionPresenter(chatItem: ChatItemProtocol) -> SectionItemPresenterProtocol {
+    func createChatSectionPresenter(_ chatItem: ChatItemProtocol) -> SectionItemPresenterProtocol {
         for builder in self.presenterBuildersByType[chatItem.type] ?? [] {
             if builder.canHandleChatItem(chatItem) {
                 return builder.createPresenterWithChatItem(chatItem)

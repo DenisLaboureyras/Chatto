@@ -51,7 +51,7 @@ class FakeDataSource: ChatDataSourceProtocol {
         let sender = FakeMessageSender()
         sender.onMessageChanged = { [weak self] (message) in
             guard let sSelf = self else { return }
-            sSelf.delegate?.chatDataSourceDidUpdate(sSelf, updateType: .Normal)
+            sSelf.delegate?.chatDataSourceDidUpdate(sSelf, updateType: .normal)
         }
         return sender
     }()
@@ -73,43 +73,43 @@ class FakeDataSource: ChatDataSourceProtocol {
     func loadNext() {
         self.slidingWindow.loadNext()
         self.slidingWindow.adjustWindow(focusPosition: 1, maxWindowSize: self.preferredMaxWindowSize)
-        self.delegate?.chatDataSourceDidUpdate(self, updateType: .Pagination)
+        self.delegate?.chatDataSourceDidUpdate(self, updateType: .pagination)
         
     }
 
     func loadPrevious() {
         self.slidingWindow.loadPrevious()
         self.slidingWindow.adjustWindow(focusPosition: 0, maxWindowSize: self.preferredMaxWindowSize)
-        self.delegate?.chatDataSourceDidUpdate(self, updateType: .Pagination)
+        self.delegate?.chatDataSourceDidUpdate(self, updateType: .pagination)
     }
 
-    func addTextMessage(text: String) {
+    func addTextMessage(_ text: String) {
         self.lastMessageId += 1;
         let uid = "\(self.lastMessageId)"
         let message = createTextMessageModel(uid, text: text, isIncoming: false)
         self.messageSender.sendMessage(message)
-        self.slidingWindow.insertItem(message, position: .Bottom)
-        self.delegate?.chatDataSourceDidUpdate(self, updateType: .Normal)
+        self.slidingWindow.insertItem(message, position: .bottom)
+        self.delegate?.chatDataSourceDidUpdate(self, updateType: .normal)
     }
 
-    func addPhotoMessage(image: UIImage) {
+    func addPhotoMessage(_ image: UIImage) {
         self.lastMessageId += 1;
         let uid = "\(self.lastMessageId)"
         let message = createPhotoMessageModel(uid, image: image, size: image.size, isIncoming: false)
         self.messageSender.sendMessage(message)
-        self.slidingWindow.insertItem(message, position: .Bottom)
-        self.delegate?.chatDataSourceDidUpdate(self, updateType: .Normal)
+        self.slidingWindow.insertItem(message, position: .bottom)
+        self.delegate?.chatDataSourceDidUpdate(self, updateType: .normal)
     }
 
     func addRandomIncomingMessage() {
         self.lastMessageId += 1;
         let message = FakeMessageFactory.createChatItem("\(self.lastMessageId)", isIncoming: true)
-        self.slidingWindow.insertItem(message, position: .Bottom)
-        self.delegate?.chatDataSourceDidUpdate(self, updateType: .Normal)
+        self.slidingWindow.insertItem(message, position: .bottom)
+        self.delegate?.chatDataSourceDidUpdate(self, updateType: .normal)
     }
 
-    func adjustNumberOfMessages(preferredMaxCount preferredMaxCount: Int?, focusPosition: Double, completion:(didAdjust: Bool) -> Void) {
+    func adjustNumberOfMessages(preferredMaxCount: Int?, focusPosition: Double, completion:(_ didAdjust: Bool) -> Void) {
         let didAdjust = self.slidingWindow.adjustWindow(focusPosition: focusPosition, maxWindowSize: preferredMaxCount ?? self.preferredMaxWindowSize)
-        completion(didAdjust: didAdjust)
+        completion(didAdjust)
     }
 }

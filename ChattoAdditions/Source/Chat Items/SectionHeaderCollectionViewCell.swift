@@ -10,10 +10,10 @@ import Foundation
 import Chatto
 
 public protocol SectionHeaderCollectionViewCellStyleProtocol {
-    func attributedStringForDate(date: String) -> NSAttributedString
-    func textFont(viewModel viewModel: SectionHeaderViewModelProtocol) -> UIFont
-    func textColor(viewModel viewModel: SectionHeaderViewModelProtocol) -> UIColor
-    func backgroundColor(viewModel viewModel: SectionHeaderViewModelProtocol) -> UIColor
+    func attributedStringForDate(_ date: String) -> NSAttributedString
+    func textFont(viewModel: SectionHeaderViewModelProtocol) -> UIFont
+    func textColor(viewModel: SectionHeaderViewModelProtocol) -> UIColor
+    func backgroundColor(viewModel: SectionHeaderViewModelProtocol) -> UIColor
     func height() -> CGFloat
     
 }
@@ -29,19 +29,19 @@ public struct SectionHeaderCollectionViewCellLayoutConstants {
  
  */
 
-public class SectionHeaderCollectionViewCell: UICollectionViewCell {
+open class SectionHeaderCollectionViewCell: UICollectionViewCell {
     
-    public var animationDuration: CFTimeInterval = 0.33
-    public var viewContext: ViewContext = .Normal
+    open var animationDuration: CFTimeInterval = 0.33
+    open var viewContext: ViewContext = .normal
     
-    public static func sizingCell() -> SectionHeaderCollectionViewCell {
-        let cell = SectionHeaderCollectionViewCell(frame: CGRectZero)
-        cell.viewContext = .Sizing
+    open static func sizingCell() -> SectionHeaderCollectionViewCell {
+        let cell = SectionHeaderCollectionViewCell(frame: CGRect.zero)
+        cell.viewContext = .sizing
         return cell
     }
     
-    public private(set) var isUpdating: Bool = false
-    public func performBatchUpdates(updateClosure: () -> Void, animated: Bool, completion: (() ->())?) {
+    open fileprivate(set) var isUpdating: Bool = false
+    open func performBatchUpdates(_ updateClosure: @escaping () -> Void, animated: Bool, completion: (() ->())?) {
         self.isUpdating = true
         let updateAndRefreshViews = {
             updateClosure()
@@ -52,7 +52,7 @@ public class SectionHeaderCollectionViewCell: UICollectionViewCell {
             }
         }
         if animated {
-            UIView.animateWithDuration(self.animationDuration, animations: updateAndRefreshViews, completion: { (finished) -> Void in
+            UIView.animate(withDuration: self.animationDuration, animations: updateAndRefreshViews, completion: { (finished) -> Void in
                 completion?()
             })
         } else {
@@ -66,15 +66,15 @@ public class SectionHeaderCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    public var baseStyle: SectionHeaderCollectionViewCellStyleProtocol! {
+    open var baseStyle: SectionHeaderCollectionViewCellStyleProtocol! {
         didSet {
             self.updateViews()
         }
     }
     
-    override public var selected: Bool {
+    override open var isSelected: Bool {
         didSet {
-            if oldValue != self.selected {
+            if oldValue != self.isSelected {
                 self.updateViews()
             }
         }
@@ -86,14 +86,14 @@ public class SectionHeaderCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    private var label: UILabel = {
+    fileprivate var label: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor.whiteColor();
-        label.backgroundColor = UIColor.darkGrayColor()
+        label.textColor = UIColor.white;
+        label.backgroundColor = UIColor.darkGray
         label.layer.cornerRadius = 8;
         label.layer.masksToBounds = false;
         label.clipsToBounds = true;
-        label.textAlignment = .Center;
+        label.textAlignment = .center;
         label.text = "example"
         return label
     }()
@@ -110,33 +110,33 @@ public class SectionHeaderCollectionViewCell: UICollectionViewCell {
         self.commonInit()
     }
     
-    public private(set) lazy var tapGestureRecognizer: UITapGestureRecognizer = {
+    open fileprivate(set) lazy var tapGestureRecognizer: UITapGestureRecognizer = {
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: "bubbleTapped:")
         return tapGestureRecognizer
     }()
     
     
-    private func commonInit() {
-        self.backgroundColor = UIColor.clearColor();
-        self.contentView.exclusiveTouch = true
-        self.exclusiveTouch = true
-        let boundsLabel = CGRectMake(10, 5, self.bounds.width - 20, self.bounds.height - 10)
+    fileprivate func commonInit() {
+        self.backgroundColor = UIColor.clear;
+        self.contentView.isExclusiveTouch = true
+        self.isExclusiveTouch = true
+        let boundsLabel = CGRect(x: 10, y: 5, width: self.bounds.width - 20, height: self.bounds.height - 10)
         self.label.frame = boundsLabel;
         self.addSubview(self.label);
     }
     
     
-    public override func prepareForReuse() {
+    open override func prepareForReuse() {
         super.prepareForReuse()
     }
     
     
     // MARK: View model binding
     
-    final private func updateViews() {
-        if self.viewContext == .Sizing { return }
+    final fileprivate func updateViews() {
+        if self.viewContext == .sizing { return }
         if self.isUpdating { return }
-        guard let viewModel = self.sectionHeaderViewModel, style = self.baseStyle else { return }
+        guard let viewModel = self.sectionHeaderViewModel, let style = self.baseStyle else { return }
         self.accessoryTimestamp?.attributedText = style.attributedStringForDate(viewModel.date)
         
         self.label.textColor = style.textColor(viewModel: viewModel)
@@ -149,7 +149,7 @@ public class SectionHeaderCollectionViewCell: UICollectionViewCell {
     }
     
     // MARK: layout
-    public override func layoutSubviews() {
+    open override func layoutSubviews() {
         super.layoutSubviews()
         
         //let layoutModel = self.calculateLayout(availableWidth: self.contentView.bounds.width)
@@ -157,8 +157,8 @@ public class SectionHeaderCollectionViewCell: UICollectionViewCell {
         // TODO: refactor accessorView?
         
         if let accessoryView = self.accessoryTimestamp {
-            accessoryView.bounds = CGRect(origin: CGPointZero, size: accessoryView.intrinsicContentSize())
-            let accessoryViewWidth = CGRectGetWidth(accessoryView.bounds)
+            accessoryView.bounds = CGRect(origin: CGPoint.zero, size: accessoryView.intrinsicContentSize)
+            let accessoryViewWidth = accessoryView.bounds.width
             let accessoryViewMargin: CGFloat = 10
             let leftDisplacement = max(0, min(self.timestampMaxVisibleOffset, accessoryViewWidth + accessoryViewMargin))
             var contentViewframe = self.contentView.frame
@@ -166,15 +166,15 @@ public class SectionHeaderCollectionViewCell: UICollectionViewCell {
             contentViewframe.origin.x = -leftDisplacement
             
             self.contentView.frame = contentViewframe
-            accessoryView.center = CGPoint(x: CGRectGetWidth(self.bounds) - leftDisplacement + accessoryViewWidth / 2, y: self.contentView.center.y)
+            accessoryView.center = CGPoint(x: self.bounds.width - leftDisplacement + accessoryViewWidth / 2, y: self.contentView.center.y)
         }
     }
     
-    public override func sizeThatFits(size: CGSize) -> CGSize {
+    open override func sizeThatFits(_ size: CGSize) -> CGSize {
         return self.calculateLayout(availableWidth: size.width).size
     }
     
-    private func calculateLayout(availableWidth availableWidth: CGFloat) -> SectionHeaderLayoutModel {
+    fileprivate func calculateLayout(availableWidth: CGFloat) -> SectionHeaderLayoutModel {
         let parameters = SectionHeaderLayoutModelParameters(
             containerWidth: availableWidth,
             containerHeight: 30,
@@ -193,7 +193,7 @@ public class SectionHeaderCollectionViewCell: UICollectionViewCell {
         }
     }
     var accessoryTimestamp: UILabel?
-    public func revealAccessoryView(maximumOffset offset: CGFloat, animated: Bool) {
+    open func revealAccessoryView(maximumOffset offset: CGFloat, animated: Bool) {
         if self.accessoryTimestamp == nil {
             if offset > 0 {
                 let accessoryTimestamp = UILabel()
@@ -204,7 +204,7 @@ public class SectionHeaderCollectionViewCell: UICollectionViewCell {
             }
             
             if animated {
-                UIView.animateWithDuration(self.animationDuration, animations: { () -> Void in
+                UIView.animate(withDuration: self.animationDuration, animations: { () -> Void in
                     self.timestampMaxVisibleOffset = offset
                     self.layoutIfNeeded()
                 })
@@ -213,7 +213,7 @@ public class SectionHeaderCollectionViewCell: UICollectionViewCell {
             }
         } else {
             if animated {
-                UIView.animateWithDuration(self.animationDuration, animations: { () -> Void in
+                UIView.animate(withDuration: self.animationDuration, animations: { () -> Void in
                     self.timestampMaxVisibleOffset = offset
                     self.layoutIfNeeded()
                     }, completion: { (finished) -> Void in
@@ -237,14 +237,14 @@ public class SectionHeaderCollectionViewCell: UICollectionViewCell {
 }
 
 struct SectionHeaderLayoutModel {
-    private (set) var size = CGSizeZero
+    fileprivate (set) var size = CGSize.zero
     
-    mutating func calculateLayout(parameters parameters: SectionHeaderLayoutModelParameters) {
+    mutating func calculateLayout(parameters: SectionHeaderLayoutModelParameters) {
         let containerWidth = parameters.containerWidth
         let containerHeight = parameters.containerHeight
         let horizontalMargin = parameters.horizontalMargin
 
-        let containerRect = CGRect(origin: CGPointMake(horizontalMargin, 0), size: CGSize(width: containerWidth - horizontalMargin * 2, height: containerHeight))
+        let containerRect = CGRect(origin: CGPoint(x: horizontalMargin, y: 0), size: CGSize(width: containerWidth - horizontalMargin * 2, height: containerHeight))
         
         
         // Adjust horizontal positions

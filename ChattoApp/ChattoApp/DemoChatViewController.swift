@@ -35,21 +35,21 @@ class DemoChatViewController: BaseChatViewController {
         }
     }
 
-    lazy private var baseMessageHandler: BaseMessageHandler = {
+    lazy fileprivate var baseMessageHandler: BaseMessageHandler = {
         return BaseMessageHandler(messageSender: self.messageSender)
     }()
    
     override func viewDidLoad() {
         super.viewDidLoad()
-        let image = UIImage(named: "bubble-incoming-tail-border", inBundle: NSBundle(forClass: self.dynamicType), compatibleWithTraitCollection: nil)?.bma_tintWithColor(UIColor.blueColor())
+        let image = UIImage(named: "bubble-incoming-tail-border", in: Bundle(for: type(of: self)), compatibleWith: nil)?.bma_tintWithColor(UIColor.blue)
         super.chatItemsDecorator = ChatItemsDemoDecorator()
         super.sectionItemsDecorator = SectionItemsDemoDecorator()
-        let addIncomingMessageButton = UIBarButtonItem(image: image, style: .Plain, target: self, action: #selector(DemoChatViewController.addRandomIncomingMessage))
+        let addIncomingMessageButton = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(DemoChatViewController.addRandomIncomingMessage))
         self.navigationItem.rightBarButtonItem = addIncomingMessageButton;
     }
 
     @objc
-    private func addRandomIncomingMessage() {
+    fileprivate func addRandomIncomingMessage() {
         self.dataSource.addRandomIncomingMessage()
     }
 
@@ -61,7 +61,7 @@ class DemoChatViewController: BaseChatViewController {
         return chatInputView
     }
 
-    func configureChatInputBar(chatInputBar: ChatInputBar) {
+    func configureChatInputBar(_ chatInputBar: ChatInputBar) {
         var appearance = ChatInputBarAppearance()
         appearance.sendButtonTitle = NSLocalizedString("Send", comment: "")
         appearance.textPlaceholder = NSLocalizedString("Type a message", comment: "")
@@ -102,7 +102,7 @@ class DemoChatViewController: BaseChatViewController {
         return items
     }
 
-    private func createTextInputItem() -> TextChatInputItem {
+    fileprivate func createTextInputItem() -> TextChatInputItem {
         let item = TextChatInputItem()
         item.textInputHandler = { [weak self] text in
             self?.dataSource.addTextMessage(text)
@@ -110,7 +110,7 @@ class DemoChatViewController: BaseChatViewController {
         return item
     }
 
-    private func createPhotoInputItem() -> PhotosChatInputItem {
+    fileprivate func createPhotoInputItem() -> PhotosChatInputItem {
         let item = PhotosChatInputItem(presentingController: self)
         item.photoInputHandler = { [weak self] image in
             self?.dataSource.addPhotoMessage(image)

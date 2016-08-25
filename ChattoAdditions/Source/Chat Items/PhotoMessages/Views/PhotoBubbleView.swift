@@ -25,19 +25,19 @@
 import UIKit
 
 public protocol PhotoBubbleViewStyleProtocol {
-    func maskingImage(viewModel viewModel: PhotoMessageViewModelProtocol) -> UIImage
-    func borderImage(viewModel viewModel: PhotoMessageViewModelProtocol) -> UIImage?
-    func placeholderBackgroundImage(viewModel viewModel: PhotoMessageViewModelProtocol) -> UIImage
-    func placeholderIconImage(viewModel viewModel: PhotoMessageViewModelProtocol) -> (icon: UIImage?, tintColor: UIColor?)
-    func tailWidth(viewModel viewModel: PhotoMessageViewModelProtocol) -> CGFloat
-    func bubbleSize(viewModel viewModel: PhotoMessageViewModelProtocol) -> CGSize
-    func progressIndicatorColor(viewModel viewModel: PhotoMessageViewModelProtocol) -> UIColor
-    func overlayColor(viewModel viewModel: PhotoMessageViewModelProtocol) -> UIColor?
+    func maskingImage(viewModel: PhotoMessageViewModelProtocol) -> UIImage
+    func borderImage(viewModel: PhotoMessageViewModelProtocol) -> UIImage?
+    func placeholderBackgroundImage(viewModel: PhotoMessageViewModelProtocol) -> UIImage
+    func placeholderIconImage(viewModel: PhotoMessageViewModelProtocol) -> (icon: UIImage?, tintColor: UIColor?)
+    func tailWidth(viewModel: PhotoMessageViewModelProtocol) -> CGFloat
+    func bubbleSize(viewModel: PhotoMessageViewModelProtocol) -> CGSize
+    func progressIndicatorColor(viewModel: PhotoMessageViewModelProtocol) -> UIColor
+    func overlayColor(viewModel: PhotoMessageViewModelProtocol) -> UIColor?
 }
 
 public final class PhotoBubbleView: UIView, MaximumLayoutWidthSpecificable, BackgroundSizingQueryable {
 
-    public var viewContext: ViewContext = .Normal
+    public var viewContext: ViewContext = .normal
     public var animationDuration: CFTimeInterval = 0.33
     public var preferredMaxLayoutWidth: CGFloat = 0
 
@@ -51,41 +51,41 @@ public final class PhotoBubbleView: UIView, MaximumLayoutWidthSpecificable, Back
         self.commonInit()
     }
 
-    private func commonInit() {
+    fileprivate func commonInit() {
         self.autoresizesSubviews = false
         self.addSubview(self.imageView)
         self.addSubview(self.placeholderIconView)
         self.addSubview(self.progressIndicatorView)
     }
 
-    private lazy var imageView: UIImageView = {
+    fileprivate lazy var imageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.autoresizingMask = .None
+        imageView.autoresizingMask = UIViewAutoresizing()
         imageView.clipsToBounds = true
         imageView.autoresizesSubviews = false
-        imageView.autoresizingMask = .None
-        imageView.contentMode = .ScaleAspectFill
+        imageView.autoresizingMask = UIViewAutoresizing()
+        imageView.contentMode = .scaleAspectFill
         imageView.addSubview(self.borderView)
         return imageView
     }()
 
-    private lazy var borderView = UIImageView()
+    fileprivate lazy var borderView = UIImageView()
 
-    private lazy var overlayView: UIView = {
+    fileprivate lazy var overlayView: UIView = {
         let view = UIView()
         return view
     }()
 
 
 
-    private var progressIndicatorView: BMACircleProgressIndicatorView = {
+    fileprivate var progressIndicatorView: BMACircleProgressIndicatorView = {
         let progressView = BMACircleProgressIndicatorView(size: CGSize(width: 33, height: 33))
-        return progressView
+        return progressView!
     }()
 
-    private var placeholderIconView: UIImageView = {
+    fileprivate var placeholderIconView: UIImageView = {
         let imageView = UIImageView()
-        imageView.autoresizingMask = .None
+        imageView.autoresizingMask = UIViewAutoresizing()
         return imageView
     }()
 
@@ -102,8 +102,8 @@ public final class PhotoBubbleView: UIView, MaximumLayoutWidthSpecificable, Back
         }
     }
 
-    public private(set) var isUpdating: Bool = false
-    public func performBatchUpdates(updateClosure: () -> Void, animated: Bool, completion: (() ->())?) {
+    public fileprivate(set) var isUpdating: Bool = false
+    public func performBatchUpdates(_ updateClosure: @escaping () -> Void, animated: Bool, completion: (() ->())?) {
         self.isUpdating = true
         let updateAndRefreshViews = {
             updateClosure()
@@ -114,7 +114,7 @@ public final class PhotoBubbleView: UIView, MaximumLayoutWidthSpecificable, Back
             }
         }
         if animated {
-            UIView.animateWithDuration(self.animationDuration, animations: updateAndRefreshViews, completion: { (finished) -> Void in
+            UIView.animate(withDuration: self.animationDuration, animations: updateAndRefreshViews, completion: { (finished) -> Void in
                 completion?()
             })
         } else {
@@ -122,50 +122,50 @@ public final class PhotoBubbleView: UIView, MaximumLayoutWidthSpecificable, Back
         }
     }
 
-    private func updateViews() {
-        if self.viewContext == .Sizing { return }
+    fileprivate func updateViews() {
+        if self.viewContext == .sizing { return }
         if isUpdating { return }
-        guard let _ = self.photoMessageViewModel, _ = self.photoMessageStyle else { return }
+        guard let _ = self.photoMessageViewModel, let _ = self.photoMessageStyle else { return }
 
         self.updateProgressIndicator()
         self.updateImages()
         self.setNeedsLayout()
     }
 
-    private func updateProgressIndicator() {
+    fileprivate func updateProgressIndicator() {
         let transferStatus = self.photoMessageViewModel.transferStatus.value
         let transferProgress = self.photoMessageViewModel.transferProgress.value
-        self.progressIndicatorView.hidden = [TransferStatus.Idle, TransferStatus.Success, TransferStatus.Failed].contains(self.photoMessageViewModel.transferStatus.value)
+        self.progressIndicatorView.isHidden = [TransferStatus.idle, TransferStatus.success, TransferStatus.failed].contains(self.photoMessageViewModel.transferStatus.value)
         self.progressIndicatorView.progressLineColor = self.photoMessageStyle.progressIndicatorColor(viewModel: self.photoMessageViewModel)
         self.progressIndicatorView.progressLineWidth = 1
         self.progressIndicatorView.setProgress(CGFloat(transferProgress))
 
         switch transferStatus {
-        case .Idle, .Success, .Failed:
+        case .idle, .success, .failed:
 
             break
-        case .Transfering:
+        case .transfering:
             switch transferProgress {
             case 0:
-                if self.progressIndicatorView.progressStatus != .Starting { self.progressIndicatorView.progressStatus = .Starting }
+                if self.progressIndicatorView.progressStatus != .starting { self.progressIndicatorView.progressStatus = .starting }
             case 1:
-                if self.progressIndicatorView.progressStatus != .Completed { self.progressIndicatorView.progressStatus = .Completed }
+                if self.progressIndicatorView.progressStatus != .completed { self.progressIndicatorView.progressStatus = .completed }
             default:
-                if self.progressIndicatorView.progressStatus != .InProgress { self.progressIndicatorView.progressStatus = .InProgress }
+                if self.progressIndicatorView.progressStatus != .inProgress { self.progressIndicatorView.progressStatus = .inProgress }
             }
         }
     }
 
-    private func updateImages() {
+    fileprivate func updateImages() {
         if let image = self.photoMessageViewModel.image.value {
             self.imageView.image = image
-            self.placeholderIconView.hidden = true
+            self.placeholderIconView.isHidden = true
         } else {
             self.imageView.image = self.photoMessageStyle.placeholderBackgroundImage(viewModel: self.photoMessageViewModel)
             let (icon, tintColor) = photoMessageStyle.placeholderIconImage(viewModel: self.photoMessageViewModel)
             self.placeholderIconView.image = icon
             self.placeholderIconView.tintColor = tintColor
-            self.placeholderIconView.hidden = false
+            self.placeholderIconView.isHidden = false
         }
 
         if let overlayColor = self.photoMessageStyle.overlayColor(viewModel: self.photoMessageViewModel) {
@@ -184,7 +184,7 @@ public final class PhotoBubbleView: UIView, MaximumLayoutWidthSpecificable, Back
 
     // MARK: Layout
 
-    public override func sizeThatFits(size: CGSize) -> CGSize {
+    public override func sizeThatFits(_ size: CGSize) -> CGSize {
         return self.calculateTextBubbleLayout(maximumWidth: size.width).size
     }
 
@@ -193,14 +193,14 @@ public final class PhotoBubbleView: UIView, MaximumLayoutWidthSpecificable, Back
         let layout = self.calculateTextBubbleLayout(maximumWidth: self.preferredMaxLayoutWidth)
         self.progressIndicatorView.center = layout.visualCenter
         self.placeholderIconView.center = layout.visualCenter
-        self.placeholderIconView.bounds = CGRect(origin: CGPointZero, size: self.placeholderIconView.image?.size ?? CGSizeZero)
+        self.placeholderIconView.bounds = CGRect(origin: CGPoint.zero, size: self.placeholderIconView.image?.size ?? CGSize.zero)
         self.imageView.bma_rect = layout.photoFrame
         self.imageView.layer.mask?.frame = self.imageView.layer.bounds
         self.overlayView.bma_rect = self.imageView.bounds
         self.borderView.bma_rect = self.imageView.bounds
     }
 
-    private func calculateTextBubbleLayout(maximumWidth maximumWidth: CGFloat) -> PhotoBubbleLayoutModel {
+    fileprivate func calculateTextBubbleLayout(maximumWidth: CGFloat) -> PhotoBubbleLayoutModel {
         let layoutContext = PhotoBubbleLayoutModel.LayoutContext(photoMessageViewModel: self.photoMessageViewModel, style: self.photoMessageStyle, containerWidth: maximumWidth)
         let layoutModel = PhotoBubbleLayoutModel(layoutContext: layoutContext)
         layoutModel.calculateLayout()
@@ -215,9 +215,9 @@ public final class PhotoBubbleView: UIView, MaximumLayoutWidthSpecificable, Back
 
 
 private class PhotoBubbleLayoutModel {
-    var photoFrame: CGRect = CGRectZero
-    var visualCenter: CGPoint = CGPointZero // Because image is cropped a few points on the side of the tail, the apparent center will be a bit shifted
-    var size: CGSize = CGSizeZero
+    var photoFrame: CGRect = CGRect.zero
+    var visualCenter: CGPoint = CGPoint.zero // Because image is cropped a few points on the side of the tail, the apparent center will be a bit shifted
+    var size: CGSize = CGSize.zero
 
     struct LayoutContext {
         let photoSize: CGSize
@@ -244,7 +244,7 @@ private class PhotoBubbleLayoutModel {
 
     func calculateLayout() {
         let photoSize = self.layoutContext.photoSize
-        self.photoFrame = CGRect(origin: CGPointZero, size: photoSize)
+        self.photoFrame = CGRect(origin: CGPoint.zero, size: photoSize)
         let offsetX: CGFloat = 0.5 * self.layoutContext.tailWidth * (self.layoutContext.isIncoming ? 1.0 : -1.0)
         self.visualCenter = self.photoFrame.bma_center.bma_offsetBy(dx: offsetX, dy: 0)
         self.size = photoSize

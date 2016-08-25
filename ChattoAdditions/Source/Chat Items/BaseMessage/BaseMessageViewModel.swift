@@ -25,20 +25,20 @@
 import Foundation
 
 public enum MessageViewModelStatus {
-    case Success
-    case Sending
-    case Failed
+    case success
+    case sending
+    case failed
 }
 
 public extension MessageStatus {
     public func viewModelStatus() -> MessageViewModelStatus {
         switch self {
-        case .Success:
-            return MessageViewModelStatus.Success
-        case .Failed:
-            return MessageViewModelStatus.Failed
-        case .Sending:
-            return MessageViewModelStatus.Sending
+        case .success:
+            return MessageViewModelStatus.success
+        case .failed:
+            return MessageViewModelStatus.failed
+        case .sending:
+            return MessageViewModelStatus.sending
         }
     }
 }
@@ -85,45 +85,45 @@ extension DecoratedMessageViewModelProtocol {
     }
 }
 
-public class MessageViewModel: MessageViewModelProtocol {
-    public var isIncoming: Bool {
+open class MessageViewModel: MessageViewModelProtocol {
+    open var isIncoming: Bool {
         return self.messageModel.isIncoming
     }
 
-    public var status: MessageViewModelStatus {
+    open var status: MessageViewModelStatus {
         return self.messageModel.status.viewModelStatus()
     }
 
-    public var showsTail: Bool
-    public lazy var date: String = {
-        return self.dateFormatter.stringFromDate(self.messageModel.date)
+    open var showsTail: Bool
+    open lazy var date: String = {
+        return self.dateFormatter.string(from: self.messageModel.date as Date)
     }()
 
-    public let dateFormatter: NSDateFormatter
-    public private(set) var messageModel: MessageModelProtocol
+    open let dateFormatter: DateFormatter
+    open fileprivate(set) var messageModel: MessageModelProtocol
 
-    public init(dateFormatter: NSDateFormatter, showsTail: Bool, messageModel: MessageModelProtocol) {
+    public init(dateFormatter: DateFormatter, showsTail: Bool, messageModel: MessageModelProtocol) {
         self.dateFormatter = dateFormatter
         self.showsTail = showsTail
         self.messageModel = messageModel
     }
 
-    public var showsFailedIcon: Bool {
-        return self.status == .Failed
+    open var showsFailedIcon: Bool {
+        return self.status == .failed
     }
 }
 
-public class MessageViewModelDefaultBuilder {
+open class MessageViewModelDefaultBuilder {
 
     public init() {}
 
-    static let dateFormatter: NSDateFormatter = {
-        let formatter = NSDateFormatter()
+    static let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
         return formatter
     }()
 
-    public func createMessageViewModel(message: MessageModelProtocol) -> MessageViewModelProtocol {
-        return MessageViewModel(dateFormatter: self.dynamicType.dateFormatter, showsTail: false, messageModel: message)
+    open func createMessageViewModel(_ message: MessageModelProtocol) -> MessageViewModelProtocol {
+        return MessageViewModel(dateFormatter: type(of: self).dateFormatter, showsTail: false, messageModel: message)
     }
 }

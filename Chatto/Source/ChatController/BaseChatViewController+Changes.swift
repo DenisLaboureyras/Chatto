@@ -28,12 +28,12 @@ import Foundation
 
 extension BaseChatViewController: ChatDataSourceDelegateProtocol {
 
-    public func chatDataSourceDidUpdate(chatDataSource: ChatDataSourceProtocol, updateType: UpdateType) {
+    public func chatDataSourceDidUpdate(_ chatDataSource: ChatDataSourceProtocol, updateType: UpdateType) {
         self.enqueueModelUpdate(updateType: updateType)
     }
     
-    public func chatDataSourceDidUpdate(chatDataSource: ChatDataSourceProtocol) {
-        self.enqueueModelUpdate(updateType: .Normal)
+    public func chatDataSourceDidUpdate(_ chatDataSource: ChatDataSourceProtocol) {
+        self.enqueueModelUpdate(updateType: .normal)
     }
 
     public func enqueueModelUpdate(updateType context: UpdateType) {
@@ -42,7 +42,7 @@ extension BaseChatViewController: ChatDataSourceDelegateProtocol {
             guard let sSelf = self else { return }
 
             let oldItems = sSelf.chatSectionCompanionCollection
-            sSelf.updateModels(newItems: newItems, oldItems: oldItems, updateType: context, completion: {
+            sSelf.updateModels(newItems: newItems, oldItems: oldItems, updateType: context, completion:  {
                 guard let sSelf = self else { return }
                 if sSelf.updateQueue.isEmpty {
                     sSelf.enqueueMessageCountReductionIfNeeded()
@@ -52,9 +52,9 @@ extension BaseChatViewController: ChatDataSourceDelegateProtocol {
         })
     }
     
-    private func getDataSourceMessageCount() -> Int {
+    fileprivate func getDataSourceMessageCount() -> Int {
         if let sectionItems = chatDataSource?.sectionItems {
-            return sectionItems.reduce(0, combine : { (total, element) in
+            return sectionItems.reduce(0, { (total, element) in
                 total + element.items.count;
             })
         }
@@ -64,7 +64,7 @@ extension BaseChatViewController: ChatDataSourceDelegateProtocol {
     }
 
     public func enqueueMessageCountReductionIfNeeded() {
-        guard let preferredMaxMessageCount = self.constants.preferredMaxMessageCount where self.getDataSourceMessageCount() > preferredMaxMessageCount else { return }
+        guard let preferredMaxMessageCount = self.constants.preferredMaxMessageCount , self.getDataSourceMessageCount() > preferredMaxMessageCount else { return }
         self.updateQueue.addTask { [weak self] (completion) -> () in
             guard let sSelf = self else { return }
             sSelf.chatDataSource?.adjustNumberOfMessages(preferredMaxCount: sSelf.constants.preferredMaxMessageCountAdjustment, focusPosition: sSelf.focusPosition, completion: { (didAdjust) -> Void in
@@ -74,7 +74,7 @@ extension BaseChatViewController: ChatDataSourceDelegateProtocol {
                 }
                 let newItems = sSelf.chatDataSource?.sectionItems ?? []
                 let oldItems = sSelf.chatSectionCompanionCollection
-                sSelf.updateModels(newItems: newItems, oldItems: oldItems, updateType: .MessageCountReduction, completion: completion )
+                sSelf.updateModels(newItems: newItems, oldItems: oldItems, updateType: .messageCountReduction, completion: (completion) )
             })
         }
     }
@@ -97,53 +97,53 @@ extension BaseChatViewController: ChatDataSourceDelegateProtocol {
         return min(max(0, Double(midContentOffset / contentHeight)), 1.0)
     }
 
-    func updateVisibleCells(changes: CollectionChanges) {
+    func updateVisibleCells(_ changes: CollectionChanges) {
         // Datasource should be already updated!
         
-        func updateCellIfVisible(atIndexPath cellIndexPath: NSIndexPath, newDataIndexPath: NSIndexPath) {
-            if let cell = self.collectionView.cellForItemAtIndexPath(cellIndexPath) {
+        func updateCellIfVisible(atIndexPath cellIndexPath: IndexPath, newDataIndexPath: IndexPath) {
+            if let cell = self.collectionView.cellForItem(at: cellIndexPath) {
                 let presenter = self.presenterForIndexPath(newDataIndexPath)
                 presenter.configureCell(cell, decorationAttributes: self.decorationAttributesForIndexPath(newDataIndexPath))
                 presenter.cellWillBeShown(cell) // `createModelUpdates` may have created a new presenter instance for existing visible cell so we need to tell it that its cell is visible
             }
         }
 
-        let visibleIndexPaths = Set(self.collectionView.indexPathsForVisibleItems().filter { (indexPath) -> Bool in
-            return !changes.insertedIndexPaths.contains(indexPath) && !changes.deletedIndexPaths.contains(indexPath)
+        let visibleIndexPaths = Set(self.collectionView.indexPathsForVisibleItems.filter { (indexPath) -> Bool in
+            return !changes.insertedIndexPaths.contains((indexPath as NSIndexPath) as IndexPath) && !changes.deletedIndexPaths.contains((indexPath as NSIndexPath) as IndexPath)
             })
 
-        var updatedIndexPaths = Set<NSIndexPath>()
+        var updatedIndexPaths = Set<IndexPath>()
         for move in changes.movedIndexPaths {
-            updatedIndexPaths.insert(move.indexPathOld)
-            updateCellIfVisible(atIndexPath: move.indexPathOld, newDataIndexPath: move.indexPathNew)
+            updatedIndexPaths.insert(move.indexPathOld as IndexPath)
+            updateCellIfVisible(atIndexPath: move.indexPathOld as IndexPath, newDataIndexPath: move.indexPathNew as IndexPath)
         }
 
         // Update remaining visible cells
-        let remaining = visibleIndexPaths.subtract(updatedIndexPaths)
+        let remaining = visibleIndexPaths.subtracting(updatedIndexPaths)
         for indexPath in remaining {
             updateCellIfVisible(atIndexPath: indexPath, newDataIndexPath: indexPath)
         }
     }
 
     func performBatchUpdates(
-        updateModelClosure updateModelClosure: () -> Void,
+        updateModelClosure: @escaping () -> Void,
         changes: CollectionChanges,
         updateType: UpdateType,
-        completion: () -> Void) {
-            let shouldScrollToBottom = (updateType == .FirstLoad) || (updateType == .ForceScroll) || (updateType != .Pagination && self.isScrolledAtBottom())
+        completion: @escaping () -> Void) {
+            let shouldScrollToBottom = (updateType == .firstLoad) || (updateType == .forceScroll) || (updateType != .pagination && self.isScrolledAtBottom())
             let (oldReferenceIndexPath, newReferenceIndexPath) = self.referenceIndexPathsToRestoreScrollPositionOnUpdate(itemsBeforeUpdate: self.chatSectionCompanionCollection, changes: changes)
             let oldRect = self.rectAtIndexPath(oldReferenceIndexPath)
             let myCompletion = {
                 // Found that cells may not match correct index paths here yet! (see comment below)
                 // Waiting for next loop seems to fix the issue
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                DispatchQueue.main.async(execute: { () -> Void in
                     completion()
                 })
             }
 
-            if updateType == .Normal ||  updateType == .ForceScroll {
+            if updateType == .normal ||  updateType == .forceScroll {
 
-                UIView.animateWithDuration(self.constants.updatesAnimationDuration, animations: { () -> Void in
+                UIView.animate(withDuration: self.constants.updatesAnimationDuration, animations: { () -> Void in
                     
                     self.collectionView.performBatchUpdates({ () -> Void in
                         // We want to update visible cells to support easy removal of bubble tail or any other updates that may be needed after a data update
@@ -158,10 +158,10 @@ extension BaseChatViewController: ChatDataSourceDelegateProtocol {
                         for move in changes.movedIndexSections {
                             self.collectionView.moveSection(move.indexOld, toSection: move.indexNew)
                         }
-                        self.collectionView.deleteItemsAtIndexPaths(Array(changes.deletedIndexPaths))
-                        self.collectionView.insertItemsAtIndexPaths(Array(changes.insertedIndexPaths))
+                        self.collectionView.deleteItems(at: Array(changes.deletedIndexPaths))
+                        self.collectionView.insertItems(at: Array(changes.insertedIndexPaths))
                         for move in changes.movedIndexPaths {
-                            self.collectionView.moveItemAtIndexPath(move.indexPathOld, toIndexPath: move.indexPathNew)
+                            self.collectionView.moveItem(at: move.indexPathOld, to: move.indexPathNew)
                         }
                     }) { (finished) -> Void in
                         myCompletion()
@@ -170,30 +170,32 @@ extension BaseChatViewController: ChatDataSourceDelegateProtocol {
             } else {
                 updateModelClosure()
                 self.collectionView.reloadData()
-                self.collectionView.collectionViewLayout.prepareLayout()
+                self.collectionView.collectionViewLayout.prepare()
                 myCompletion()
             }
 
             if shouldScrollToBottom {
-                self.scrollToBottom(animated: updateType == .Normal || updateType == .ForceScroll)
+                self.scrollToBottom(animated: updateType == .normal || updateType == .forceScroll)
             } else {
                 let newRect = self.rectAtIndexPath(newReferenceIndexPath)
                 self.scrollToPreservePosition(oldRefRect: oldRect, newRefRect: newRect)
             }
     }
 
-    private func updateModels(newItems newItems: [SectionItemProtocol], oldItems: ChatSectionCompanionCollection, var updateType: UpdateType, completion: () -> Void) {
+    private func updateModels(newItems: [SectionItemProtocol], oldItems: ChatSectionCompanionCollection, updateType: UpdateType, completion: @escaping () -> Void) {
+        var updateType = updateType
         let collectionViewWidth = self.collectionView.bounds.width
-        let updateType = self.isFirstLayout ? .FirstLoad : updateType
-        let performInBackground = updateType != .FirstLoad
+        let updateTypeSecond = self.isFirstLayout ? .firstLoad : updateType
+        let performInBackground = updateTypeSecond != .firstLoad
 
         self.autoLoadingEnabled = false
-        let perfomBatchUpdates: (changes: CollectionChanges, updateModelClosure: () -> Void) -> ()  = { [weak self] modelUpdate in
+        
+        let perfomBatchUpdates: (_ changes: CollectionChanges, _ updateModelClosure: @escaping () -> Void) -> ()  = { [weak self] (changes: CollectionChanges, updateModelClosure: @escaping () -> Void) in
             self?.performBatchUpdates(
-                updateModelClosure: modelUpdate.updateModelClosure,
-                changes: modelUpdate.changes,
-                updateType: updateType,
-                completion: { () -> Void in
+                updateModelClosure: updateModelClosure,
+                changes: changes,
+                updateType: updateTypeSecond,
+                completion:  { () -> Void in
                     self?.autoLoadingEnabled = true
                     completion()
             })
@@ -207,19 +209,19 @@ extension BaseChatViewController: ChatDataSourceDelegateProtocol {
         }
 
         if performInBackground {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) { () -> Void in
+            DispatchQueue.global(priority: DispatchQueue.GlobalQueuePriority.default).async { () -> Void in
                 let modelUpdate = createModelUpdate()
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    perfomBatchUpdates(changes: modelUpdate.changes, updateModelClosure: modelUpdate.updateModelClosure)
+                DispatchQueue.main.async(execute: { () -> Void in
+                    perfomBatchUpdates(modelUpdate.changes, modelUpdate.updateModelClosure)
                 })
             }
         } else {
             let modelUpdate = createModelUpdate()
-            perfomBatchUpdates(changes: modelUpdate.changes, updateModelClosure: modelUpdate.updateModelClosure)
+            perfomBatchUpdates(modelUpdate.changes, modelUpdate.updateModelClosure)
         }
     }
 
-    private func createModelUpdates(newSections newSections: [SectionItemProtocol], oldSections: ChatSectionCompanionCollection, collectionViewWidth: CGFloat) -> (changes: CollectionChanges, updateModelClosure: () -> Void) {
+    fileprivate func createModelUpdates(newSections: [SectionItemProtocol], oldSections: ChatSectionCompanionCollection, collectionViewWidth: CGFloat) -> (changes: CollectionChanges, updateModelClosure: () -> Void) {
         
         
         let sectionCompanionCollection = self.createSectionCompanionCollection(fromChatSections: newSections, previousCompanionCollection: oldSections)
@@ -239,7 +241,7 @@ extension BaseChatViewController: ChatDataSourceDelegateProtocol {
         return (changes, updateModelClosure)
     }
     
-    private func createCompanionCollection(fromChatItems newItems: [DecoratedChatItem], previousCompanionCollection oldItems: ChatItemCompanionCollection) -> ChatItemCompanionCollection {
+    fileprivate func createCompanionCollection(fromChatItems newItems: [DecoratedChatItem], previousCompanionCollection oldItems: ChatItemCompanionCollection) -> ChatItemCompanionCollection {
         return ChatItemCompanionCollection(items: newItems.map { (decoratedChatItem) -> ChatItemCompanion in
             let chatItem = decoratedChatItem.chatItem
             var presenter: ChatItemPresenterProtocol!
@@ -248,7 +250,7 @@ extension BaseChatViewController: ChatDataSourceDelegateProtocol {
             // Oherwise updateVisibleCells may try to update existing cell with a new presenter which is working with a different type of cell
             
             // Optimization: reuse presenter if it's the same instance.
-            if let oldChatItemCompanion = oldItems[chatItem.uid] where oldChatItemCompanion.chatItem === chatItem {
+            if let oldChatItemCompanion = oldItems[chatItem.uid] , oldChatItemCompanion.chatItem === chatItem {
                 presenter = oldChatItemCompanion.presenter
             } else {
                 presenter = self.createPresenterForChatItem(decoratedChatItem.chatItem)
@@ -257,15 +259,15 @@ extension BaseChatViewController: ChatDataSourceDelegateProtocol {
             })
     }
     
-    private func createSectionCompanionCollection(fromChatSections newSections: [SectionItemProtocol], previousCompanionCollection oldSections: ChatSectionCompanionCollection) -> ChatSectionCompanionCollection {
+    fileprivate func createSectionCompanionCollection(fromChatSections newSections: [SectionItemProtocol], previousCompanionCollection oldSections: ChatSectionCompanionCollection) -> ChatSectionCompanionCollection {
         
-        let newDecoratedSections = self.sectionItemsDecorator?.decorateItems(newSections) ?? newSections.enumerate().map { (index, section) in
+        let newDecoratedSections = self.sectionItemsDecorator?.decorateItems(newSections) ?? newSections.enumerated().map { (index, section) in
             
             return DecoratedSectionItem(chatItem: section.section, decorationAttributes: nil)
         }
         
         
-        return ChatSectionCompanionCollection(items: newSections.enumerate().map { (index, newSection) -> ChatSection in
+        return ChatSectionCompanionCollection(items: newSections.enumerated().map { (index, newSection) -> ChatSection in
             
             let newDecoratedSection = newDecoratedSections[index];
             let sectionItem = newDecoratedSection.chatItem
@@ -275,7 +277,7 @@ extension BaseChatViewController: ChatDataSourceDelegateProtocol {
             // Oherwise updateVisibleCells may try to update existing cell with a new presenter which is working with a different type of cell
             
             // Optimization: reuse presenter if it's the same instance.
-            if let oldChatSectionCompanion = oldSections[sectionItem.uid]?.section where oldChatSectionCompanion.sectionItem === sectionItem {
+            if let oldChatSectionCompanion = oldSections[sectionItem.uid]?.section , oldChatSectionCompanion.sectionItem === sectionItem {
                 presenter = oldChatSectionCompanion.presenter
             } else {
                 presenter = self.createPresenterForSectionItem(newDecoratedSection.chatItem)
@@ -293,26 +295,26 @@ extension BaseChatViewController: ChatDataSourceDelegateProtocol {
             })
     }
     
-    private func createLayoutModel(decoratedSections: ChatSectionCompanionCollection, collectionViewWidth: CGFloat) -> ChatCollectionViewLayoutModel {
-        typealias IntermediateItemLayoutData = (indexPath: NSIndexPath, height: CGFloat?, headerMargin: CGFloat, bottomMargin: CGFloat)
-        typealias ItemLayoutData = (indexPath: NSIndexPath, height: CGFloat, headerMargin: CGFloat, bottomMargin: CGFloat)
-        typealias SectionLayoutData = (indexPath: NSIndexPath, height: CGFloat)
-        func createLayoutModel(intermediateLayoutData intermediateLayoutData: [IntermediateItemLayoutData], sectionsLayoutData: [SectionLayoutData]) -> ChatCollectionViewLayoutModel {
+    fileprivate func createLayoutModel(_ decoratedSections: ChatSectionCompanionCollection, collectionViewWidth: CGFloat) -> ChatCollectionViewLayoutModel {
+        typealias IntermediateItemLayoutData = (indexPath: IndexPath, height: CGFloat?, headerMargin: CGFloat, bottomMargin: CGFloat)
+        typealias ItemLayoutData = (indexPath: IndexPath, height: CGFloat, headerMargin: CGFloat, bottomMargin: CGFloat)
+        typealias SectionLayoutData = (indexPath: IndexPath, height: CGFloat)
+        func createLayoutModel(intermediateLayoutData: [IntermediateItemLayoutData], sectionsLayoutData: [SectionLayoutData]) -> ChatCollectionViewLayoutModel {
             let layoutData = intermediateLayoutData.map { (intermediateLayoutData: IntermediateItemLayoutData) -> ItemLayoutData in
                 return (indexPath: intermediateLayoutData.indexPath, height: intermediateLayoutData.height!, headerMargin: intermediateLayoutData.headerMargin, bottomMargin: intermediateLayoutData.bottomMargin)
             }
             return ChatCollectionViewLayoutModel.createModel(self.collectionView.bounds.width, itemsLayoutData: layoutData, sectionsLayoutData: sectionsLayoutData)
         }
 
-        let isInbackground = !NSThread.isMainThread()
+        let isInbackground = !Thread.isMainThread
         var intermediateLayoutData = [IntermediateItemLayoutData]()
         var sectionsLayoutData = [SectionLayoutData]()
         var itemsForMainThread = [(index: Int, itemDecorationAttribute: ChatItemDecorationAttributesProtocol?, presenter: ChatItemPresenterProtocol?)]()
         var sectionsForMainThread = [(index: Int, itemDecorationAttribute: ChatItemDecorationAttributesProtocol?, presenter: SectionItemPresenterProtocol?)]()
         
-        for(sectionIndex, decoratedSection) in decoratedSections.enumerate(){
+        for(sectionIndex, decoratedSection) in decoratedSections.enumerated(){
             let decoratedItems = decoratedSection.items;
-            let presenter = self.presenterForIndexSection(NSIndexPath(forRow: 0, inSection: sectionIndex))
+            let presenter = self.presenterForIndexSection(IndexPath(row: 0, section: sectionIndex))
             var sectionHeight: CGFloat = 0;
 
             if !isInbackground || presenter.canCalculateHeightInBackground ?? false {
@@ -320,8 +322,8 @@ extension BaseChatViewController: ChatDataSourceDelegateProtocol {
             } else {
                 sectionsForMainThread.append((index: sectionIndex, itemDecorationAttribute: decoratedSection.section.decorationAttributes, presenter: presenter))
             }
-            sectionsLayoutData.append((indexPath: NSIndexPath(forItem: 0, inSection: sectionIndex), height: sectionHeight))
-            for (index, decoratedItem) in decoratedItems.enumerate() {
+            sectionsLayoutData.append((indexPath: IndexPath(item: 0, section: sectionIndex), height: sectionHeight))
+            for (index, decoratedItem) in decoratedItems.enumerated() {
                 let presenter = self.presenterForIndex(index, chatItemCompanionCollection: decoratedItems)
                 var height: CGFloat?
                 let bottomMargin: CGFloat = decoratedItem.decorationAttributes?.bottomMargin ?? 0
@@ -330,14 +332,14 @@ extension BaseChatViewController: ChatDataSourceDelegateProtocol {
                 } else {
                     itemsForMainThread.append((index: index, itemDecorationAttribute: decoratedItem.decorationAttributes, presenter: presenter))
                 }
-                let indexPath = NSIndexPath(forRow: index, inSection: sectionIndex)
+                let indexPath = IndexPath(row: index, section: sectionIndex)
                 intermediateLayoutData.append((indexPath: indexPath, height: height, headerMargin: sectionHeight, bottomMargin: bottomMargin))
             }
         }
         
 
         if itemsForMainThread.count > 0 {
-            dispatch_sync(dispatch_get_main_queue(), { () -> Void in
+            DispatchQueue.main.sync(execute: { () -> Void in
                 for (index, decoratedItem, presenter) in itemsForMainThread {
                     let height = presenter?.heightForCell(maximumWidth: collectionViewWidth, decorationAttributes: decoratedItem)
                     intermediateLayoutData[index].height = height
@@ -346,7 +348,7 @@ extension BaseChatViewController: ChatDataSourceDelegateProtocol {
         }
         
         if sectionsForMainThread.count > 0 {
-            dispatch_sync(dispatch_get_main_queue(), { () -> Void in
+            DispatchQueue.main.sync(execute: { () -> Void in
                 for (index, decoratedItem, presenter) in sectionsForMainThread {
                     let height = presenter?.heightForCell(maximumWidth: collectionViewWidth, decorationAttributes: decoratedItem)
                     intermediateLayoutData[index].height = height

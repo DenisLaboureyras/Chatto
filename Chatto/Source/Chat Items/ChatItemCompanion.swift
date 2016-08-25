@@ -9,7 +9,7 @@
 import Foundation
 
 public protocol ChatItemsDecoratorProtocol {
-    func decorateItems(chatItems: [ChatItemProtocol]) -> [DecoratedChatItem]
+    func decorateItems(_ chatItems: [ChatItemProtocol]) -> [DecoratedChatItem]
 }
 
 public struct DecoratedChatItem {
@@ -23,7 +23,7 @@ public struct DecoratedChatItem {
 
 public protocol SectionItemsDecoratorProtocol {
     var chatItemsDecorator: ChatItemsDecoratorProtocol? {get set}
-    func decorateItems(sectionItems: [SectionItemProtocol]) -> [DecoratedSectionItem]
+    func decorateItems(_ sectionItems: [SectionItemProtocol]) -> [DecoratedSectionItem]
 }
 
 public struct DecoratedSectionItem {
@@ -59,15 +59,15 @@ public protocol ChatSectionProtocol : UniqueIdentificable {
     var items: ChatItemCompanionCollection {get set};
 }
 
-public class ChatSection: ChatSectionProtocol {
-    public var section: SectionItemCompanion;
-    public var items: ChatItemCompanionCollection;
+open class ChatSection: ChatSectionProtocol {
+    open var section: SectionItemCompanion;
+    open var items: ChatItemCompanionCollection;
     public init(section: SectionItemCompanion, items: ChatItemCompanionCollection) {
         self.section = section
         self.items = items
     }
     
-    public var uid: String {
+    open var uid: String {
         return self.section.sectionItem.uid
     }
     

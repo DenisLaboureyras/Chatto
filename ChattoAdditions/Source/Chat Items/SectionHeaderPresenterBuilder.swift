@@ -9,13 +9,13 @@
 import Foundation
 import Chatto
 
-public class SectionHeaderPresenterBuilder<ViewModelBuilderT, InteractionHandlerT where
+open class SectionHeaderPresenterBuilder<ViewModelBuilderT, InteractionHandlerT>
+: SectionItemPresenterBuilderProtocol where
     ViewModelBuilderT: SectionHeaderViewModelBuilderProtocol,
     ViewModelBuilderT.ModelT: SectionHeaderModelProtocol,
     ViewModelBuilderT.ViewModelT: SectionHeaderViewModelProtocol,
     InteractionHandlerT: SectionHeaderInteractionHandlerProtocol,
-    InteractionHandlerT.ViewModelT == ViewModelBuilderT.ViewModelT>
-: SectionItemPresenterBuilderProtocol {
+    InteractionHandlerT.ViewModelT == ViewModelBuilderT.ViewModelT {
     typealias ViewModelT = ViewModelBuilderT.ViewModelT
     typealias ModelT = ViewModelBuilderT.ModelT
     
@@ -28,14 +28,14 @@ public class SectionHeaderPresenterBuilder<ViewModelBuilderT, InteractionHandler
     
     let viewModelBuilder: ViewModelBuilderT
     let interactionHandler: InteractionHandlerT?
-    let layoutCache = NSCache()
+    let layoutCache = NSCache<AnyObject, AnyObject>()
     
     lazy var sizingCell: SectionHeaderCollectionViewCell = {
         var cell: SectionHeaderCollectionViewCell? = nil
-        if NSThread.isMainThread() {
+        if Thread.isMainThread {
             cell = SectionHeaderCollectionViewCell.sizingCell()
         } else {
-            dispatch_sync(dispatch_get_main_queue(), {
+            DispatchQueue.main.sync(execute: {
                 cell =  SectionHeaderCollectionViewCell.sizingCell()
             })
         }
@@ -43,14 +43,14 @@ public class SectionHeaderPresenterBuilder<ViewModelBuilderT, InteractionHandler
         return cell!
     }()
     
-    public lazy var sectionHeaderStyle: SectionHeaderCollectionViewCellStyleProtocol = SectionHeaderCollectionViewCellDefaultSyle()
+    open lazy var sectionHeaderStyle: SectionHeaderCollectionViewCellStyleProtocol = SectionHeaderCollectionViewCellDefaultSyle()
     
-    public func canHandleChatItem(chatItem: ChatItemProtocol) -> Bool {
+    open func canHandleChatItem(_ chatItem: ChatItemProtocol) -> Bool {
         return chatItem is SectionHeaderModelProtocol ? true : false
     }
     
     
-    public func createPresenterWithChatItem(chatItem: ChatItemProtocol) -> SectionItemPresenterProtocol {
+    open func createPresenterWithChatItem(_ chatItem: ChatItemProtocol) -> SectionItemPresenterProtocol {
         assert(self.canHandleChatItem(chatItem))
         return SectionHeaderPresenter<ViewModelBuilderT, InteractionHandlerT>(
             sectionHeaderModel: chatItem as! ModelT,
@@ -61,7 +61,7 @@ public class SectionHeaderPresenterBuilder<ViewModelBuilderT, InteractionHandler
         )
     }
     
-    public var presenterType: SectionItemPresenterProtocol.Type {
+    open var presenterType: SectionItemPresenterProtocol.Type {
         return SectionHeaderPresenter<ViewModelBuilderT, InteractionHandlerT>.self
     }
 }

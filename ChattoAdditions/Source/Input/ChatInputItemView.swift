@@ -25,7 +25,7 @@
 import Foundation
 
 protocol ChatInputItemViewDelegate: class {
-    func inputItemViewTapped(view: ChatInputItemView)
+    func inputItemViewTapped(_ view: ChatInputItemView)
 }
 
 class ChatInputItemView: UIView {
@@ -39,8 +39,8 @@ class ChatInputItemView: UIView {
         self.commonInit()
     }
 
-    private func commonInit() {
-        let gestureRecognizer = UITapGestureRecognizer(target: self, action: "handleTap")
+    fileprivate func commonInit() {
+        let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(ChatInputItemView.handleTap))
         gestureRecognizer.cancelsTouchesInView = false
         self.addGestureRecognizer(gestureRecognizer)
     }
@@ -72,7 +72,7 @@ extension ChatInputItemView {
         self.inputItem.tabView.frame = self.bounds
     }
 
-    override func intrinsicContentSize() -> CGSize {
-        return self.inputItem.tabView.intrinsicContentSize()
+     func intrinsicContentSizeNew() -> CGSize {
+        return self.inputItem.tabView.intrinsicContentSize
     }
 }

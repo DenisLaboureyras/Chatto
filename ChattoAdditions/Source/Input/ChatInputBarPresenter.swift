@@ -24,7 +24,7 @@
 
 import UIKit
 
-@objc public class ChatInputBarPresenter: NSObject {
+@objc open class ChatInputBarPresenter: NSObject {
     let chatInputView: ChatInputBar;
     let chatInputItems: [ChatInputItemProtocol]
 
@@ -39,7 +39,7 @@ import UIKit
         self.chatInputView.inputItems = self.chatInputItems
     }
 
-    private(set) var focusedItem: ChatInputItemProtocol? {
+    fileprivate(set) var focusedItem: ChatInputItemProtocol? {
         willSet {
             self.focusedItem?.selected = false
         }
@@ -48,20 +48,20 @@ import UIKit
         }
     }
 
-    private func updateFirstResponderWithInputItem(inputItem: ChatInputItemProtocol) {
+    fileprivate func updateFirstResponderWithInputItem(_ inputItem: ChatInputItemProtocol) {
         let responder = self.chatInputView.textView
-        responder.inputView = inputItem.inputView
-        if responder.isFirstResponder() {
-            responder.reloadInputViews()
+        responder?.inputView = inputItem.inputView
+        if (responder?.isFirstResponder)! {
+            responder?.reloadInputViews()
         } else {
-            responder.becomeFirstResponder()
+            responder?.becomeFirstResponder()
         }
     }
 
-    private func firstKeyboardInputItem() -> ChatInputItemProtocol? {
+    fileprivate func firstKeyboardInputItem() -> ChatInputItemProtocol? {
         var firstKeyboardInputItem: ChatInputItemProtocol? = nil
         for inputItem in self.chatInputItems {
-            if inputItem.presentationMode == .Keyboard {
+            if inputItem.presentationMode == .keyboard {
                 firstKeyboardInputItem = inputItem
                 break
             }
@@ -71,34 +71,34 @@ import UIKit
 }
 
 extension ChatInputBarPresenter: ChatInputBarDelegate {
-    public func inputBarDidEndEditing(inputBar: ChatInputBar) {
+    public func inputBarDidEndEditing(_ inputBar: ChatInputBar) {
         self.focusedItem = nil
         self.chatInputView.textView.inputView = nil
         self.chatInputView.showsTextView = true
         self.chatInputView.showsSendButton = true
     }
 
-    public func inputBarDidBeginEditing(inputBar: ChatInputBar) {
+    public func inputBarDidBeginEditing(_ inputBar: ChatInputBar) {
         if self.focusedItem == nil {
             self.focusedItem = self.firstKeyboardInputItem()
         }
     }
 
-    func inputBarSendButtonPressed(inputBar: ChatInputBar) {
+    func inputBarSendButtonPressed(_ inputBar: ChatInputBar) {
         if let focusedItem = self.focusedItem {
-            focusedItem.handleInput(inputBar.inputText)
+            focusedItem.handleInput(inputBar.inputText as AnyObject)
         } else if let keyboardItem = self.firstKeyboardInputItem() {
-            keyboardItem.handleInput(inputBar.inputText)
+            keyboardItem.handleInput(inputBar.inputText as AnyObject)
         }
     }
 
-    func inputBar(inputBar: ChatInputBar, didReceiveFocusOnItem item: ChatInputItemProtocol) {
-        guard item.presentationMode != .None else { return }
+    func inputBar(_ inputBar: ChatInputBar, didReceiveFocusOnItem item: ChatInputItemProtocol) {
+        guard item.presentationMode != .none else { return }
         guard item !== self.focusedItem else { return }
 
         self.focusedItem = item
         self.chatInputView.showsSendButton = item.showsSendButton
-        self.chatInputView.showsTextView = item.presentationMode == .Keyboard
+        self.chatInputView.showsTextView = item.presentationMode == .keyboard
         self.updateFirstResponderWithInputItem(item)
     }
 }

@@ -29,18 +29,18 @@ extension DecoratedSectionHeaderViewModelProtocol {
     }
 }
 
-public class SectionHeaderViewModel: SectionHeaderViewModelProtocol {
+open class SectionHeaderViewModel: SectionHeaderViewModelProtocol {
    
-    public lazy var date: String = {
-        return self.dateFormatter.stringFromDate(self.sectionHeaderModel.date)
+    open lazy var date: String = {
+        return self.dateFormatter.string(from: self.sectionHeaderModel.date as Date)
     }()
     
-    public let dateFormatter: NSDateFormatter
-    public private(set) var sectionHeaderModel: SectionHeaderModelProtocol
+    open let dateFormatter: DateFormatter
+    open fileprivate(set) var sectionHeaderModel: SectionHeaderModelProtocol
     
-    public let text: String
+    open let text: String
     
-    public init(dateFormatter: NSDateFormatter, sectionHeaderModel: SectionHeaderModelProtocol) {
+    public init(dateFormatter: DateFormatter, sectionHeaderModel: SectionHeaderModelProtocol) {
         self.text = sectionHeaderModel.text;
         self.dateFormatter = dateFormatter
         self.sectionHeaderModel = sectionHeaderModel;
@@ -50,7 +50,7 @@ public class SectionHeaderViewModel: SectionHeaderViewModelProtocol {
 
 
 
-public class SectionHeaderViewModelDefaultBuilder: SectionHeaderViewModelBuilderProtocol {
+open class SectionHeaderViewModelDefaultBuilder: SectionHeaderViewModelBuilderProtocol {
     public typealias ModelT = SectionHeaderModel
     public typealias ViewModelT = SectionHeaderViewModel
     
@@ -58,14 +58,14 @@ public class SectionHeaderViewModelDefaultBuilder: SectionHeaderViewModelBuilder
         
     }
     
-    static let dateFormatter: NSDateFormatter = {
-        let formatter = NSDateFormatter()
+    static let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
         formatter.dateFormat = "DD-MM-YYYY"
         return formatter
     }()
     
-    public func createSectionHeaderViewModel(sectionHeader: SectionHeaderModel) -> SectionHeaderViewModel
+    open func createSectionHeaderViewModel(_ sectionHeader: SectionHeaderModel) -> SectionHeaderViewModel
     {
-        return SectionHeaderViewModel(dateFormatter: self.dynamicType.dateFormatter, sectionHeaderModel: sectionHeader)
+        return SectionHeaderViewModel(dateFormatter: type(of: self).dateFormatter, sectionHeaderModel: sectionHeader)
     }
 }
