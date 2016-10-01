@@ -27,7 +27,7 @@ import Foundation
 typealias TaskClosure = (_ completion: @escaping () -> Void) -> Void
 
 protocol SerialTaskQueueProtocol {
-    func addTask(_ task: TaskClosure)
+    func addTask(_ task: @escaping TaskClosure)
     func start()
     func stop()
     var isEmpty: Bool { get }
@@ -38,7 +38,7 @@ final class SerialTaskQueue: SerialTaskQueueProtocol {
     fileprivate var isStopped = true
     fileprivate var tasksQueue = [TaskClosure]()
 
-    func addTask(_ task: TaskClosure) {
+    func addTask(_ task: @escaping TaskClosure) {
         self.tasksQueue.append(task)
         self.maybeExecuteNextTask()
     }

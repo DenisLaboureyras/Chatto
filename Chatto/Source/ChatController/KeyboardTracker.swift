@@ -55,7 +55,7 @@ class KeyboardTracker {
     typealias LayoutBlock = (_ bottomMargin: CGFloat) -> Void
     fileprivate var layoutBlock: LayoutBlock
     
-    init(viewController: UIViewController, inputContainer: UIView, layoutBlock: LayoutBlock, notificationCenter: NotificationCenter) {
+    init(viewController: UIViewController, inputContainer: UIView, layoutBlock: @escaping LayoutBlock, notificationCenter: NotificationCenter) {
         self.view = viewController.view
         self.layoutBlock = layoutBlock
         self.inputContainer = inputContainer
