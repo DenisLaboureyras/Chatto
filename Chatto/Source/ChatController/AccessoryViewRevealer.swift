@@ -27,6 +27,7 @@ import Foundation
 public protocol AccessoryViewRevealable {
     func revealAccessoryView(withOffset offset: CGFloat, animated: Bool)
     func preferredOffsetToRevealAccessoryView() -> CGFloat? // This allows to sync size in case cells have different sizes for the accessory view. Nil -> no restriction
+    var allowAccessoryViewRevealing: Bool { get }
 }
 
 public struct AccessoryViewRevealerConfig {
@@ -49,8 +50,8 @@ public struct AccessoryViewRevealerConfig {
 
 class AccessoryViewRevealer: NSObject, UIGestureRecognizerDelegate {
     
-    fileprivate let panRecognizer: UIPanGestureRecognizer = UIPanGestureRecognizer()
-    fileprivate let collectionView: UICollectionView
+    private let panRecognizer: UIPanGestureRecognizer = UIPanGestureRecognizer()
+    private let collectionView: UICollectionView
     
     init(collectionView: UICollectionView) {
         self.collectionView = collectionView
@@ -74,7 +75,7 @@ class AccessoryViewRevealer: NSObject, UIGestureRecognizerDelegate {
     var config = AccessoryViewRevealerConfig.defaultConfig()
     
     @objc
-    fileprivate func handlePan(_ panRecognizer: UIPanGestureRecognizer) {
+    private func handlePan(_ panRecognizer: UIPanGestureRecognizer) {
         switch panRecognizer.state {
         case .began:
             break
@@ -103,15 +104,15 @@ class AccessoryViewRevealer: NSObject, UIGestureRecognizerDelegate {
         return angleRads <= self.config.angleThresholdInRads
     }
     
-    fileprivate func revealAccessoryView(atOffset offset: CGFloat) {
+    private func revealAccessoryView(atOffset offset: CGFloat) {
         // Find max offset (cells can have slighlty different timestamp size ( 3.00 am vs 11.37 pm )
-        let cells: [AccessoryViewRevealable] = self.collectionView.visibleCells.filter({$0 is AccessoryViewRevealable}).map({$0 as! AccessoryViewRevealable})
+        let cells: [AccessoryViewRevealable] = self.collectionView.visibleCells.flatMap({$0 as? AccessoryViewRevealable})
         let offset = min(offset, cells.reduce(0) { (current, cell) -> CGFloat in
             return max(current, cell.preferredOffsetToRevealAccessoryView() ?? 0)
-            })
+        })
         
         for cell in self.collectionView.visibleCells {
-            if let cell = cell as? AccessoryViewRevealable {
+            if let cell = cell as? AccessoryViewRevealable, cell.allowAccessoryViewRevealing {
                 cell.revealAccessoryView(withOffset: offset, animated: offset == 0)
             }
         }

@@ -40,6 +40,13 @@ open class BaseChatViewController: UIViewController, UICollectionViewDataSource,
     }
 
     open var constants = Constants()
+    
+    public struct UpdatesConfig {
+        public var fastUpdates = false // Allows another performBatchUpdates to be called before completion of a previous one (not recommended). Changing this value after viewDidLoad is not supported
+        public var coalesceUpdates = false // If receiving data source updates too fast, while an update it's being processed, only the last one will be executed
+    }
+    
+    public var updatesConfig =  UpdatesConfig()
 
     open fileprivate(set) var collectionView: UICollectionView!
     public final internal(set) var chatSectionCompanionCollection: ChatSectionCompanionCollection = ReadOnlyOrderedSectionedDictionary(items: [])

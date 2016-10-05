@@ -9,14 +9,7 @@
 import Foundation
 
 public struct ReadOnlyOrderedDictionary<T where T: UniqueIdentificable>: Collection {
-    /// Returns the position immediately after the given index.
-    ///
-    /// - Parameter i: A valid index of the collection. `i` must be less than
-    ///   `endIndex`.
-    /// - Returns: The index value immediately after `i`.
-    public func index(after i: Int) -> Int {
-        return self.items.index(after: i)
-    }
+   
 
     
     fileprivate let items: [T]
@@ -48,6 +41,18 @@ public struct ReadOnlyOrderedDictionary<T where T: UniqueIdentificable>: Collect
     
     public func makeIterator() -> IndexingIterator<[T]> {
         return self.items.makeIterator()
+    }
+    
+    public func index(_ i: Int, offsetBy n: Int) -> Int {
+        return self.items.index(i, offsetBy: n)
+    }
+    
+    public func index(_ i: Int, offsetBy n: Int, limitedBy limit: Int) -> Int? {
+        return self.items.index(i, offsetBy: n, limitedBy: limit)
+    }
+    
+    public func index(after i: Int) -> Int {
+        return self.items.index(after: i)
     }
     
     public var startIndex: Int {
@@ -60,15 +65,7 @@ public struct ReadOnlyOrderedDictionary<T where T: UniqueIdentificable>: Collect
 }
 
 public struct ReadOnlyOrderedSectionedDictionary<T where T: ChatSectionProtocol>: Collection {
-    /// Returns the position immediately after the given index.
-    ///
-    /// - Parameter i: A valid index of the collection. `i` must be less than
-    ///   `endIndex`.
-    /// - Returns: The index value immediately after `i`.
-    public func index(after i: Int) -> Int {
-        return self.items.index(after: i)
-    }
-
+    
     
     fileprivate let items: [T]
     fileprivate let itemIndexesById: [String: Int] // Maping to the position in the array instead the item itself for better performance
@@ -100,6 +97,19 @@ public struct ReadOnlyOrderedSectionedDictionary<T where T: ChatSectionProtocol>
     public func makeIterator() -> IndexingIterator<[T]> {
         return self.items.makeIterator()
     }
+    
+    public func index(_ i: Int, offsetBy n: Int) -> Int {
+        return self.items.index(i, offsetBy: n)
+    }
+    
+    public func index(_ i: Int, offsetBy n: Int, limitedBy limit: Int) -> Int? {
+        return self.items.index(i, offsetBy: n, limitedBy: limit)
+    }
+    
+    public func index(after i: Int) -> Int {
+        return self.items.index(after: i)
+    }
+    
     public var startIndex: Int {
         return 0
     }

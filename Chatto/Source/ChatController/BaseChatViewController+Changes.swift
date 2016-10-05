@@ -38,6 +38,11 @@ extension BaseChatViewController: ChatDataSourceDelegateProtocol {
 
     public func enqueueModelUpdate(updateType context: UpdateType) {
         let newItems = self.chatDataSource?.sectionItems ?? []
+        
+        if self.updatesConfig.coalesceUpdates {
+            self.updateQueue.flushQueue()
+        }
+        
         self.updateQueue.addTask({ [weak self] (completion) -> () in
             guard let sSelf = self else { return }
 
@@ -100,6 +105,8 @@ extension BaseChatViewController: ChatDataSourceDelegateProtocol {
     func updateVisibleCells(_ changes: CollectionChanges) {
         // Datasource should be already updated!
         
+//        assert(self.visibleCellsAreValid(changes: changes), "Invalid visible cells. Don't call me")
+        
         func updateCellIfVisible(atIndexPath cellIndexPath: IndexPath, newDataIndexPath: IndexPath) {
             if let cell = self.collectionView.cellForItem(at: cellIndexPath) {
                 let presenter = self.presenterForIndexPath(newDataIndexPath)
@@ -124,6 +131,18 @@ extension BaseChatViewController: ChatDataSourceDelegateProtocol {
             updateCellIfVisible(atIndexPath: indexPath, newDataIndexPath: indexPath)
         }
     }
+    
+//    private func visibleCellsAreValid(changes: CollectionChanges) -> Bool {
+//        // Afer performBatchUpdates, indexPathForCell may return a cell refering to the state before the update
+//        // if self.updatesConfig.fastUpdates is enabled, very fast updates could result in `updateVisibleCells` updating wrong cells.
+//        // See more: https://github.com/diegosanchezr/UICollectionViewStressing
+//        
+//        if self.updatesConfig.fastUpdates {
+//            return updated(collection: self.visibleCells, withChanges: changes) == updated(collection: self.visibleCellsFromCollectionViewApi(), withChanges: changes)
+//        } else {
+//            return true // never seen inconsistency without fastUpdates
+//        }
+//    }
 
     func performBatchUpdates(
         updateModelClosure: @escaping () -> Void,

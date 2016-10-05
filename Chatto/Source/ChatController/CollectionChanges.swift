@@ -203,7 +203,7 @@ func generateChanges(oldCollection: [ChatSectionProtocol], newCollection: [ChatS
     var insertedIndexPaths = Set<IndexPath>()
     var movedIndexPaths = [CollectionChangeMove]()
 
-    // Deletetions
+    // Deletions
     for oldId in oldIds {
         let isDeleted = newIndexsPathById[oldId] == nil
         if isDeleted {
@@ -231,4 +231,28 @@ func generateChanges(oldCollection: [ChatSectionProtocol], newCollection: [ChatS
         insertedIndexPaths: insertedIndexPaths,
         deletedIndexPaths: deletedIndexPaths,
         movedIndexPaths: movedIndexPaths)
+}
+
+//FIXME Change also sections
+func updated<T: Any>(collection: [IndexPath: T], withChanges changes: CollectionChanges) -> [IndexPath: T] {
+    var result = collection
+    
+    changes.deletedIndexPaths.forEach { (indexPath) in
+        result[indexPath] = nil
+    }
+    
+    var movedDestinations = Set<IndexPath>()
+    changes.movedIndexPaths.forEach { (move) in
+        result[move.indexPathNew] = collection[move.indexPathOld]
+        movedDestinations.insert(move.indexPathNew)
+        if !movedDestinations.contains(move.indexPathOld) {
+            result[move.indexPathOld] = nil
+        }
+    }
+    
+    changes.insertedIndexPaths.forEach { (indexPath) in
+        result[indexPath] = nil
+    }
+    
+    return result
 }

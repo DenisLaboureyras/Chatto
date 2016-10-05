@@ -53,6 +53,9 @@ public struct BaseMessageCollectionViewCellLayoutConstants {
 */
 
 open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, BackgroundSizingQueryable, AccessoryViewRevealable, UIGestureRecognizerDelegate where BubbleViewType:UIView, BubbleViewType:MaximumLayoutWidthSpecificable, BubbleViewType: BackgroundSizingQueryable {
+    
+    public var allowAccessoryViewRevealing: Bool = true
+
 
     open var animationDuration: CFTimeInterval = 0.33
     open var viewContext: ViewContext = .normal
