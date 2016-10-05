@@ -96,7 +96,7 @@ open class MessageViewModel: MessageViewModelProtocol {
 
     open var showsTail: Bool
     open lazy var date: String = {
-        return self.dateFormatter.string(from: self.messageModel.date as Date)
+        return self.dateFormatter.string(from: self.messageModel.date)
     }()
 
     open let dateFormatter: DateFormatter

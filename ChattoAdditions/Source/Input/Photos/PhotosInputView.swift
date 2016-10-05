@@ -154,7 +154,7 @@ extension PhotosInputView: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         var cell: UICollectionViewCell
-        if (indexPath as NSIndexPath).item == Constants.liveCameraItemIndex {
+        if indexPath.item == Constants.liveCameraItemIndex {
             let liveCameraCell = collectionView.dequeueReusableCell(withReuseIdentifier: "bar", for: indexPath) as! LiveCameraCell
             liveCameraCell.updateWithAuthorizationStatus(AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo))
             cell = liveCameraCell
@@ -167,21 +167,21 @@ extension PhotosInputView: UICollectionViewDataSource {
 
 extension PhotosInputView: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if (indexPath as NSIndexPath).item == Constants.liveCameraItemIndex {
+        if indexPath.item == Constants.liveCameraItemIndex {
             self.cameraPicker.requestImage { image in
                 if let image = image {
                     self.delegate?.inputView(self, didSelectImage: image)
                 }
             }
         } else {
-            self.dataProvider.requestFullImageAtIndex((indexPath as NSIndexPath).item - 1) { image in
+            self.dataProvider.requestFullImageAtIndex(indexPath.item - 1) { image in
                 self.delegate?.inputView(self, didSelectImage: image)
             }
         }
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return self.itemSizeCalculator.itemSizeForWidth(collectionView.bounds.width, atIndex: (indexPath as NSIndexPath).item)
+        return self.itemSizeCalculator.itemSizeForWidth(collectionView.bounds.width, atIndex: indexPath.item)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
@@ -193,13 +193,13 @@ extension PhotosInputView: UICollectionViewDelegateFlowLayout {
     }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if (indexPath as NSIndexPath).item == Constants.liveCameraItemIndex {
+        if indexPath.item == Constants.liveCameraItemIndex {
             (cell as! LiveCameraCell).startCapturing()
         }
     }
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if (indexPath as NSIndexPath).item == Constants.liveCameraItemIndex {
+        if indexPath.item == Constants.liveCameraItemIndex {
             (cell as! LiveCameraCell).stopCapturing()
         }
     }

@@ -46,13 +46,13 @@ public struct ChatCollectionViewLayoutModel {
         for layoutData in itemsLayoutData {
             let (indexPath, height, headerMargin, bottomMargin) = layoutData
             let itemSize = CGSize(width: collectionViewWidth, height: height)
-            if((indexPath as NSIndexPath).row == 0){verticalOffset += headerMargin}
+            if(indexPath.row == 0){verticalOffset += headerMargin}
             let frame = CGRect(origin: CGPoint(x: 0, y: verticalOffset), size: itemSize)
             let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
             attributes.frame = frame
             layoutAttributes.append(attributes)
-            if((indexPath as NSIndexPath).section < layoutAttributesBySectionAndItem.count){
-                layoutAttributesBySectionAndItem[(indexPath as NSIndexPath).section].append(attributes)
+            if(indexPath.section < layoutAttributesBySectionAndItem.count){
+                layoutAttributesBySectionAndItem[indexPath.section].append(attributes)
             }else{
                 layoutAttributesBySectionAndItem.append([attributes])
             }
@@ -160,7 +160,7 @@ open class ChatCollectionViewLayout: UICollectionViewLayout {
             let contentOffset: CGPoint = cv?.contentOffset ?? CGPoint.zero;
             
             
-            let layoutAttributes = self.layoutModel.layoutAttributesSections[(indexPath as NSIndexPath).section]
+            let layoutAttributes = self.layoutModel.layoutAttributesSections[indexPath.section]
             
             let section = layoutAttributes.indexPath.section;
             let numberOfItemsInSection = cv?.numberOfItems(inSection: section) ?? 0;
@@ -211,8 +211,8 @@ open class ChatCollectionViewLayout: UICollectionViewLayout {
     
 
     open override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        if (indexPath as NSIndexPath).section < self.layoutModel.layoutAttributesBySectionAndItem.count && (indexPath as NSIndexPath).item < self.layoutModel.layoutAttributesBySectionAndItem[(indexPath as NSIndexPath).section].count {
-            return self.layoutModel.layoutAttributesBySectionAndItem[(indexPath as NSIndexPath).section][(indexPath as NSIndexPath).item]
+        if indexPath.section < self.layoutModel.layoutAttributesBySectionAndItem.count && indexPath.item < self.layoutModel.layoutAttributesBySectionAndItem[indexPath.section].count {
+            return self.layoutModel.layoutAttributesBySectionAndItem[indexPath.section][indexPath.item]
         }
         assert(false, "Unexpected indexPath requested:\(indexPath)")
         return nil

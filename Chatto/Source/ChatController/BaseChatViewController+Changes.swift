@@ -109,13 +109,13 @@ extension BaseChatViewController: ChatDataSourceDelegateProtocol {
         }
 
         let visibleIndexPaths = Set(self.collectionView.indexPathsForVisibleItems.filter { (indexPath) -> Bool in
-            return !changes.insertedIndexPaths.contains((indexPath as NSIndexPath) as IndexPath) && !changes.deletedIndexPaths.contains((indexPath as NSIndexPath) as IndexPath)
+            return !changes.insertedIndexPaths.contains(indexPath) && !changes.deletedIndexPaths.contains(indexPath)
             })
 
         var updatedIndexPaths = Set<IndexPath>()
         for move in changes.movedIndexPaths {
-            updatedIndexPaths.insert(move.indexPathOld as IndexPath)
-            updateCellIfVisible(atIndexPath: move.indexPathOld as IndexPath, newDataIndexPath: move.indexPathNew as IndexPath)
+            updatedIndexPaths.insert(move.indexPathOld)
+            updateCellIfVisible(atIndexPath: move.indexPathOld, newDataIndexPath: move.indexPathNew)
         }
 
         // Update remaining visible cells

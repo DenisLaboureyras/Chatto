@@ -74,7 +74,7 @@ class SendingStatusPresenter: ChatItemPresenterProtocol {
     }
 
     func dequeueCell(collectionView: UICollectionView, indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SendingStatusCollectionViewCell", for: indexPath as IndexPath)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SendingStatusCollectionViewCell", for: indexPath)
         return cell
     }
 

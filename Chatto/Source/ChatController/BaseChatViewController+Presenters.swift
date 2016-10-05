@@ -40,7 +40,7 @@ extension BaseChatViewController: ChatCollectionViewLayoutDelegate {
         if ( kind == UICollectionElementKindSectionHeader )
         {
             let presenter = self.presenterForIndexSection(indexPath)
-            let cell = presenter.dequeueCell(collectionView: collectionView, indexPath: indexPath as IndexPath)
+            let cell = presenter.dequeueCell(collectionView: collectionView, indexPath: indexPath)
             let decorationAttributes = self.decorationAttributesForIndexSection(indexPath)
             presenter.configureCell(cell, decorationAttributes: decorationAttributes)
             return cell
@@ -52,7 +52,7 @@ extension BaseChatViewController: ChatCollectionViewLayoutDelegate {
 
     @objc(collectionView:cellForItemAtIndexPath:) public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let presenter = self.presenterForIndexPath(indexPath)
-        let cell = presenter.dequeueCell(collectionView: collectionView, indexPath: indexPath as IndexPath)
+        let cell = presenter.dequeueCell(collectionView: collectionView, indexPath: indexPath)
         let decorationAttributes = self.decorationAttributesForIndexPath(indexPath)
         presenter.configureCell(cell, decorationAttributes: decorationAttributes)
         return cell
@@ -97,16 +97,16 @@ extension BaseChatViewController: ChatCollectionViewLayoutDelegate {
     }
 
     public func presenterForIndexPath(_ indexPath: IndexPath) -> ChatItemPresenterProtocol {
-        let decoratedChatItems = self.chatSectionCompanionCollection[(indexPath as NSIndexPath).section].items
-        return self.presenterForIndex((indexPath as NSIndexPath).item, chatItemCompanionCollection: decoratedChatItems)
+        let decoratedChatItems = self.chatSectionCompanionCollection[indexPath.section].items
+        return self.presenterForIndex(indexPath.item, chatItemCompanionCollection: decoratedChatItems)
     }
     
     public func presenterForIndexSection(_ indexPath: IndexPath) -> SectionItemPresenterProtocol {
-        guard (indexPath as NSIndexPath).section < chatSectionCompanionCollection.count else {
+        guard indexPath.section < chatSectionCompanionCollection.count else {
             // This can happen from didEndDisplayingCell if we reloaded with less messages
             return DummySectionItemPresenter()
         }
-        return self.chatSectionCompanionCollection[(indexPath as NSIndexPath).section].section.presenter
+        return self.chatSectionCompanionCollection[indexPath.section].section.presenter
         
     }
 
@@ -128,10 +128,10 @@ extension BaseChatViewController: ChatCollectionViewLayoutDelegate {
     }
 
     public func decorationAttributesForIndexPath(_ indexPath: IndexPath) -> ChatItemDecorationAttributesProtocol? {
-        return self.chatSectionCompanionCollection[(indexPath as NSIndexPath).section].items[(indexPath as NSIndexPath).row].decorationAttributes
+        return self.chatSectionCompanionCollection[indexPath.section].items[indexPath.row].decorationAttributes
     }
     
     public func decorationAttributesForIndexSection(_ indexPath: IndexPath) -> ChatItemDecorationAttributesProtocol? {
-        return self.chatSectionCompanionCollection[(indexPath as NSIndexPath).section].section.decorationAttributes
+        return self.chatSectionCompanionCollection[indexPath.section].section.decorationAttributes
     }
 }

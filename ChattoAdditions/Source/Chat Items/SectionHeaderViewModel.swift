@@ -32,7 +32,7 @@ extension DecoratedSectionHeaderViewModelProtocol {
 open class SectionHeaderViewModel: SectionHeaderViewModelProtocol {
    
     open lazy var date: String = {
-        return self.dateFormatter.string(from: self.sectionHeaderModel.date as Date)
+        return self.dateFormatter.string(from: self.sectionHeaderModel.date)
     }()
     
     open let dateFormatter: DateFormatter

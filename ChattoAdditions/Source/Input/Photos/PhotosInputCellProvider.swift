@@ -64,7 +64,7 @@ class PhotosInputCellProvider: PhotosInputCellProviderProtocol {
             self.dataProvider.cancelPreviewImageRequest(requestID.int32Value)
         }
 
-        let index = (indexPath as NSIndexPath).item - 1
+        let index = indexPath.item - 1
         let targetSize = cell.bounds.size
         let requestID = self.dataProvider.requestPreviewImageAtIndex(index, targetSize: targetSize) { image in
             self.previewRequests.removeObject(forKey: cell)

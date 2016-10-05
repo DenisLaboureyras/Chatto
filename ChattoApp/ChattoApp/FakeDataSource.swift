@@ -72,14 +72,14 @@ class FakeDataSource: ChatDataSourceProtocol {
 
     func loadNext() {
         self.slidingWindow.loadNext()
-        self.slidingWindow.adjustWindow(focusPosition: 1, maxWindowSize: self.preferredMaxWindowSize)
+        _ = self.slidingWindow.adjustWindow(focusPosition: 1, maxWindowSize: self.preferredMaxWindowSize)
         self.delegate?.chatDataSourceDidUpdate(self, updateType: .pagination)
         
     }
 
     func loadPrevious() {
         self.slidingWindow.loadPrevious()
-        self.slidingWindow.adjustWindow(focusPosition: 0, maxWindowSize: self.preferredMaxWindowSize)
+        _ = self.slidingWindow.adjustWindow(focusPosition: 0, maxWindowSize: self.preferredMaxWindowSize)
         self.delegate?.chatDataSourceDidUpdate(self, updateType: .pagination)
     }
 
