@@ -25,7 +25,7 @@
 import UIKit
 
 public protocol ChatCollectionViewLayoutDelegate: class {
-    var collectionView: UICollectionView! {get}
+    weak var collectionView: UICollectionView! {get}
     func chatCollectionViewLayoutModel() -> ChatCollectionViewLayoutModel
 }
 
@@ -102,7 +102,7 @@ open class ChatCollectionViewLayout: UICollectionViewLayout {
         var oldLayoutModel = self.layoutModel
         self.layoutModel = delegate.chatCollectionViewLayoutModel()
         self.layoutNeedsUpdate = false
-        DispatchQueue.global(priority: DispatchQueue.GlobalQueuePriority.default).async { () -> Void in
+        DispatchQueue.global(qos: .default).async { () -> Void in
             // Dealloc of layout with 5000 items take 25 ms on tests on iPhone 4s
             // This moves dealloc out of main thread
             if oldLayoutModel != nil {
@@ -125,10 +125,10 @@ open class ChatCollectionViewLayout: UICollectionViewLayout {
     fileprivate func layoutAttributesForElementsInRectCustom(_ rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         var answer = self.layoutModel.layoutAttributes.filter { $0.frame.intersects(rect) }
         
-        let missingSections = NSMutableIndexSet();
+        var missingSections = IndexSet();
         for layoutAttributes in answer {
             if (layoutAttributes.representedElementCategory == .cell) {
-                missingSections.add(layoutAttributes.indexPath.section);
+                missingSections.insert(layoutAttributes.indexPath.section);
             }
         }
         for layoutAttributes in answer {
@@ -138,13 +138,13 @@ open class ChatCollectionViewLayout: UICollectionViewLayout {
         }
         
         
-        missingSections.enumerate ({ (idx, stop) in
+        for (idx, stop) in missingSections.enumerated() {
             let indexPath = IndexPath(item: 0, section: idx)
             if let layoutAttributes = self.layoutAttributesForSupplementaryView(ofKind: UICollectionElementKindSectionHeader, at: indexPath) {
                 answer.append(layoutAttributes)
             }
             
-        })
+        }
         
         
         
@@ -156,14 +156,14 @@ open class ChatCollectionViewLayout: UICollectionViewLayout {
        
         if(elementKind == UICollectionElementKindSectionHeader){
             
-            let cv = self.delegate?.collectionView;
-            let contentOffset: CGPoint = cv?.contentOffset ?? CGPoint.zero;
+            guard let cv = self.delegate?.collectionView else {return nil;};
+            let contentOffset: CGPoint = cv.contentOffset ?? CGPoint.zero;
             
-            
+            guard indexPath.section < self.layoutModel.layoutAttributesSections.count else {return nil;}
             let layoutAttributes = self.layoutModel.layoutAttributesSections[indexPath.section]
             
             let section = layoutAttributes.indexPath.section;
-            let numberOfItemsInSection = cv?.numberOfItems(inSection: section) ?? 0;
+            let numberOfItemsInSection = cv.numberOfItems(inSection: section) ?? 0;
             
             let firstObjectIndexPath = IndexPath(item:0, section:section);
             let lastObjectIndexPath = IndexPath(item:max(0, (numberOfItemsInSection - 1)), section:section);
@@ -185,7 +185,7 @@ open class ChatCollectionViewLayout: UICollectionViewLayout {
             var origin = layoutAttributes.frame.origin;
             origin.y = min(
                 max(
-                    contentOffset.y + (cv?.contentInset.top ?? 0),
+                    contentOffset.y + (cv.contentInset.top ?? 0),
                     (firstObjectAttrs.frame.minY - headerHeight)
                 ),
                 (lastObjectAttrs.frame.maxY - headerHeight)
