@@ -62,7 +62,7 @@ class PhotosInputDataProvider: PhotosInputDataProviderProtocol {
 
     func requestPreviewImageAtIndex(_ index: Int, targetSize: CGSize, completion: @escaping (UIImage) -> Void) -> Int32 {
         assert(index >= 0 && index < self.fetchResult.count, "Index out of bounds")
-        let asset = self.fetchResult[index] as! PHAsset
+        let asset = self.fetchResult[index] 
         let options = PHImageRequestOptions()
         options.deliveryMode = .highQualityFormat
         return self.imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFill, options: options) { (image, info) in
@@ -78,7 +78,7 @@ class PhotosInputDataProvider: PhotosInputDataProviderProtocol {
 
     func requestFullImageAtIndex(_ index: Int, completion: @escaping (UIImage) -> Void) {
         assert(index >= 0 && index < self.fetchResult.count, "Index out of bounds")
-        let asset = self.fetchResult[index] as! PHAsset
+        let asset = self.fetchResult[index] 
         self.imageManager.requestImageData(for: asset, options: .none) { (data, dataUTI, orientation, info) -> Void in
             if let data = data, let image = UIImage(data: data) {
                 completion(image)

@@ -111,9 +111,15 @@ open class SectionHeaderCollectionViewCell: UICollectionViewCell {
     }
     
     open fileprivate(set) lazy var tapGestureRecognizer: UITapGestureRecognizer = {
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: "bubbleTapped:")
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(SectionHeaderCollectionViewCell.bubbleTapped(_:)))
         return tapGestureRecognizer
     }()
+    
+    open var onBubbleTapped: ((_ cell: SectionHeaderCollectionViewCell) -> Void)?
+    @objc
+    func bubbleTapped(_ tapGestureRecognizer: UITapGestureRecognizer) {
+        self.onBubbleTapped?(self)
+    }
     
     
     fileprivate func commonInit() {

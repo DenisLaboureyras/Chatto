@@ -202,7 +202,7 @@ extension BaseChatViewController: ChatDataSourceDelegateProtocol {
     }
 
     private func updateModels(newItems: [SectionItemProtocol], oldItems: ChatSectionCompanionCollection, updateType: UpdateType, completion: @escaping () -> Void) {
-        var updateType = updateType
+        let updateType = updateType
         let collectionViewWidth = self.collectionView.bounds.width
         let updateTypeSecond = self.isFirstLayout ? .firstLoad : updateType
         let performInBackground = updateTypeSecond != .firstLoad
@@ -228,7 +228,7 @@ extension BaseChatViewController: ChatDataSourceDelegateProtocol {
         }
 
         if performInBackground {
-            DispatchQueue.global(priority: DispatchQueue.GlobalQueuePriority.default).async { () -> Void in
+            DispatchQueue.global(qos: .userInitiated).async { () -> Void in
                 let modelUpdate = createModelUpdate()
                 DispatchQueue.main.async(execute: { () -> Void in
                     perfomBatchUpdates(modelUpdate.changes, modelUpdate.updateModelClosure)
@@ -336,7 +336,7 @@ extension BaseChatViewController: ChatDataSourceDelegateProtocol {
             let presenter = self.presenterForIndexSection(IndexPath(row: 0, section: sectionIndex))
             var sectionHeight: CGFloat = 0;
 
-            if !isInbackground || presenter.canCalculateHeightInBackground ?? false {
+            if !isInbackground || presenter.canCalculateHeightInBackground {
                 sectionHeight = presenter.heightForCell(maximumWidth: collectionViewWidth, decorationAttributes: decoratedSection.section.decorationAttributes)
             } else {
                 sectionsForMainThread.append((index: sectionIndex, itemDecorationAttribute: decoratedSection.section.decorationAttributes, presenter: presenter))
@@ -346,7 +346,7 @@ extension BaseChatViewController: ChatDataSourceDelegateProtocol {
                 let presenter = self.presenterForIndex(index, chatItemCompanionCollection: decoratedItems)
                 var height: CGFloat?
                 let bottomMargin: CGFloat = decoratedItem.decorationAttributes?.bottomMargin ?? 0
-                if !isInbackground || presenter.canCalculateHeightInBackground ?? false {
+                if !isInbackground || presenter.canCalculateHeightInBackground {
                     height = presenter.heightForCell(maximumWidth: collectionViewWidth, decorationAttributes: decoratedItem.decorationAttributes)
                 } else {
                     itemsForMainThread.append((index: index, itemDecorationAttribute: decoratedItem.decorationAttributes, presenter: presenter))

@@ -17,7 +17,7 @@ open class SectionHeaderCollectionViewCellDefaultSyle: SectionHeaderCollectionVi
     }()
     
     open func attributedStringForDate(_ date: String) -> NSAttributedString {
-        let attributes = [NSFontAttributeName : self.dateFont]
+        let attributes = [NSAttributedStringKey.font : self.dateFont]
         return NSAttributedString(string: date, attributes: attributes)
     }
     

@@ -92,7 +92,7 @@ class PhotosInputView: UIView, PhotosInputViewProtocol {
     }
 
     fileprivate func requestAccessToVideo() {
-        AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo) { (success) -> Void in
+        AVCaptureDevice.requestAccess(for: AVMediaType.video) { (success) -> Void in
             DispatchQueue.main.async(execute: { () -> Void in
                 self.reloadVideoItem()
             })
@@ -156,7 +156,7 @@ extension PhotosInputView: UICollectionViewDataSource {
         var cell: UICollectionViewCell
         if indexPath.item == Constants.liveCameraItemIndex {
             let liveCameraCell = collectionView.dequeueReusableCell(withReuseIdentifier: "bar", for: indexPath) as! LiveCameraCell
-            liveCameraCell.updateWithAuthorizationStatus(AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo))
+            liveCameraCell.updateWithAuthorizationStatus(AVCaptureDevice.authorizationStatus(for: AVMediaType.video))
             cell = liveCameraCell
         } else {
             cell = self.cellProvider.cellForItemAtIndexPath(indexPath)

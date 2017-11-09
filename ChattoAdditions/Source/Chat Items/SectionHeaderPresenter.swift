@@ -27,8 +27,8 @@ public protocol SectionHeaderInteractionHandlerProtocol {
 
 open class SectionHeaderPresenter<ViewModelBuilderT, InteractionHandlerT> : BaseSectionItemPresenter<SectionHeaderCollectionViewCell> where
     ViewModelBuilderT: SectionHeaderViewModelBuilderProtocol,
-    ViewModelBuilderT.ModelT: SectionHeaderModelProtocol,
-    ViewModelBuilderT.ViewModelT: SectionHeaderViewModelProtocol,
+//    ViewModelBuilderT.ModelT: SectionHeaderModelProtocol,
+//    ViewModelBuilderT.ViewModelT: SectionHeaderViewModelProtocol,
     InteractionHandlerT: SectionHeaderInteractionHandlerProtocol,
     InteractionHandlerT.ViewModelT == ViewModelBuilderT.ViewModelT {
     public typealias CellT = SectionHeaderCollectionViewCell

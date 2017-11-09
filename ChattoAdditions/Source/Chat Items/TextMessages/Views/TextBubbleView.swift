@@ -141,8 +141,8 @@ public final class TextBubbleView: UIView, MaximumLayoutWidthSpecificable, Backg
         if self.textView.textColor != textColor {
             self.textView.textColor = textColor
             self.textView.linkTextAttributes = [
-                NSForegroundColorAttributeName: textColor,
-                NSUnderlineStyleAttributeName : NSUnderlineStyle.styleSingle.rawValue
+                NSAttributedStringKey.foregroundColor.rawValue: textColor,
+                NSAttributedStringKey.underlineStyle.rawValue : NSUnderlineStyle.styleSingle.rawValue
             ]
         }
         if self.bubbleImageView.image != bubbleImage { self.bubbleImageView.image = bubbleImage}
@@ -235,7 +235,7 @@ public final class TextBubbleView: UIView, MaximumLayoutWidthSpecificable, Backg
         return self.layoutContext.text.boundingRect(
             with: CGSize(width: width, height: CGFloat.greatestFiniteMagnitude),
             options: [.usesLineFragmentOrigin, .usesFontLeading],
-            attributes: [NSFontAttributeName: self.layoutContext.font], context:  nil
+            attributes: [NSAttributedStringKey.font: self.layoutContext.font], context:  nil
         ).size.bma_round()
     }
 }

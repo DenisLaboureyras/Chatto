@@ -138,7 +138,7 @@ open class ChatCollectionViewLayout: UICollectionViewLayout {
         }
         
         
-        for (idx, stop) in missingSections.enumerated() {
+        for (idx, _) in missingSections.enumerated() {
             let indexPath = IndexPath(item: 0, section: idx)
             if let layoutAttributes = self.layoutAttributesForSupplementaryView(ofKind: UICollectionElementKindSectionHeader, at: indexPath) {
                 answer.append(layoutAttributes)
@@ -157,13 +157,13 @@ open class ChatCollectionViewLayout: UICollectionViewLayout {
         if(elementKind == UICollectionElementKindSectionHeader){
             
             guard let cv = self.delegate?.collectionView else {return nil;};
-            let contentOffset: CGPoint = cv.contentOffset ?? CGPoint.zero;
+            let contentOffset: CGPoint = cv.contentOffset;
             
             guard indexPath.section < self.layoutModel.layoutAttributesSections.count else {return nil;}
             let layoutAttributes = self.layoutModel.layoutAttributesSections[indexPath.section]
             
             let section = layoutAttributes.indexPath.section;
-            let numberOfItemsInSection = cv.numberOfItems(inSection: section) ?? 0;
+            let numberOfItemsInSection = cv.numberOfItems(inSection: section);
             
             let firstObjectIndexPath = IndexPath(item:0, section:section);
             let lastObjectIndexPath = IndexPath(item:max(0, (numberOfItemsInSection - 1)), section:section);
@@ -185,7 +185,7 @@ open class ChatCollectionViewLayout: UICollectionViewLayout {
             var origin = layoutAttributes.frame.origin;
             origin.y = min(
                 max(
-                    contentOffset.y + (cv.contentInset.top ?? 0),
+                    contentOffset.y + cv.contentInset.top,
                     (firstObjectAttrs.frame.minY - headerHeight)
                 ),
                 (lastObjectAttrs.frame.maxY - headerHeight)

@@ -12,8 +12,8 @@ import Chatto
 open class SectionHeaderPresenterBuilder<ViewModelBuilderT, InteractionHandlerT>
 : SectionItemPresenterBuilderProtocol where
     ViewModelBuilderT: SectionHeaderViewModelBuilderProtocol,
-    ViewModelBuilderT.ModelT: SectionHeaderModelProtocol,
-    ViewModelBuilderT.ViewModelT: SectionHeaderViewModelProtocol,
+//    ViewModelBuilderT.ModelT: SectionHeaderModelProtocol,
+//    ViewModelBuilderT.ViewModelT: SectionHeaderViewModelProtocol,
     InteractionHandlerT: SectionHeaderInteractionHandlerProtocol,
     InteractionHandlerT.ViewModelT == ViewModelBuilderT.ViewModelT {
     typealias ViewModelT = ViewModelBuilderT.ViewModelT

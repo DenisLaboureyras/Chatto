@@ -97,7 +97,7 @@ public struct CollectionChanges {
         
         
         
-        for (index, stop ) in insertedIndexSections.enumerated() {
+        for (index, _ ) in insertedIndexSections.enumerated() {
             print("section : \(index)")
         }
         
@@ -106,7 +106,7 @@ public struct CollectionChanges {
         
         
         print("deletedIndexSections");
-        for (index, stop ) in deletedIndexSections.enumerated() {
+        for (index, _ ) in deletedIndexSections.enumerated() {
             print("section : \(index)")
         }
         

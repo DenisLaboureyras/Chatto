@@ -163,14 +163,14 @@ class LiveCameraCell: UICollectionViewCell {
     }
 
     fileprivate var needsRestoreCaptureSession = false
-    func handleWillResignActiveNotification() {
+    @objc func handleWillResignActiveNotification() {
         if self.captureSession.isCapturing {
             self.needsRestoreCaptureSession = true
             self.stopCapturing()
         }
     }
 
-    func handleDidBecomeActiveNotification() {
+    @objc func handleDidBecomeActiveNotification() {
         if self.needsRestoreCaptureSession {
             self.needsRestoreCaptureSession = false
             self.startCapturing()
@@ -188,16 +188,16 @@ private class LiveCameraCaptureSession: LiveCameraCaptureSessionProtocol {
 
     fileprivate func configureCaptureSession() {
         self.captureSession = AVCaptureSession()
-        let device = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
+        let device = AVCaptureDevice.default(for: AVMediaType.video)
         do {
-            let input = try AVCaptureDeviceInput(device: device)
+            let input = try AVCaptureDeviceInput(device: device!)
             self.captureSession.addInput(input)
         } catch {
 
         }
 
         self.captureLayer = AVCaptureVideoPreviewLayer(session: self.captureSession)
-        self.captureLayer!.videoGravity = AVLayerVideoGravityResizeAspectFill
+        self.captureLayer!.videoGravity = AVLayerVideoGravity.resizeAspectFill
     }
 
     fileprivate lazy var queue: OperationQueue = {

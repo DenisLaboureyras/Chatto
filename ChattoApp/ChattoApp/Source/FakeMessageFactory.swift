@@ -85,7 +85,7 @@ class FakeMessageFactory {
         let length: Int = 10 + Int(arc4random_uniform(300))
         
         let thirdletterindex = maxText.index(maxText.startIndex, offsetBy: length)
-        let text = "\(maxText.characters[thirdletterindex]) incoming:\(incomingText), #:\(uid)"
+        let text = "\(maxText[thirdletterindex]) incoming:\(incomingText), #:\(uid)"
         return ChattoApp.createTextMessageModel(uid, text: text, isIncoming: isIncoming)
     }
 

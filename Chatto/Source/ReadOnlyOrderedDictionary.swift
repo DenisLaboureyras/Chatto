@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct ReadOnlyOrderedDictionary<T where T: UniqueIdentificable>: Collection {
+public struct ReadOnlyOrderedDictionary<T>: Collection where T: UniqueIdentificable {
    
 
     
@@ -64,7 +64,7 @@ public struct ReadOnlyOrderedDictionary<T where T: UniqueIdentificable>: Collect
     }
 }
 
-public struct ReadOnlyOrderedSectionedDictionary<T where T: ChatSectionProtocol>: Collection {
+public struct ReadOnlyOrderedSectionedDictionary<T>: Collection where T: ChatSectionProtocol {
     
     
     fileprivate let items: [T]
