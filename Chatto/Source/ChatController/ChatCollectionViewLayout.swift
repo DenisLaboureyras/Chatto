@@ -142,8 +142,10 @@ open class ChatCollectionViewLayout: UICollectionViewFlowLayout {
             }
         }
         
+        let maxSections = (missingSections.max() ?? 0) + 1
+        let rangeSections = 0..<maxSections
         
-        for (idx, _) in missingSections.enumerated() {
+        for idx in rangeSections {
             let indexPath = IndexPath(item: 0, section: idx)
             if let layoutAttributes = self.layoutAttributesForSupplementaryView(ofKind: UICollectionElementKindSectionHeader, at: indexPath) {
                 answer.append(layoutAttributes)
@@ -198,8 +200,7 @@ open class ChatCollectionViewLayout: UICollectionViewFlowLayout {
             
             layoutAttributes.zIndex = 1024;
             layoutAttributes.frame = CGRect(origin: origin, size: layoutAttributes.frame.size);
-            print("layoutAttributes \(indexPath.section)")
-            print(layoutAttributes.frame)
+            
             return layoutAttributes;
         }
         return nil;
