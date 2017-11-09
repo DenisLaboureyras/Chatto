@@ -157,53 +157,54 @@ open class ChatCollectionViewLayout: UICollectionViewFlowLayout {
 
     }
 
-//    override open func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-//       
-//        if(elementKind == UICollectionElementKindSectionHeader){
-//            
-//            guard let cv = self.delegate?.collectionView else {return nil;};
-//            let contentOffset: CGPoint = cv.contentOffset;
-//            
-//            guard indexPath.section < self.layoutModel.layoutAttributesSections.count else {return nil;}
-//            let layoutAttributes = self.layoutModel.layoutAttributesSections[indexPath.section]
-//            
-//            let section = layoutAttributes.indexPath.section;
-//            let numberOfItemsInSection = cv.numberOfItems(inSection: section);
-//            
-//            let firstObjectIndexPath = IndexPath(item:0, section:section);
-//            let lastObjectIndexPath = IndexPath(item:max(0, (numberOfItemsInSection - 1)), section:section);
-//            
-//            var firstObjectAttrs: UICollectionViewLayoutAttributes!;
-//            var lastObjectAttrs: UICollectionViewLayoutAttributes!;
-//            
-//            if (numberOfItemsInSection > 0) {
-//                firstObjectAttrs = self.layoutAttributesForItem(at: firstObjectIndexPath);
-//                lastObjectAttrs = self.layoutAttributesForItem(at: lastObjectIndexPath);
-//            } else {
-//                firstObjectAttrs = self.layoutAttributesForSupplementaryView(ofKind: UICollectionElementKindSectionHeader,
-//                    at:firstObjectIndexPath);
-//                lastObjectAttrs = self.layoutAttributesForSupplementaryView(ofKind: UICollectionElementKindSectionFooter,
-//                    at:lastObjectIndexPath);
-//            }
-//            
-//            let headerHeight = layoutAttributes.frame.height;
-//            var origin = layoutAttributes.frame.origin;
-//            origin.y = min(
-//                max(
-//                    contentOffset.y + cv.contentInset.top,
-//                    (firstObjectAttrs.frame.minY - headerHeight)
-//                ),
-//                (lastObjectAttrs.frame.maxY - headerHeight)
-//            );
-//            
-//            layoutAttributes.zIndex = 1024;
-//            layoutAttributes.frame = CGRect(origin: origin, size: layoutAttributes.frame.size);
-//            print("layoutAttributes \(indexPath.section)")
-//            print(layoutAttributes.frame)
-//            return layoutAttributes;
-//        }
-//        return nil;
-//    }
+    override open func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+       
+        if(elementKind == UICollectionElementKindSectionHeader){
+            
+            guard let cv = self.delegate?.collectionView else {return nil;};
+            let contentOffset: CGPoint = cv.contentOffset;
+            
+            guard indexPath.section < self.layoutModel.layoutAttributesSections.count else {return nil;}
+            let layoutAttributes = self.layoutModel.layoutAttributesSections[indexPath.section]
+            
+            let section = layoutAttributes.indexPath.section;
+            let numberOfItemsInSection = cv.numberOfItems(inSection: section);
+            
+            let firstObjectIndexPath = IndexPath(item:0, section:section);
+            let lastObjectIndexPath = IndexPath(item:max(0, (numberOfItemsInSection - 1)), section:section);
+            
+            var firstObjectAttrs: UICollectionViewLayoutAttributes!;
+            var lastObjectAttrs: UICollectionViewLayoutAttributes!;
+            
+            if (numberOfItemsInSection > 0) {
+                firstObjectAttrs = self.layoutAttributesForItem(at: firstObjectIndexPath);
+                lastObjectAttrs = self.layoutAttributesForItem(at: lastObjectIndexPath);
+            } else {
+                firstObjectAttrs = self.layoutAttributesForSupplementaryView(ofKind: UICollectionElementKindSectionHeader,
+                    at:firstObjectIndexPath);
+                lastObjectAttrs = self.layoutAttributesForSupplementaryView(ofKind: UICollectionElementKindSectionFooter,
+                    at:lastObjectIndexPath);
+            }
+            
+            let headerHeight = layoutAttributes.frame.height;
+            var origin = layoutAttributes.frame.origin;
+            origin.y = min(
+                max(
+                    contentOffset.y + cv.contentInset.top,
+                    (firstObjectAttrs.frame.minY - headerHeight)
+                ),
+                (lastObjectAttrs.frame.maxY - headerHeight)
+            );
+            
+            layoutAttributes.zIndex = 1024;
+            layoutAttributes.frame = CGRect(origin: origin, size: layoutAttributes.frame.size);
+            print("layoutAttributes \(indexPath.section)")
+            print(layoutAttributes.frame)
+            return layoutAttributes;
+        }
+        return nil;
+    }
+    
     
     open override func initialLayoutAttributesForAppearingSupplementaryElement(ofKind elementKind: String, at indexPath : IndexPath) -> UICollectionViewLayoutAttributes?
     {
