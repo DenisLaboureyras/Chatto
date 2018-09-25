@@ -30,9 +30,9 @@ public protocol PhotoMessageModelProtocol: DecoratedMessageModelProtocol {
 }
 
 open class PhotoMessageModel: PhotoMessageModelProtocol {
-    open let messageModel: MessageModelProtocol
-    open let image: UIImage // fixme: URL
-    open let imageSize: CGSize
+    public let messageModel: MessageModelProtocol
+    public let image: UIImage // fixme: URL
+    public let imageSize: CGSize
     public init(messageModel: MessageModelProtocol, imageSize: CGSize, image: UIImage) {
         self.messageModel = messageModel
         self.imageSize = imageSize

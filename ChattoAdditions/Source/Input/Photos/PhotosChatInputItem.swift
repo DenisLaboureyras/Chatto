@@ -34,7 +34,7 @@ import Foundation
     lazy fileprivate var internalTabView: UIButton = {
         var button = UIButton(type: .custom)
         button.isExclusiveTouch = true
-        button.setImage(UIImage(named: "camera-icon-unselected", in: Bundle(for: type(of: self)), compatibleWith: nil), for: UIControlState())
+        button.setImage(UIImage(named: "camera-icon-unselected", in: Bundle(for: type(of: self)), compatibleWith: nil), for: UIControl.State())
         button.setImage(UIImage(named: "camera-icon-selected", in: Bundle(for: type(of: self)), compatibleWith: nil), for: .highlighted)
         button.setImage(UIImage(named: "camera-icon-selected", in: Bundle(for: type(of: self)), compatibleWith: nil), for: .selected)
         return button

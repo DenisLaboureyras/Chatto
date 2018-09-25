@@ -55,7 +55,7 @@ open class SectionHeaderPresenter<ViewModelBuilderT, InteractionHandlerT> : Base
     let cellStyle: SectionHeaderCollectionViewCellStyleProtocol
     
     open override class func registerCells(_ collectionView: UICollectionView) {
-        collectionView.register(SectionHeaderCollectionViewCell.self, forSupplementaryViewOfKind:UICollectionElementKindSectionHeader, withReuseIdentifier: "section-header")
+        collectionView.register(SectionHeaderCollectionViewCell.self, forSupplementaryViewOfKind:UICollectionView.elementKindSectionHeader, withReuseIdentifier: "section-header")
     }
     
     override open var canCalculateHeightInBackground: Bool {
@@ -67,7 +67,7 @@ open class SectionHeaderPresenter<ViewModelBuilderT, InteractionHandlerT> : Base
     }
     
     open override func dequeueCell(collectionView: UICollectionView, indexPath: IndexPath) -> UICollectionReusableView {
-        return collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "section-header", for: indexPath)
+        return collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "section-header", for: indexPath)
     }
     
     public fileprivate(set) final lazy var sectionHeaderViewModel: ViewModelT = {

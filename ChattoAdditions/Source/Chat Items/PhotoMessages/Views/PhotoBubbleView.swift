@@ -60,10 +60,10 @@ public final class PhotoBubbleView: UIView, MaximumLayoutWidthSpecificable, Back
 
     fileprivate lazy var imageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.autoresizingMask = UIViewAutoresizing()
+        imageView.autoresizingMask = UIView.AutoresizingMask()
         imageView.clipsToBounds = true
         imageView.autoresizesSubviews = false
-        imageView.autoresizingMask = UIViewAutoresizing()
+        imageView.autoresizingMask = UIView.AutoresizingMask()
         imageView.contentMode = .scaleAspectFill
         imageView.addSubview(self.borderView)
         return imageView
@@ -85,7 +85,7 @@ public final class PhotoBubbleView: UIView, MaximumLayoutWidthSpecificable, Back
 
     fileprivate var placeholderIconView: UIImageView = {
         let imageView = UIImageView()
-        imageView.autoresizingMask = UIViewAutoresizing()
+        imageView.autoresizingMask = UIView.AutoresizingMask()
         return imageView
     }()
 

@@ -35,10 +35,10 @@ open class SectionHeaderViewModel: SectionHeaderViewModelProtocol {
         return self.dateFormatter.string(from: self.sectionHeaderModel.date)
     }()
     
-    open let dateFormatter: DateFormatter
+    public let dateFormatter: DateFormatter
     open fileprivate(set) var sectionHeaderModel: SectionHeaderModelProtocol
     
-    open let text: String
+    public let text: String
     
     public init(dateFormatter: DateFormatter, sectionHeaderModel: SectionHeaderModelProtocol) {
         self.text = sectionHeaderModel.text;

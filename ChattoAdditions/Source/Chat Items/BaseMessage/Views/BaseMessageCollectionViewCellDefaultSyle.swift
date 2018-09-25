@@ -60,7 +60,7 @@ open class BaseMessageCollectionViewCellDefaultSyle: BaseMessageCollectionViewCe
     }()
 
     open func attributedStringForDate(_ date: String) -> NSAttributedString {
-        let attributes = [NSAttributedStringKey.font : self.dateFont]
+        let attributes = [NSAttributedString.Key.font : self.dateFont]
         return NSAttributedString(string: date, attributes: attributes)
     }
 

@@ -25,7 +25,7 @@
 import UIKit
 
 public protocol ChatCollectionViewLayoutDelegate: class {
-    weak var collectionView: UICollectionView! {get}
+    var collectionView: UICollectionView! {get}
     func chatCollectionViewLayoutModel() -> ChatCollectionViewLayoutModel
 }
 
@@ -63,7 +63,7 @@ public struct ChatCollectionViewLayoutModel {
         
         for sectionLayoutData in sectionsLayoutData {
             let (indexPath, height) = sectionLayoutData
-            let layoutAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, with: indexPath)
+            let layoutAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, with: indexPath)
             
             let itemSize = CGSize(width: collectionViewWidth, height: height)
             let frame = CGRect(origin: CGPoint(x: 0, y: verticalOffset), size: itemSize)
@@ -137,7 +137,7 @@ open class ChatCollectionViewLayout: UICollectionViewFlowLayout {
             }
         }
         for layoutAttributes in answer {
-            if (layoutAttributes.representedElementKind == UICollectionElementKindSectionHeader) {
+            if (layoutAttributes.representedElementKind == UICollectionView.elementKindSectionHeader) {
                 missingSections.remove(layoutAttributes.indexPath.section);
             }
         }
@@ -147,7 +147,7 @@ open class ChatCollectionViewLayout: UICollectionViewFlowLayout {
         
         for idx in rangeSections {
             let indexPath = IndexPath(item: 0, section: idx)
-            if let layoutAttributes = self.layoutAttributesForSupplementaryView(ofKind: UICollectionElementKindSectionHeader, at: indexPath) {
+            if let layoutAttributes = self.layoutAttributesForSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, at: indexPath) {
                 answer.append(layoutAttributes)
             }
             
@@ -161,7 +161,7 @@ open class ChatCollectionViewLayout: UICollectionViewFlowLayout {
 
     override open func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
        
-        if(elementKind == UICollectionElementKindSectionHeader){
+        if(elementKind == UICollectionView.elementKindSectionHeader){
             
             guard let cv = self.delegate?.collectionView else {return nil;};
             let contentOffset: CGPoint = cv.contentOffset;
@@ -182,9 +182,9 @@ open class ChatCollectionViewLayout: UICollectionViewFlowLayout {
                 firstObjectAttrs = self.layoutAttributesForItem(at: firstObjectIndexPath);
                 lastObjectAttrs = self.layoutAttributesForItem(at: lastObjectIndexPath);
             } else {
-                firstObjectAttrs = self.layoutAttributesForSupplementaryView(ofKind: UICollectionElementKindSectionHeader,
+                firstObjectAttrs = self.layoutAttributesForSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader,
                     at:firstObjectIndexPath);
-                lastObjectAttrs = self.layoutAttributesForSupplementaryView(ofKind: UICollectionElementKindSectionFooter,
+                lastObjectAttrs = self.layoutAttributesForSupplementaryView(ofKind: UICollectionView.elementKindSectionFooter,
                     at:lastObjectIndexPath);
             }
             

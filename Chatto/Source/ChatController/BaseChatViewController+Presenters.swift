@@ -37,7 +37,7 @@ extension BaseChatViewController: ChatCollectionViewLayoutDelegate {
     }
     
     @objc(collectionView:viewForSupplementaryElementOfKind:atIndexPath:) public func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        if ( kind == UICollectionElementKindSectionHeader )
+        if ( kind == UICollectionView.elementKindSectionHeader )
         {
             let presenter = self.presenterForIndexSection(indexPath)
             let cell = presenter.dequeueCell(collectionView: collectionView, indexPath: indexPath)

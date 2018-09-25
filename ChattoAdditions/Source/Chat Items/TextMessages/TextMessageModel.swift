@@ -29,8 +29,8 @@ public protocol TextMessageModelProtocol: DecoratedMessageModelProtocol {
 }
 
 open class TextMessageModel: TextMessageModelProtocol {
-    open let messageModel: MessageModelProtocol
-    open let text: String
+    public let messageModel: MessageModelProtocol
+    public let text: String
     public init(messageModel: MessageModelProtocol, text: String) {
         self.messageModel = messageModel
         self.text = text

@@ -34,7 +34,7 @@ open class SectionHeaderCollectionViewCell: UICollectionViewCell {
     open var animationDuration: CFTimeInterval = 0.33
     open var viewContext: ViewContext = .normal
     
-    open static func sizingCell() -> SectionHeaderCollectionViewCell {
+    public static func sizingCell() -> SectionHeaderCollectionViewCell {
         let cell = SectionHeaderCollectionViewCell(frame: CGRect.zero)
         cell.viewContext = .sizing
         return cell

@@ -141,8 +141,8 @@ public final class TextBubbleView: UIView, MaximumLayoutWidthSpecificable, Backg
         if self.textView.textColor != textColor {
             self.textView.textColor = textColor
             self.textView.linkTextAttributes = [
-                NSAttributedStringKey.foregroundColor.rawValue: textColor,
-                NSAttributedStringKey.underlineStyle.rawValue : NSUnderlineStyle.styleSingle.rawValue
+                NSAttributedString.Key.foregroundColor: textColor,
+                NSAttributedString.Key.underlineStyle : NSUnderlineStyle.single.rawValue
             ]
         }
         if self.bubbleImageView.image != bubbleImage { self.bubbleImageView.image = bubbleImage}
@@ -227,7 +227,7 @@ public final class TextBubbleView: UIView, MaximumLayoutWidthSpecificable, Backg
         let textSize = self.textSizeThatFitsWidth(maxTextWidth)
         let bubbleSize = textSize.bma_outsetBy(dx: textHorizontalInset, dy: self.layoutContext.textInsets.bma_verticalInset)
         self.bubbleFrame = CGRect(origin: CGPoint.zero, size: bubbleSize)
-        self.textFrame = UIEdgeInsetsInsetRect(self.bubbleFrame, self.layoutContext.textInsets)
+        self.textFrame = self.bubbleFrame.inset(by: self.layoutContext.textInsets)
         self.size = bubbleSize
     }
 
@@ -235,7 +235,7 @@ public final class TextBubbleView: UIView, MaximumLayoutWidthSpecificable, Backg
         return self.layoutContext.text.boundingRect(
             with: CGSize(width: width, height: CGFloat.greatestFiniteMagnitude),
             options: [.usesLineFragmentOrigin, .usesFontLeading],
-            attributes: [NSAttributedStringKey.font: self.layoutContext.font], context:  nil
+            attributes: [NSAttributedString.Key.font: self.layoutContext.font], context:  nil
         ).size.bma_round()
     }
 }

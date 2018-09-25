@@ -99,7 +99,7 @@ open class MessageViewModel: MessageViewModelProtocol {
         return self.dateFormatter.string(from: self.messageModel.date)
     }()
 
-    open let dateFormatter: DateFormatter
+    public let dateFormatter: DateFormatter
     open fileprivate(set) var messageModel: MessageModelProtocol
 
     public init(dateFormatter: DateFormatter, showsTail: Bool, messageModel: MessageModelProtocol) {

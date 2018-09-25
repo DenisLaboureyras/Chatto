@@ -60,7 +60,7 @@ open class PhotoMessageViewModel: PhotoMessageViewModelProtocol {
     open var imageSize: CGSize {
         return self.photoMessage.imageSize
     }
-    open let messageViewModel: MessageViewModelProtocol
+    public let messageViewModel: MessageViewModelProtocol
     open var showsFailedIcon: Bool {
         return self.messageViewModel.showsFailedIcon || self.transferStatus.value == .failed
     }

@@ -129,7 +129,7 @@ open class BaseChatViewController: UIViewController, UICollectionViewDataSource,
         self.collectionView.showsHorizontalScrollIndicator = false
         self.collectionView.allowsSelection = false
         self.collectionView.translatesAutoresizingMaskIntoConstraints = false
-        self.collectionView.autoresizingMask = UIViewAutoresizing()
+        self.collectionView.autoresizingMask = UIView.AutoresizingMask()
         
         self.view.addSubview(self.collectionView)
         self.view.addConstraint(NSLayoutConstraint(item: self.view, attribute: .top, relatedBy: .equal, toItem: self.collectionView, attribute: .top, multiplier: 1, constant: 0))
@@ -153,7 +153,7 @@ open class BaseChatViewController: UIViewController, UICollectionViewDataSource,
     fileprivate var inputContainerBottomConstraint: NSLayoutConstraint!
     fileprivate func addInputViews() {
         self.inputContainer = UIView(frame: CGRect.zero)
-        self.inputContainer.autoresizingMask = UIViewAutoresizing()
+        self.inputContainer.autoresizingMask = UIView.AutoresizingMask()
         self.inputContainer.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(self.inputContainer)
         self.view.addConstraint(NSLayoutConstraint(item: self.inputContainer, attribute: .top, relatedBy: .greaterThanOrEqual, toItem: self.topLayoutGuide, attribute: .bottom, multiplier: 1, constant: 0))

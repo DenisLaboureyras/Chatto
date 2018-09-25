@@ -26,8 +26,8 @@ import UIKit
 import Photos
 
 protocol PhotosInputViewProtocol {
-    weak var delegate: PhotosInputViewDelegate? { get set }
-    weak var presentingController: UIViewController? { get }
+    var delegate: PhotosInputViewDelegate? { get set }
+    var presentingController: UIViewController? { get }
     func reload()
 }
 
